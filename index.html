@@ -1694,46 +1694,104 @@ async function portalSignIn(){
 
   if(!email){ showPortalError('portalSignInError','Please enter your email address.'); return; }
   if(!pw)   { showPortalError('portalSignInError','Please enter your password.'); return; }
-
   if(btn){ btn.textContent='Signing in…'; btn.disabled=true; }
 
-  const { data, error } = await sbSignIn(email, pw);
+  // ── Method 1: Supabase Auth (for verified accounts) ──
+  let user = null;
+  let supabaseOk = false;
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if(!error && data?.user){ user = data.user; supabaseOk = true; }
+  } catch(e){}
+
+  // ── Method 2: Local account check (for accounts registered before Supabase) ──
+  let localUser = null;
+  if(!supabaseOk){
+    try {
+      localUser = await pGet(emailKey(email));
+      if(localUser && localUser.pwHash === hashPw(pw)){
+        // Valid local account
+      } else {
+        localUser = null;
+      }
+    } catch(e){}
+  }
 
   if(btn){ btn.textContent='Sign In →'; btn.disabled=false; }
 
-  if(error){
-    if(error.message.includes('Invalid login') || error.message.includes('invalid_credentials')){
-      showPortalError('portalSignInError','Incorrect email or password. Please try again.');
-    } else if(error.message.includes('Email not confirmed')){
-      showPortalError('portalSignInError','Please verify your email first. Check your inbox for the verification link.');
-    } else {
-      showPortalError('portalSignInError', error.message || 'Sign in failed. Please try again.');
-    }
+  if(!supabaseOk && !localUser){
+    showPortalError('portalSignInError','Incorrect email or password. Please try again.');
     return;
   }
 
-  const user = data.user;
-  if(!user){ showPortalError('portalSignInError','Sign in failed. Please try again.'); return; }
+  // Build portalCurrentUser from whichever auth worked
+  if(supabaseOk && user){
+    let profile = null;
+    try {
+      const { data: pd } = await sb.from('profiles').select('*').eq('id', user.id).single();
+      profile = pd;
+    } catch(e){}
 
-  // Load profile from Supabase
-  const profile = await dbGetOne('profiles', { id: user.id });
+    if(profile?.role === 'herbalist' || profile?.role === 'admin'){
+      await sb.auth.signOut();
+      showPortalError('portalSignInError','Please use the Practitioner Portal to sign in.');
+      return;
+    }
 
-  portalCurrentUser = {
-    id:        user.id,
-    email:     user.email,
-    firstName: profile?.first_name || user.user_metadata?.first_name || user.email.split('@')[0],
-    lastName:  profile?.last_name  || user.user_metadata?.last_name  || '',
-    name:      profile?.full_name  || user.user_metadata?.full_name  || user.email.split('@')[0],
-    role:      profile?.role       || 'client',
-    status:    profile?.status     || 'active',
-    verified:  true,
-  };
+    portalCurrentUser = {
+      id:        user.id,
+      email:     user.email,
+      firstName: profile?.first_name || user.user_metadata?.first_name || user.email.split('@')[0],
+      lastName:  profile?.last_name  || user.user_metadata?.last_name  || '',
+      name:      profile?.full_name  || user.user_metadata?.full_name  || user.email.split('@')[0],
+      role:      'client',
+      status:    'active',
+      verified:  true,
+    };
+  } else if(localUser){
+    if(!localUser.verified){
+      // Re-trigger verification
+      portalPendingUser = localUser;
+      portalVerifyCode  = String(Math.floor(100000 + Math.random() * 900000));
+      setElText('verifyEmailDisplay', email);
+      setElText('verifyCodeDisplay',  portalVerifyCode);
+      setElVal('verifyCodeInput','');
+      portalView('verify'); startVerifyTimer(60);
+      setTimeout(()=>showToast('📧 Verify your email. Code: '+portalVerifyCode),400);
+      return;
+    }
+    localUser.lastLogin = new Date().toISOString();
+    await pSet(emailKey(email), localUser);
+    portalCurrentUser = {
+      id:        localUser.id,
+      email:     localUser.email,
+      firstName: localUser.firstName,
+      lastName:  localUser.lastName,
+      name:      localUser.name,
+      role:      'client',
+      status:    'active',
+      verified:  true,
+      assessmentRef: localUser.assessmentRef || null,
+    };
+  }
 
-  // Look up assessment ref
-  const assessment = await dbGetOne('assessments', { client_email: user.email });
-  if(assessment) portalCurrentUser.assessmentRef = assessment.ref_code;
+  // Find assessment ref if not set
+  if(!portalCurrentUser.assessmentRef){
+    try {
+      const { data: asm } = await sb.from('assessments').select('ref_code').eq('client_email', email).single();
+      if(asm) portalCurrentUser.assessmentRef = asm.ref_code;
+    } catch(e){
+      try {
+        const refs = (await pGet('tfb_refs'))||[];
+        for(const r of refs){
+          const a = await pGet('tfb_assessment_'+r);
+          if(a?.personal?.email?.toLowerCase()===email){ portalCurrentUser.assessmentRef=r; break; }
+        }
+      } catch(e2){}
+    }
+  }
 
-  showToast('✅ Welcome back, ' + portalCurrentUser.firstName + '!');
+  showToast('✅ Welcome back, '+(portalCurrentUser.firstName||'there')+'!');
   loadPortalDashboard();
 }
 
@@ -2153,57 +2211,51 @@ async function practSignIn() {
   const usernameRaw = (document.getElementById('pract-user')?.value || '').trim();
   const pw          = (document.getElementById('pract-pw')?.value  || '');
   const btn         = document.getElementById('practBtn');
-  const errEl       = document.getElementById('practError');
 
-  if (errEl) errEl.style.display = 'none';
-  if (!usernameRaw) { showPlainError('practError', 'Please enter your username.'); document.getElementById('pract-user')?.focus(); return; }
-  if (!pw)          { showPlainError('practError', 'Please enter your password.');  document.getElementById('pract-pw')?.focus();   return; }
+  if (!usernameRaw) { showPlainError('practError','Please enter your username.'); return; }
+  if (!pw)          { showPlainError('practError','Please enter your password.');  return; }
+  if (btn) { btn.textContent='Signing in…'; btn.disabled=true; }
 
-  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
-
-  // Always reload the latest list so admin changes (passwords, suspensions) are reflected
+  // Load full practitioner list (built-ins + storage)
   const freshList = await loadPractitioners();
   practSuggestList = freshList;
 
-  // Find matching user by any identifier
+  // Find by username, id, email or name
   const candidate = matchPractitioner(freshList, usernameRaw);
 
-  if (btn) { btn.textContent = 'Sign In to Dashboard →'; btn.disabled = false; }
+  if (btn) { btn.textContent='Sign In to Dashboard →'; btn.disabled=false; }
 
-  // No account found at all
-  if (!candidate) {
-    showPlainError('practError', 'No practitioner account found with that username. Check spelling or contact your administrator.');
+  if(!candidate){
+    showPlainError('practError','No practitioner account found with that username.');
+    return;
+  }
+  if(candidate.status==='suspended'){ showPlainError('practError','This account has been suspended.'); return; }
+  if(candidate.status==='inactive') { showPlainError('practError','This account is inactive.'); return; }
+
+  // ── Authenticate: local password first, then Supabase ──
+  let authenticated = false;
+
+  // Local password check (works for all built-in accounts: amara, liang, sofia, priya, miller.jerome)
+  if(candidate.pw && candidate.pw !== '[supabase]'){
+    authenticated = (candidate.pw === pw);
+  }
+
+  // Supabase fallback (for accounts created in Supabase dashboard)
+  if(!authenticated && candidate.email){
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({ email: candidate.email, password: pw });
+      if(!error && data?.user) authenticated = true;
+    } catch(e){}
+  }
+
+  if(!authenticated){
+    showPlainError('practError','Incorrect password. Please try again.');
+    document.getElementById('pract-pw').value='';
     return;
   }
 
-  // Account status checks
-  if (candidate.status === 'suspended') {
-    showPlainError('practError', 'This account has been suspended. Please contact your system administrator.');
-    return;
-  }
-  if (candidate.status === 'inactive') {
-    showPlainError('practError', 'This account is inactive. Please contact your system administrator.');
-    return;
-  }
-
-  // Password check
-  if (candidate.pw !== pw) {
-    showPlainError('practError', 'Incorrect password. Please try again or use "Forgot password?" below.');
-    document.getElementById('pract-pw').value = '';
-    document.getElementById('pract-pw')?.focus();
-    return;
-  }
-
-  // ✅ Success — update last login timestamp
-  try {
-    const updated = freshList.map(h => h.id === candidate.id ? { ...h, lastLogin: new Date().toISOString() } : h);
-    try { await window.storage.set('tfb_herbalists', JSON.stringify(updated), true); } catch(e) {}
-    try { localStorage.setItem('tfb_herbalists', JSON.stringify(updated)); } catch(e) {}
-  } catch(e) {}
-
+  // ✅ Success — store session and navigate to herbalist dashboard
   closeLogin();
-
-  // Store credentials in sessionStorage so herbalist.html can auto-login
   try {
     sessionStorage.setItem('tfb_pract_autologin', JSON.stringify({
       id:        candidate.id,
@@ -2212,12 +2264,13 @@ async function practSignIn() {
       specialty: candidate.specialty || candidate.tradition || 'Herbalist',
       tradition: candidate.tradition || '',
       pw:        candidate.pw,
-      ts:        Date.now()  // expires after 30s
+      ts:        Date.now()
     }));
-  } catch(e) {}
+  } catch(e){}
 
-  showToast('🌿 Welcome, ' + (candidate.name.split(' ').find(p => !p.includes('.')) || candidate.name.split(' ')[0]) + '! Loading your dashboard…');
-  setTimeout(() => { window.location.href = 'herbalist.html'; }, 800);
+  const firstName = candidate.name.split(' ').find(p=>!p.includes('.')) || candidate.name.split(' ')[0];
+  showToast('🌿 Welcome, '+firstName+'! Loading your dashboard…');
+  setTimeout(()=>{ window.location.href='herbalist.html'; }, 800);
 }
 
 function showPractForgot() {

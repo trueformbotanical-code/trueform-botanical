@@ -902,71 +902,63 @@ async function doAdminLogin(){
   const btn   = document.getElementById('adminLoginBtn');
   const err   = document.getElementById('adminLoginError');
 
-  // Helper to show error
   const showErr = msg => {
-    if(err){ err.textContent='⚠️ '+msg; err.style.display='block'; err.style.cssText='display:block;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.6rem .9rem;font-size:.82rem;color:#dc2626;font-weight:600;margin-bottom:.8rem'; }
+    if(err){ err.textContent='⚠️ '+msg; err.style.cssText='display:block;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.6rem .9rem;font-size:.82rem;color:#dc2626;font-weight:600;margin-bottom:.8rem'; }
   };
-
   if(err) err.style.display='none';
   if(!email){ showErr('Please enter your email address.'); return; }
   if(!pw)   { showErr('Please enter your password.'); return; }
   if(btn){ btn.textContent='Signing in…'; btn.disabled=true; }
 
-  try {
-    // Sign in with Supabase Auth
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  let authenticated = false;
+  let adminName = 'System Administrator';
 
-    if(btn){ btn.textContent='Sign In to Admin'; btn.disabled=false; }
-
-    if(error){
-      showErr('Incorrect email or password. Please try again.');
-      return;
-    }
-
-    if(!data?.user){
-      showErr('Sign in failed. Please try again.');
-      return;
-    }
-
-    // Check admin access — accept trueformbotanical@gmail.com or role=admin in profiles
-    const isAdminEmail = data.user.email === 'trueformbotanical@gmail.com';
-    let profile = null;
-    try {
-      const { data: pd } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
-      profile = pd;
-    } catch(e){}
-
-    const isAdminRole = profile?.role === 'admin';
-
-    if(!isAdminEmail && !isAdminRole){
-      await sb.auth.signOut();
-      showErr('This account does not have admin access.');
-      return;
-    }
-
-    // Auto-fix role if needed
-    if(profile && profile.role !== 'admin'){
-      try { await sb.from('profiles').update({ role:'admin' }).eq('id', data.user.id); } catch(e){}
-    }
-
-    // Boot dashboard
-    currentAdmin = {
-      id:    data.user.id,
-      name:  profile?.full_name || 'System Administrator',
-      email: data.user.email,
-      role:  'admin'
-    };
-
-    document.getElementById('loginGate').style.display='none';
-    document.getElementById('adminApp').style.display='flex';
-    await loadAll();
-    await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
-    showToast('✅ Welcome, '+currentAdmin.name+'!');
-
-  } catch(e){
-    if(btn){ btn.textContent='Sign In to Admin'; btn.disabled=false; }
-    showErr('Connection error: '+e.message);
+  // ── Method 1: Local fallback (original sysadmin2025 password) ──
+  const isAdminEmail = email==='admin' || email==='trueformbotanical@gmail.com';
+  if(isAdminEmail && pw==='sysadmin2025'){
+    authenticated = true;
   }
+
+  // ── Method 2: Supabase Auth ──
+  if(!authenticated){
+    try {
+      const loginEmail = email==='admin' ? 'trueformbotanical@gmail.com' : email;
+      const { data, error } = await sb.auth.signInWithPassword({ email: loginEmail, password: pw });
+      if(!error && data?.user){
+        // Verify admin role
+        let profile = null;
+        try {
+          const { data: pd } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+          profile = pd;
+        } catch(e){}
+        const isAdmin = data.user.email==='trueformbotanical@gmail.com' || profile?.role==='admin';
+        if(isAdmin){
+          authenticated = true;
+          adminName = profile?.full_name || 'System Administrator';
+          // Auto-fix role
+          if(profile && profile.role!=='admin'){
+            try { await sb.from('profiles').update({role:'admin'}).eq('id',data.user.id); } catch(e){}
+          }
+        } else {
+          await sb.auth.signOut();
+        }
+      }
+    } catch(e){}
+  }
+
+  if(btn){ btn.textContent='Sign In to Admin'; btn.disabled=false; }
+
+  if(!authenticated){
+    showErr('Incorrect email or password. Please try again.');
+    return;
+  }
+
+  currentAdmin = { id:'admin', name: adminName, email: email==='admin'?'trueformbotanical@gmail.com':email, role:'admin' };
+  document.getElementById('loginGate').style.display='none';
+  document.getElementById('adminApp').style.display='flex';
+  await loadAll();
+  await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
+  showToast('✅ Welcome, '+currentAdmin.name+'!');
 }
 async function doLogout(){
   await sbSignOut();

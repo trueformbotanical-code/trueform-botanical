@@ -1375,59 +1375,62 @@ async function doLogin() {
 
   btn.textContent = 'Signing in…'; btn.disabled = true;
 
-  // Resolve username to email
+  // Load merged herbalist list (built-ins + storage + Supabase)
   const freshList = await loadHerbalistList();
   loginHerbalistList = freshList;
   const q = usernameRaw.toLowerCase();
+
+  // Find account by username, id, or email
   const found = freshList.find(h =>
-    h.username?.toLowerCase()===q || h.id?.toLowerCase()===q || h.email?.toLowerCase()===q
+    h.username?.toLowerCase()===q ||
+    h.id?.toLowerCase()===q ||
+    h.email?.toLowerCase()===q ||
+    h.name?.toLowerCase()===q
   );
-
-  if(!found){
-    btn.textContent='Sign In to Dashboard →'; btn.disabled=false;
-    // Also try Supabase directly if not in local list (email login)
-    const emailInput = usernameRaw.includes('@') ? usernameRaw : null;
-    if(!emailInput){ showLoginError('No practitioner account found with that username.'); return; }
-  }
-
-  const email = found?.email || usernameRaw;
-
-  // Sign in via Supabase
-  const { data, error } = await sbSignIn(email, pw);
 
   btn.textContent='Sign In to Dashboard →'; btn.disabled=false;
 
-  if(error){
-    if(error.message.includes('Invalid login') || error.message.includes('invalid_credentials')){
-      showLoginError('Incorrect username or password.');
-    } else {
-      showLoginError(error.message || 'Sign in failed.');
-    }
-    document.getElementById('loginPw').value='';
+  if(!found){
+    showLoginError('No practitioner account found with that username. Check spelling or contact your administrator.');
     return;
   }
 
-  const user = data.user;
-  if(!user){ showLoginError('Sign in failed. Please try again.'); return; }
+  // Check suspension/inactive
+  if(found.status==='suspended'){ showLoginError('This account has been suspended. Please contact your administrator.'); return; }
+  if(found.status==='inactive') { showLoginError('This account is inactive. Please contact your administrator.'); return; }
 
-  // Verify this is a herbalist account
-  const profile = await dbGetOne('profiles', { id: user.id });
-  const herbData = found || await dbGetOne('herbalists', { email: user.email });
-
-  if(profile && profile.role === 'client'){
-    showLoginError('This account is registered as a client, not a practitioner.');
-    await sbSignOut(); return;
+  // ── AUTHENTICATE ──
+  // Method 1: local password check (works for all built-in accounts)
+  let authenticated = false;
+  if(found.pw && found.pw !== '[supabase]'){
+    authenticated = (found.pw === pw);
   }
 
-  const firstName = (found?.name||user.email).split(' ').find(p=>p.length>1&&!p.endsWith('.')) || (found?.name||user.email).split(' ')[0];
+  // Method 2: Supabase Auth (for accounts created via Supabase)
+  if(!authenticated && found.email){
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({ email: found.email, password: pw });
+      if(!error && data?.user) authenticated = true;
+    } catch(e){}
+  }
+
+  if(!authenticated){
+    showLoginError('Incorrect password. Please try again or use "Forgot password?" below.');
+    document.getElementById('loginPw').value='';
+    document.getElementById('loginPw')?.focus();
+    return;
+  }
+
+  // ✅ Success
+  const firstName = (found.name||'').split(' ').find(p=>p.length>1&&!p.endsWith('.')) || (found.name||'Herbalist').split(' ')[0];
   const herbalistData = {
-    name:      found?.full_name || found?.name || user.email,
-    initial:   (found?.full_name || found?.name || user.email).charAt(0),
-    specialty: found?.specialty || herbData?.specialty || 'Herbalist',
-    greet:     firstName,
-    id:        found?.id || user.id,
-    tradition: found?.tradition || herbData?.tradition || '',
-    permissions: found || {},
+    name:        found.full_name || found.name || usernameRaw,
+    initial:     (found.full_name || found.name || usernameRaw).charAt(0),
+    specialty:   found.specialty || 'Herbalist',
+    greet:       firstName,
+    id:          found.id || found.username,
+    tradition:   found.tradition || '',
+    permissions: found,
   };
 
   currentHerbalist = herbalistData;
