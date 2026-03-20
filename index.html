@@ -1906,10 +1906,19 @@ async function portalRegister(){
     if(btn){ btn.textContent='Create Account →'; btn.disabled=false; }
 
     if(error){
-      if(error.message.includes('already registered') || error.message.includes('already been registered')){
-        showPortalError('roleRegError','An account with this email already exists. Please sign in instead.');
+      const msg = error.message || '';
+      const emailExists = msg.includes('already registered') ||
+                          msg.includes('already been registered') ||
+                          msg.includes('already exists') ||
+                          msg.includes('Email address') ||
+                          msg.includes('email_exists') ||
+                          error.code === 'email_exists' ||
+                          error.status === 422;
+      if(emailExists){
+        showPortalError('roleRegError',
+          'This email is already registered. Please use the Sign In tab instead, or use a different email address.');
       } else {
-        showPortalError('roleRegError', error.message || 'Registration failed. Please try again.');
+        showPortalError('roleRegError', msg || 'Registration failed. Please try again.');
       }
       return;
     }
