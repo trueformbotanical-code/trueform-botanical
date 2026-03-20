@@ -700,23 +700,41 @@ async function dbDelete(table, filters) {
     <!-- ══ ROLE SELECTOR ══ -->
     <div id="portalRoleSelect" style="padding:2rem 2rem 1.5rem;overflow-y:auto;flex:1">
       <button class="modal-close" data-action="closeLogin" style="position:absolute;top:.9rem;right:.9rem">✕</button>
-      <div style="text-align:center;margin-bottom:1.6rem">
-        <div style="font-size:2rem;margin-bottom:.5rem">🌿</div>
+      <div style="text-align:center;margin-bottom:1.8rem">
+        <div style="font-size:2.2rem;margin-bottom:.5rem">🌿</div>
         <div style="font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--text-dark)">TrueForm Botanical</div>
-        <div style="font-size:.82rem;color:var(--text-soft);margin-top:.25rem">Select your account type to sign in</div>
+        <div style="font-size:.82rem;color:var(--text-soft);margin-top:.3rem">How would you like to continue?</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:.65rem">
-        <button onclick="portalSelectRole('client')" class="role-select-btn" style="--rc:var(--teal-mid)">
-          <div class="rsb-icon" style="background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid))">👤</div>
-          <div class="rsb-text"><div class="rsb-title">Client</div><div class="rsb-sub">Access your consultations, assessments &amp; protocols</div></div>
-          <div class="rsb-arrow">→</div>
-        </button>
-        <button onclick="portalSelectRole('practitioner')" class="role-select-btn" style="--rc:var(--saffron)">
-          <div class="rsb-icon" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">🌿</div>
-          <div class="rsb-text"><div class="rsb-title">Herbalist / Practitioner</div><div class="rsb-sub">Access your herbalist dashboard and client files</div></div>
-          <div class="rsb-arrow">→</div>
-        </button>
-      </div>
+
+      <!-- Option 1: Existing Client Sign In -->
+      <button onclick="portalSelectRole('client')" class="role-select-btn" style="--rc:var(--teal-mid);margin-bottom:.6rem">
+        <div class="rsb-icon" style="background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid))">👤</div>
+        <div class="rsb-text">
+          <div class="rsb-title">Sign In</div>
+          <div class="rsb-sub">Existing client — access your portal, protocols &amp; diary</div>
+        </div>
+        <div class="rsb-arrow">→</div>
+      </button>
+
+      <!-- Option 2: New Client Register -->
+      <button onclick="portalSelectRole('register')" class="role-select-btn" style="--rc:var(--spice);margin-bottom:.6rem">
+        <div class="rsb-icon" style="background:linear-gradient(135deg,var(--spice),var(--saffron))">✨</div>
+        <div class="rsb-text">
+          <div class="rsb-title">New Client</div>
+          <div class="rsb-sub">Create a free account to book your first consultation</div>
+        </div>
+        <div class="rsb-arrow">→</div>
+      </button>
+
+      <!-- Option 3: Herbalist / Practitioner -->
+      <button onclick="portalSelectRole('practitioner')" class="role-select-btn" style="--rc:var(--saffron)">
+        <div class="rsb-icon" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">🌿</div>
+        <div class="rsb-text">
+          <div class="rsb-title">Herbalist / Practitioner</div>
+          <div class="rsb-sub">Sign in to your practitioner dashboard</div>
+        </div>
+        <div class="rsb-arrow">→</div>
+      </button>
     </div>
 
     <!-- ══ CLIENT AREA ══ -->
@@ -1488,32 +1506,6 @@ async function dbDelete(table, filters) {
 
 <script>
 // ══ PRODUCTS ══
-const products=[
-  {id:1,name:"Ashwagandha Root Extract",cats:["ayurveda","tincture"],emoji:"🌱",desc:"KSM-66® tincture. 5% withanolides. 60ml.",price:32,badge:"best",tradition:"Ayurveda"},
-  {id:2,name:"Reishi Mushroom Blend",cats:["tcm","tincture"],emoji:"🍄",desc:"Dual-extract Ganoderma lucidum. Beta-glucans. 50ml.",price:38,badge:"new",tradition:"TCM"},
-  {id:3,name:"Moringa Leaf Powder",cats:["african","tea"],emoji:"🌿",desc:"Certified organic Moringa from Ghana. 200g.",price:24,badge:"",tradition:"African"},
-  {id:4,name:"Valerian & Passionflower Tea",cats:["western","tea"],emoji:"🌼",desc:"Sleep support blend. 20 biodegradable bags.",price:18,badge:"best",tradition:"Western"},
-  {id:5,name:"Shatavari Rasayana",cats:["ayurveda"],emoji:"🌸",desc:"Women's tonic. Asparagus racemosus. 120g.",price:29,badge:"",tradition:"Ayurveda"},
-  {id:6,name:"He Shou Wu Tincture",cats:["tcm","tincture"],emoji:"🌺",desc:"Prepared Polygonum multiflorum. Jing tonic. 50ml.",price:42,badge:"new",tradition:"TCM"},
-  {id:7,name:"Rooibos & Buchu Blend",cats:["african","tea"],emoji:"🫖",desc:"South African anti-inflammatory tea. 30 bags.",price:16,badge:"",tradition:"African"},
-  {id:8,name:"Milk Thistle Capsules",cats:["western"],emoji:"🟣",desc:"Silymarin 80%. Liver & detox. 90 vegan caps.",price:26,badge:"",tradition:"Western"},
-  {id:9,name:"Brahmi Memory Oil",cats:["ayurveda"],emoji:"🧠",desc:"Bacopa monnieri infused sesame oil. 100ml.",price:22,badge:"sale",tradition:"Ayurveda"},
-  {id:10,name:"Dong Quai Extract",cats:["tcm","tincture"],emoji:"🌷",desc:"Angelica sinensis women's blood tonic. 50ml.",price:35,badge:"",tradition:"TCM"},
-  {id:11,name:"Baobab Immunity Powder",cats:["african"],emoji:"🌳",desc:"Adansonia digitata. Vitamin C rich. 150g.",price:20,badge:"new",tradition:"African"},
-  {id:12,name:"St. John's Wort Tincture",cats:["western","tincture"],emoji:"☀️",desc:"Hypericin 0.3%. Mood support. 50ml.",price:22,badge:"best",tradition:"Western"},
-];
-let cart=[],activeCat="all";
-function renderProducts(){const g=document.getElementById("productsGrid");const f=activeCat==="all"?products:products.filter(p=>p.cats.includes(activeCat));g.innerHTML=f.map(p=>`<article class="product-card"><div class="product-img">${p.emoji}${p.badge?`<span class="pbadge pbadge-${p.badge}">${p.badge==='best'?'Best Seller':p.badge==='new'?'New':'Sale'}</span>`:''}</div><div class="product-body"><div class="product-tradition">${p.tradition}</div><h4>${p.name}</h4><p>${p.desc}</p><div class="product-footer"><span class="product-price">$${p.price}${p.badge==='sale'?`<s>$${p.price+8}</s>`:''}</span><button class="add-btn" onclick="addToCart(${p.id})">Add to Cart</button></div></div></article>`).join("");}
-renderProducts();
-document.querySelectorAll(".sf-btn").forEach(b=>b.addEventListener("click",()=>{activeCat=b.dataset.cat;document.querySelectorAll(".sf-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderProducts();}));
-
-// ══ CART ══
-function addToCart(id){const p=products.find(x=>x.id===id);const e=cart.find(x=>x.id===id);if(e)e.qty=(e.qty||1)+1;else cart.push({...p,qty:1});updateCartUI();showToast("✅ "+p.name+" added to cart");}
-function removeFromCart(id){cart=cart.filter(x=>x.id!==id);updateCartUI();}
-function updateCartUI(){const badge=document.getElementById("cartBadge");const total=cart.reduce((s,x)=>s+x.price*(x.qty||1),0);const count=cart.reduce((s,x)=>s+(x.qty||1),0);if(badge){badge.style.display=count>0?"flex":"none";badge.textContent=count;}const ci=document.getElementById("cartItems");const cf=document.getElementById("cartFoot");if(!cart.length){ci.innerHTML='<div class="cart-empty">Your cart is empty.<br/><small>Add herbs or services to begin.</small></div>';cf.style.display="none";}else{ci.innerHTML=cart.map(p=>`<div class="cart-item"><div class="ci-em">${p.emoji}</div><div class="ci-name">${p.name}<br/><small style="color:var(--text-light);font-weight:400">Qty: ${p.qty||1}</small></div><span class="ci-price">$${(p.price*(p.qty||1)).toFixed(2)}</span><button class="ci-rm" onclick="removeFromCart(${p.id})">✕</button></div>`).join("");cf.style.display="block";document.getElementById("cartTotal").textContent="$"+total.toFixed(2);}}
-function openCart(){document.getElementById("cartDrawer").classList.add("open");document.getElementById("cartOverlay").classList.add("open");document.body.style.overflow="hidden";}
-function closeCart(){document.getElementById("cartDrawer").classList.remove("open");document.getElementById("cartOverlay").classList.remove("open");document.body.style.overflow="";}
-function checkout(){closeCart();showToast("🔒 Redirecting to Stripe checkout…");setTimeout(()=>showToast("✅ Demo — Stripe integration ready to connect."),2500);}
 
 // ══════════════════════════════════════════════
 // UNIFIED PORTAL — CLIENT · PRACTITIONER · ADMIN
@@ -1609,7 +1601,15 @@ function portalSelectRole(role){
   if(role==='client'){
     showArea('portalClientArea');
     portalView('signin');
+    // Switch to Sign In tab
+    portalTab('signin', document.querySelector('.mtab'));
     setTimeout(()=>document.getElementById('si-email')?.focus(),200);
+  } else if(role==='register'){
+    showArea('portalClientArea');
+    portalView('register');
+    // Switch to Register tab
+    portalTab('register', document.querySelectorAll('.mtab')[1]);
+    setTimeout(()=>document.getElementById('reg-fn')?.focus(),200);
   } else if(role==='practitioner'){
     showArea('portalPractArea');
     initPractLogin();
@@ -2990,8 +2990,7 @@ function submitBookingRequest(){
   const trad    = document.getElementById('bf-trad')?.value;
   const type    = document.getElementById('bf-type')?.value;
   const concern = document.getElementById('bf-concern')?.value.trim();
-  if(!fn||!email){ showToast('⚠️ Please enter your name and email.'); return; }
-  // Save booking request to Supabase appointments table
+  if(!fn||!email){ showToast('Please enter your name and email.'); return; }
   const row = {
     client_name:    fn+' '+ln,
     herbalist_name: trad||'To be assigned',
@@ -3001,13 +3000,11 @@ function submitBookingRequest(){
     created_at:     new Date().toISOString()
   };
   if(typeof sb !== 'undefined'){
-    sb.from('appointments').insert(row).then(({error})=>{
-      if(error) console.error('Booking error:', error);
-    });
+    sb.from('appointments').insert(row).then(function(res){ if(res.error) console.error('Booking error:', res.error); });
   }
-  showToast('✅ Consultation request received! We'll contact '+email+' within 24 hours.');
-  // Clear form
-  ['bf-fn','bf-ln','bf-email','bf-phone','bf-concern'].forEach(id=>{
+  const msg = 'Consultation request received! We will contact ' + email + ' within 24 hours.';
+  showToast('✅ ' + msg);
+  ['bf-fn','bf-ln','bf-email','bf-phone','bf-concern'].forEach(function(id){
     const el=document.getElementById(id); if(el) el.value='';
   });
 }
@@ -3114,9 +3111,6 @@ document.addEventListener('click', function(e) {
   e.preventDefault();
   if (action === 'openFinder')   openFinder();
   if (action === 'closeFinder')  closeFinder();
-  if (action === 'openCart')     openCart();
-  if (action === 'closeCart')    closeCart();
-  if (action === 'checkout')     checkout();
   if (action === 'openLogin')    openLogin();
   if (action === 'closeLogin')   closeLogin();
   if (action === 'doLogin')      doLogin();
@@ -3136,12 +3130,17 @@ document.addEventListener('click', function(e) {
 document.getElementById('nav').addEventListener('click', function(e){
   const btn = e.target.closest('button,a');
   if(!btn) return;
-  if(btn.classList.contains('nav-cart'))       { e.preventDefault(); openCart(); }
   if(btn.classList.contains('nav-login'))      { e.preventDefault(); openLogin(); }
   if(btn.classList.contains('nav-book'))       { e.preventDefault(); const b=document.querySelector('#booking'); if(b) b.scrollIntoView({behavior:'smooth'}); }
   if(btn.classList.contains('nav-finder-btn')) { e.preventDefault(); openFinder(); }
   if(btn.classList.contains('hamburger'))      { e.preventDefault(); toggleMenu(); }
 });
+
+// ── Cart stubs (shop removed) ──
+function openCart(){}
+function closeCart(){}
+function checkout(){}
 </script>
 </body>
-</html>
+</html>function updateCartUI(){ /* cart removed */ }
+
