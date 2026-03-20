@@ -1315,7 +1315,7 @@ async function dbDelete(table, filters) {
     <h1>Personalised herbal<br/><em>medicine,</em><br/><span>delivered to you.</span></h1>
     <p class="hero-desc">Work one-on-one with certified botanical practitioners across four world healing traditions. Submit your health assessment, receive a personalised protocol, and track your wellness journey — all from one secure portal.</p>
     <div class="hero-btns">
-      <button class="btn-saffron" onclick="document.querySelector('.nav-login').click()">🌿 Book a Consultation</button>
+      <button class="btn-saffron" onclick="openLogin()">🌿 Book a Consultation</button>
       <button class="btn-outline-light" data-action="openFinder">Try Herb Finder</button>
     </div>
     <div class="hero-traditions">
@@ -1370,7 +1370,7 @@ async function dbDelete(table, filters) {
     </div>
   </div>
   <div style="text-align:center;margin-top:2.5rem">
-    <button class="btn-saffron" onclick="document.querySelector('.nav-login').click()">Get Started — It's Free →</button>
+    <button class="btn-saffron" onclick="openLogin()">Get Started — It's Free →</button>
   </div>
 </section>
 
@@ -1510,7 +1510,7 @@ document.querySelectorAll(".sf-btn").forEach(b=>b.addEventListener("click",()=>{
 // ══ CART ══
 function addToCart(id){const p=products.find(x=>x.id===id);const e=cart.find(x=>x.id===id);if(e)e.qty=(e.qty||1)+1;else cart.push({...p,qty:1});updateCartUI();showToast("✅ "+p.name+" added to cart");}
 function removeFromCart(id){cart=cart.filter(x=>x.id!==id);updateCartUI();}
-function updateCartUI(){const badge=document.getElementById("cartBadge");const total=cart.reduce((s,x)=>s+x.price*(x.qty||1),0);const count=cart.reduce((s,x)=>s+(x.qty||1),0);badge.style.display=count>0?"flex":"none";badge.textContent=count;const ci=document.getElementById("cartItems");const cf=document.getElementById("cartFoot");if(!cart.length){ci.innerHTML='<div class="cart-empty">Your cart is empty.<br/><small>Add herbs or services to begin.</small></div>';cf.style.display="none";}else{ci.innerHTML=cart.map(p=>`<div class="cart-item"><div class="ci-em">${p.emoji}</div><div class="ci-name">${p.name}<br/><small style="color:var(--text-light);font-weight:400">Qty: ${p.qty||1}</small></div><span class="ci-price">$${(p.price*(p.qty||1)).toFixed(2)}</span><button class="ci-rm" onclick="removeFromCart(${p.id})">✕</button></div>`).join("");cf.style.display="block";document.getElementById("cartTotal").textContent="$"+total.toFixed(2);}}
+function updateCartUI(){const badge=document.getElementById("cartBadge");const total=cart.reduce((s,x)=>s+x.price*(x.qty||1),0);const count=cart.reduce((s,x)=>s+(x.qty||1),0);if(badge){badge.style.display=count>0?"flex":"none";badge.textContent=count;}const ci=document.getElementById("cartItems");const cf=document.getElementById("cartFoot");if(!cart.length){ci.innerHTML='<div class="cart-empty">Your cart is empty.<br/><small>Add herbs or services to begin.</small></div>';cf.style.display="none";}else{ci.innerHTML=cart.map(p=>`<div class="cart-item"><div class="ci-em">${p.emoji}</div><div class="ci-name">${p.name}<br/><small style="color:var(--text-light);font-weight:400">Qty: ${p.qty||1}</small></div><span class="ci-price">$${(p.price*(p.qty||1)).toFixed(2)}</span><button class="ci-rm" onclick="removeFromCart(${p.id})">✕</button></div>`).join("");cf.style.display="block";document.getElementById("cartTotal").textContent="$"+total.toFixed(2);}}
 function openCart(){document.getElementById("cartDrawer").classList.add("open");document.getElementById("cartOverlay").classList.add("open");document.body.style.overflow="hidden";}
 function closeCart(){document.getElementById("cartDrawer").classList.remove("open");document.getElementById("cartOverlay").classList.remove("open");document.body.style.overflow="";}
 function checkout(){closeCart();showToast("🔒 Redirecting to Stripe checkout…");setTimeout(()=>showToast("✅ Demo — Stripe integration ready to connect."),2500);}
@@ -3083,10 +3083,11 @@ document.addEventListener('click', function(e) {
 document.getElementById('nav').addEventListener('click', function(e){
   const btn = e.target.closest('button,a');
   if(!btn) return;
-  if(btn.classList.contains('nav-cart')) { e.preventDefault(); openCart(); }
-  if(btn.classList.contains('nav-login')) { e.preventDefault(); openLogin(); }
-  if(btn.classList.contains('nav-book')) { e.preventDefault(); document.querySelector('#booking').scrollIntoView({behavior:'smooth'}); }
+  if(btn.classList.contains('nav-cart'))       { e.preventDefault(); openCart(); }
+  if(btn.classList.contains('nav-login'))      { e.preventDefault(); openLogin(); }
+  if(btn.classList.contains('nav-book'))       { e.preventDefault(); const b=document.querySelector('#booking'); if(b) b.scrollIntoView({behavior:'smooth'}); }
   if(btn.classList.contains('nav-finder-btn')) { e.preventDefault(); openFinder(); }
+  if(btn.classList.contains('hamburger'))      { e.preventDefault(); toggleMenu(); }
 });
 </script>
 </body>
