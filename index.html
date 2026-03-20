@@ -10,7 +10,7 @@
 <title>TrueForm Botanical — Herb Shop & Botanical Consultation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -54,8 +54,8 @@
 
   --r:5px;
   --r-lg:10px;
-  --serif:'Cormorant Garamond',Georgia,serif;
-  --sans:'Nunito Sans',sans-serif;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
 }
 
 /* ── SYMPTOM SEARCH & DROPDOWN ── */
@@ -1172,7 +1172,7 @@ async function dbDelete(table, filters) {
     <button class="nav-link nav-finder-btn" data-action="openFinder" aria-label="Open Herb Finder"><span class="finder-pulse" aria-hidden="true"></span>🌿 Herb Finder</button>
   </div>
   <div class="nav-right">
-    <button class="nav-login" onclick="openLogin()">Portal</button>
+    <button class="nav-login" onclick="openLogin()" style="background:var(--saffron);border-color:var(--saffron);color:#fff;font-weight:600;padding:8px 20px;border-radius:6px;transition:all .2s" onmouseover="this.style.background='var(--saffron-bright)'" onmouseout="this.style.background='var(--saffron)'">Client Portal</button>
     <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -1180,154 +1180,337 @@ async function dbDelete(table, filters) {
 <main id="main">
 
 <!-- ═══ HERO ═══ -->
-<section id="hero" aria-label="Hero">
-  <div class="hero-geo" aria-hidden="true"></div>
-  <div class="hero-grid" aria-hidden="true"></div>
-  <div class="hero-content">
-    <span class="hero-eyebrow">Expert Herbal Consultation</span>
-    <h1>Personalised herbal<br/><em>medicine,</em><br/><span>delivered to you.</span></h1>
-    <p class="hero-desc">Work one-on-one with certified botanical practitioners across four world healing traditions. Submit your health assessment, receive a personalised protocol, and track your wellness journey — all from one secure portal.</p>
-    <div class="hero-btns">
-      <button class="btn-saffron" onclick="openLogin()">🌿 Book a Consultation</button>
-      <button class="btn-outline-light" data-action="openFinder">Try Herb Finder</button>
+<section id="hero" style="position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:#071e1c">
+
+  <!-- Background photograph -->
+  <div style="position:absolute;inset:0;z-index:0">
+    <img src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1600&q=80&auto=format&fit=crop"
+      alt="" aria-hidden="true"
+      style="width:100%;height:100%;object-fit:cover;object-position:center;opacity:.35"/>
+    <div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(7,30,28,.92) 45%,rgba(7,30,28,.4) 100%)"></div>
+  </div>
+
+  <!-- Content -->
+  <div style="position:relative;z-index:1;width:100%;max-width:1200px;margin:0 auto;padding:7rem 5% 5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center">
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(34,168,159,.15);border:1px solid rgba(34,168,159,.3);border-radius:30px;padding:.35rem 1rem;margin-bottom:1.8rem">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--teal-bright);display:inline-block"></span>
+        <span style="font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-light)">Expert Herbal Consultation</span>
+      </div>
+      <h1 style="font-family:var(--serif);font-size:clamp(2.6rem,5vw,4rem);font-weight:700;line-height:1.12;color:#fff;margin-bottom:1.4rem">
+        Ancient wisdom.<br/><em style="color:var(--saffron-bright)">Modern healing.</em><br/>Personal to you.
+      </h1>
+      <p style="font-size:1.05rem;color:rgba(255,255,255,.72);line-height:1.75;margin-bottom:2.2rem;max-width:480px;font-weight:300">
+        Work one-on-one with certified botanical practitioners across Ayurveda, TCM, Western Phytotherapy and African traditions. Receive a protocol built entirely around you.
+      </p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem">
+        <button onclick="openLogin()" style="padding:14px 28px;background:var(--saffron);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s;letter-spacing:.02em" onmouseover="this.style.background='var(--saffron-bright)'" onmouseout="this.style.background='var(--saffron)'">Book a Consultation →</button>
+        <button data-action="openFinder" style="padding:14px 28px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s" onmouseover="this.style.borderColor='var(--teal-bright)';this.style.color='var(--teal-bright)'" onmouseout="this.style.borderColor='rgba(255,255,255,.35)';this.style.color='#fff'">🌿 Herb Finder</button>
+      </div>
+      <div style="display:flex;gap:2.5rem">
+        <div><div style="font-family:var(--serif);font-size:2rem;font-weight:700;color:#fff">12K+</div><div style="font-size:.75rem;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.1em">Consultations</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.12)"></div>
+        <div><div style="font-family:var(--serif);font-size:2rem;font-weight:700;color:#fff">48+</div><div style="font-size:.75rem;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.1em">Countries</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.12)"></div>
+        <div><div style="font-family:var(--serif);font-size:2rem;font-weight:700;color:#fff">97%</div><div style="font-size:.75rem;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.1em">Satisfaction</div></div>
+      </div>
     </div>
-    <div class="hero-traditions">
-      <span class="tpill">🕉️ Ayurveda</span><span class="tpill">☯️ TCM</span><span class="tpill">🌿 Western</span><span class="tpill">🌍 African</span>
+
+    <!-- Right: stacked photo cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;position:relative" aria-hidden="true">
+      <div style="border-radius:16px;overflow:hidden;height:280px;margin-top:2rem;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80&auto=format&fit=crop" alt="" style="width:100%;height:100%;object-fit:cover"/>
+      </div>
+      <div style="border-radius:16px;overflow:hidden;height:280px;margin-top:-1rem;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80&auto=format&fit=crop" alt="" style="width:100%;height:100%;object-fit:cover"/>
+      </div>
+      <div style="border-radius:16px;overflow:hidden;height:200px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80&auto=format&fit=crop" alt="" style="width:100%;height:100%;object-fit:cover"/>
+      </div>
+      <div style="border-radius:16px;overflow:hidden;height:200px;margin-top:1rem;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <img src="https://images.unsplash.com/photo-1471943311424-646960669fbc?w=600&q=80&auto=format&fit=crop" alt="" style="width:100%;height:100%;object-fit:cover"/>
+      </div>
     </div>
   </div>
-  <div class="hero-right" aria-hidden="true">
-    <div class="hero-stat"><span class="stat-num">12K+</span><span class="stat-lbl">Consultations</span></div>
-    <div class="hero-stat"><span class="stat-num">5</span><span class="stat-lbl">Expert Herbalists</span></div>
-    <div class="hero-stat"><span class="stat-num">97%</span><span class="stat-lbl">Satisfaction</span></div>
-  </div>
-  <div class="hero-scroll" aria-hidden="true"><div class="scroll-line"></div><span>Scroll</span></div>
 </section>
 
-<!-- ═══ TRUST ═══ -->
-<div id="trust" role="complementary" aria-label="Trust badges">
-  <div class="trust-strip">
-    <div class="trust-item"><span class="trust-icon">✓</span>Certified Practitioners</div>
-    <div class="trust-item"><span class="trust-icon">🔒</span>HIPAA Aligned</div>
-    <div class="trust-item"><span class="trust-icon">🌍</span>48+ Countries Served</div>
-    <div class="trust-item"><span class="trust-icon">📋</span>Personalised Protocols</div>
-    <div class="trust-item"><span class="trust-icon">🌿</span>4 Healing Traditions</div>
-    <div class="trust-item"><span class="trust-icon">⭐</span>4.9 / 5 — 1,200+ Reviews</div>
+<!-- ═══ TRUST STRIP ═══ -->
+<div id="trust" style="background:#0d3d3a;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div style="max-width:1200px;margin:0 auto;padding:.9rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem">
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">✓</span> Certified Practitioners</div>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🔒</span> HIPAA Aligned</div>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🌍</span> 48+ Countries Served</div>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">📋</span> Personalised Protocols</div>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--saffron-bright)">⭐</span> 4.9 / 5 — 1,200+ Reviews</div>
   </div>
 </div>
 
 <!-- ═══ HOW IT WORKS ═══ -->
-<section id="how" aria-labelledby="how-title" style="background:var(--surface)">
-  <div style="text-align:center;max-width:520px;margin:0 auto 2.8rem">
-    <span class="tag" style="justify-content:center">Simple Process</span>
-    <h2 id="how-title" style="text-align:center">How it <em>works</em></h2>
-    <p class="section-lead">From registration to your first protocol in three simple steps.</p>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;max-width:900px;margin:0 auto">
-    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
-      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem">📋</div>
-      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 1</div>
-      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Submit Your Assessment</h3>
-      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">Register for a free account, then complete your detailed health assessment. Tell us about your symptoms, lifestyle, and health history.</p>
+<section id="how" style="padding:6rem 5%;background:#fff">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:4rem">
+      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Simple Process</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep);line-height:1.2">How it <em>works</em></h2>
     </div>
-    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
-      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:font-size:1.5rem;margin:0 auto 1rem;font-size:1.5rem">👩‍⚕️</div>
-      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 2</div>
-      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Meet Your Herbalist</h3>
-      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">One of our five certified practitioners reviews your assessment and schedules a one-to-one video or phone consultation with you.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+
+      <div style="position:relative">
+        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
+          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80&auto=format&fit=crop" alt="Submit assessment" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-mid);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">01</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Submit Your Assessment</h3>
+        </div>
+        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Register free, then complete your health assessment covering symptoms, lifestyle, and medical history.</p>
+      </div>
+
+      <div style="position:relative">
+        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
+          <img src="https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=600&q=80&auto=format&fit=crop" alt="Meet herbalist" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">02</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Meet Your Herbalist</h3>
+        </div>
+        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Your assigned practitioner reviews your assessment and schedules a personal one-to-one consultation.</p>
+      </div>
+
+      <div style="position:relative">
+        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
+          <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&q=80&auto=format&fit=crop" alt="Receive protocol" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-bright);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">03</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Receive Your Protocol</h3>
+        </div>
+        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Get a personalised herbal protocol with dosages, dietary advice, and lifestyle guidance sent to your portal.</p>
+      </div>
+
     </div>
-    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
-      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem">🌿</div>
-      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 3</div>
-      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Receive Your Protocol</h3>
-      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">Get a personalised herbal protocol with dosages, dietary advice, and lifestyle guidance. Track your progress in your private wellness diary.</p>
+    <div style="text-align:center;margin-top:3rem">
+      <button onclick="openLogin()" style="padding:14px 32px;background:var(--teal-mid);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s" onmouseover="this.style.background='var(--teal-bright)'" onmouseout="this.style.background='var(--teal-mid)'">Get Started Free →</button>
     </div>
-  </div>
-  <div style="text-align:center;margin-top:2.5rem">
-    <button class="btn-saffron" onclick="openLogin()">Get Started — It's Free →</button>
   </div>
 </section>
 
 <!-- ═══ BOOKING ═══ -->
-<section id="booking" aria-labelledby="booking-title">
-  <div style="text-align:center;max-width:520px;margin:0 auto 2.8rem">
-    <span class="tag" style="justify-content:center">Book a Session</span>
-    <h2 id="booking-title" style="text-align:center">Book your <em>consultation</em></h2>
-    <p class="section-lead">Choose your preferred tradition and schedule a session with one of our certified practitioners.</p>
-  </div>
-  <div class="booking-layout">
-    <div class="booking-form">
-      <h3>Request a Consultation</h3>
-      <div class="frow">
-        <div class="fgrp"><label>First Name</label><input type="text" id="bf-fn" placeholder="Jane" autocomplete="given-name"/></div>
-        <div class="fgrp"><label>Last Name</label><input type="text" id="bf-ln" placeholder="Smith" autocomplete="family-name"/></div>
-      </div>
-      <div class="fgrp"><label>Email</label><input type="email" id="bf-email" placeholder="your@email.com" autocomplete="email"/></div>
-      <div class="fgrp"><label>Phone</label><input type="tel" id="bf-phone" placeholder="+1 555 000 0000"/></div>
-      <div class="fgrp"><label>Preferred Tradition</label>
-        <select id="bf-trad">
-          <option value="">Select tradition…</option>
-          <option>Ayurveda</option>
-          <option>Traditional Chinese Medicine</option>
-          <option>Western Phytotherapy</option>
-          <option>African Botanicals</option>
-          <option>No preference</option>
-        </select>
-      </div>
-      <div class="fgrp"><label>Type of Session</label>
-        <select id="bf-type">
-          <option>Video Consultation</option>
-          <option>Phone Consultation</option>
-          <option>In-Person (London)</option>
-        </select>
-      </div>
-      <div class="fgrp"><label>Brief Health Concern</label>
-        <textarea id="bf-concern" rows="3" placeholder="Tell us briefly what you'd like help with…"></textarea>
-      </div>
-      <button class="btn-saffron" style="width:100%;justify-content:center;padding:14px" onclick="submitBookingRequest()">Request Consultation →</button>
-      <p class="booking-note">We'll confirm your appointment within 24 hours. First consultation from £65.</p>
+<section id="booking" style="padding:6rem 5%;background:var(--surface-alt)">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:4rem">
+      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Book a Session</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">Book your <em>consultation</em></h2>
     </div>
-    <div class="booking-info">
-      <div class="bi-card"><div class="bi-icon">📋</div><div><h4>Complete Assessment First</h4><p>For the best experience, complete your health assessment before your consultation. This helps your herbalist prepare a truly personalised protocol.</p></div></div>
-      <div class="bi-card"><div class="bi-icon">🕐</div><div><h4>Session Duration</h4><p>Initial consultations: 60–90 minutes. Follow-up sessions: 30–45 minutes. All conducted via secure encrypted video.</p></div></div>
-      <div class="bi-card"><div class="bi-icon">🌍</div><div><h4>Available Worldwide</h4><p>We serve clients in 48+ countries. Flexible timezone scheduling with sessions available 7 days a week.</p></div></div>
-      <div class="bi-card"><div class="bi-icon">💷</div><div><h4>Transparent Pricing</h4><p>Initial consultation from £65. Follow-ups from £40. Protocol review from £30. No hidden fees.</p></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+
+      <!-- Form -->
+      <div style="background:#fff;border-radius:20px;padding:2.5rem;box-shadow:0 8px 40px rgba(13,61,58,.08)">
+        <h3 style="font-family:var(--serif);font-size:1.4rem;font-weight:700;color:var(--teal-deep);margin-bottom:1.5rem">Request a Consultation</h3>
+        <div class="frow">
+          <div class="fgrp"><label>First Name</label><input type="text" id="bf-fn" placeholder="Jane" autocomplete="given-name"/></div>
+          <div class="fgrp"><label>Last Name</label><input type="text" id="bf-ln" placeholder="Smith" autocomplete="family-name"/></div>
+        </div>
+        <div class="fgrp"><label>Email</label><input type="email" id="bf-email" placeholder="your@email.com" autocomplete="email"/></div>
+        <div class="fgrp"><label>Phone</label><input type="tel" id="bf-phone" placeholder="+1 555 000 0000"/></div>
+        <div class="fgrp"><label>Preferred Tradition</label>
+          <select id="bf-trad">
+            <option value="">Select tradition…</option>
+            <option>Ayurveda</option>
+            <option>Traditional Chinese Medicine</option>
+            <option>Western Phytotherapy</option>
+            <option>African Botanicals</option>
+            <option>No preference</option>
+          </select>
+        </div>
+        <div class="fgrp"><label>Session Type</label>
+          <select id="bf-type">
+            <option>Video Consultation</option>
+            <option>Phone Consultation</option>
+            <option>In-Person (London)</option>
+          </select>
+        </div>
+        <div class="fgrp"><label>Brief Health Concern</label>
+          <textarea id="bf-concern" rows="3" placeholder="Tell us briefly what you would like help with…"></textarea>
+        </div>
+        <button onclick="submitBookingRequest()" style="width:100%;padding:14px;background:var(--saffron);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s;margin-top:.5rem" onmouseover="this.style.background='var(--saffron-bright)'" onmouseout="this.style.background='var(--saffron)'">Request Consultation →</button>
+        <p style="font-size:.76rem;color:var(--text-light);text-align:center;margin-top:.8rem">We confirm within 24 hours. First consultation from £65.</p>
+      </div>
+
+      <!-- Info + photo -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <div style="border-radius:16px;overflow:hidden;height:260px">
+          <img src="https://images.unsplash.com/photo-1543362906-acfc16c67564?w=700&q=80&auto=format&fit=crop" alt="Herbal consultation" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
+            <div style="font-size:1.4rem;margin-bottom:.5rem">🕐</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--teal-deep);margin-bottom:.3rem">Session Duration</div>
+            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">Initial: 60–90 min<br/>Follow-up: 30–45 min</div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
+            <div style="font-size:1.4rem;margin-bottom:.5rem">🌍</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--teal-deep);margin-bottom:.3rem">Worldwide</div>
+            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">48+ countries<br/>7 days a week</div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
+            <div style="font-size:1.4rem;margin-bottom:.5rem">💷</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--teal-deep);margin-bottom:.3rem">Transparent Pricing</div>
+            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">From £65<br/>No hidden fees</div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
+            <div style="font-size:1.4rem;margin-bottom:.5rem">🔒</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--teal-deep);margin-bottom:.3rem">Fully Secure</div>
+            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">Encrypted sessions<br/>HIPAA aligned</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ TRADITIONS ═══ -->
-<section id="traditions" aria-labelledby="trad-title" style="background:var(--surface)">
-  <div style="text-align:center;max-width:520px;margin:0 auto 2.4rem"><span class="tag" style="justify-content:center">Four World Traditions</span><h2 id="trad-title" style="text-align:center">Wisdom from <em>every corner</em> of the earth</h2></div>
-  <div class="trad-grid">
-    <div class="trad-card"><span class="trad-icon">🕉️</span><h3>Ayurvedic</h3><p>5,000-year Indian system. Tridosha theory, rasayanas, and classic adaptogens like Ashwagandha & Brahmi.</p><span class="trad-tag">India · 5,000 years</span></div>
-    <div class="trad-card"><span class="trad-icon">☯️</span><h3>Traditional Chinese</h3><p>TCM protocols using Qi, Yin-Yang & Five Elements theory. Time-honoured Imperial formulas.</p><span class="trad-tag">China · 3,000 years</span></div>
-    <div class="trad-card"><span class="trad-icon">🌿</span><h3>Western Phytotherapy</h3><p>European herbal medicine validated by modern phytochemistry. Clinically studied with rigorous safety data.</p><span class="trad-tag">Europe · 2,000 years</span></div>
-    <div class="trad-card"><span class="trad-icon">🌍</span><h3>African Botanicals</h3><p>Indigenous healing traditions from across Africa — Rooibos, Moringa, Baobab, and revered plant allies.</p><span class="trad-tag">Africa · Ancient</span></div>
+<section id="traditions" style="padding:6rem 5%;background:#fff">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:4rem">
+      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Four World Traditions</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">Wisdom from <em>every corner</em> of the earth</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem">
+
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:180px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&q=80&auto=format&fit=crop" alt="Ayurveda" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.3rem">
+          <div style="font-size:1.3rem;margin-bottom:.5rem">🕉️</div>
+          <h3 style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Ayurvedic</h3>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:.7rem">5,000-year Indian system. Tridosha theory, rasayanas, and classic adaptogens.</p>
+          <span style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.1em">India · 5,000 years</span>
+        </div>
+      </div>
+
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:180px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop" alt="TCM" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.3rem">
+          <div style="font-size:1.3rem;margin-bottom:.5rem">☯️</div>
+          <h3 style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Traditional Chinese</h3>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:.7rem">TCM protocols using Qi, Yin-Yang and Five Elements theory.</p>
+          <span style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.1em">China · 3,000 years</span>
+        </div>
+      </div>
+
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:180px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=400&q=80&auto=format&fit=crop" alt="Western Phytotherapy" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.3rem">
+          <div style="font-size:1.3rem;margin-bottom:.5rem">🌿</div>
+          <h3 style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Western Phytotherapy</h3>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:.7rem">European herbal medicine validated by modern phytochemistry.</p>
+          <span style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.1em">Europe · 2,000 years</span>
+        </div>
+      </div>
+
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:180px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1487700160041-babef9c3cb55?w=400&q=80&auto=format&fit=crop" alt="African Botanicals" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.3rem">
+          <div style="font-size:1.3rem;margin-bottom:.5rem">🌍</div>
+          <h3 style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">African Botanicals</h3>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:.7rem">Indigenous healing traditions — Rooibos, Moringa, Baobab and revered plant allies.</p>
+          <span style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.1em">Africa · Ancient</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ═══ BLOG ═══ -->
-<section id="blog" aria-labelledby="blog-title">
-  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem"><div><span class="tag">Knowledge Hub</span><h2 id="blog-title">From the <em>apothecary</em></h2></div></div>
-  <div class="blog-grid">
-    <article class="bcard"><div class="bthumb">🫁</div><div class="bmeta"><div class="bcat">Ayurveda · 8 min</div><h4>Ashwagandha vs Rhodiola: Which Adaptogen Is Right For You?</h4><p>Breaking down the differences between these two powerful stress-busting herbs based on constitution and lifestyle.</p><div class="bfoot"><span>Dr. Priya Sharma · Mar 2025</span><span class="read-more">Read →</span></div></div></article>
-    <article class="bcard"><div class="bthumb">🍵</div><div class="bmeta"><div class="bcat">TCM · 6 min</div><h4>The Five Flavours: How TCM Uses Taste to Diagnose & Heal</h4><p>Sour, bitter, sweet, pungent, salty — TCM uses flavour as a profound diagnostic and therapeutic tool.</p><div class="bfoot"><span>Liang Wei · Feb 2025</span><span class="read-more">Read →</span></div></div></article>
-    <article class="bcard"><div class="bthumb">🌍</div><div class="bmeta"><div class="bcat">African Botanicals · 7 min</div><h4>Moringa: The African Superfood Science Is Finally Catching Up To</h4><p>Used in African medicine for millennia, Moringa oleifera is now one of the most-studied plants on earth.</p><div class="bfoot"><span>Dr. Amara Osei · Jan 2025</span><span class="read-more">Read →</span></div></div></article>
+<section id="blog" style="padding:6rem 5%;background:var(--surface-alt)">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:3rem">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.7rem">Knowledge Hub</div>
+        <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">From the <em>apothecary</em></h2>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+
+      <article style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 36px rgba(13,61,58,.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:200px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80&auto=format&fit=crop" alt="Ashwagandha vs Rhodiola" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.5rem">
+          <div style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Ayurveda · 8 min read</div>
+          <h4 style="font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--teal-deep);margin-bottom:.6rem;line-height:1.4">Ashwagandha vs Rhodiola: Which Adaptogen Is Right For You?</h4>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:1rem">Breaking down the differences between these two powerful stress-busting herbs based on constitution and lifestyle.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.75rem;color:var(--text-light)">Dr. Priya Sharma · Mar 2025</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--teal-mid)">Read →</span>
+          </div>
+        </div>
+      </article>
+
+      <article style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 36px rgba(13,61,58,.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:200px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&q=80&auto=format&fit=crop" alt="Five Flavours TCM" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.5rem">
+          <div style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">TCM · 6 min read</div>
+          <h4 style="font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--teal-deep);margin-bottom:.6rem;line-height:1.4">The Five Flavours: How TCM Uses Taste to Diagnose &amp; Heal</h4>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:1rem">Sour, bitter, sweet, pungent, salty — TCM uses flavour as a profound diagnostic and therapeutic tool.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.75rem;color:var(--text-light)">Liang Wei · Feb 2025</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--teal-mid)">Read →</span>
+          </div>
+        </div>
+      </article>
+
+      <article style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 36px rgba(13,61,58,.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:200px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=500&q=80&auto=format&fit=crop" alt="Moringa superfood" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+        <div style="padding:1.5rem">
+          <div style="font-size:.68rem;font-weight:700;color:var(--teal-mid);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">African Botanicals · 7 min read</div>
+          <h4 style="font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--teal-deep);margin-bottom:.6rem;line-height:1.4">Moringa: The African Superfood Science Is Finally Catching Up To</h4>
+          <p style="font-size:.82rem;color:var(--text-soft);line-height:1.6;margin-bottom:1rem">Used in African medicine for millennia, Moringa oleifera is now one of the most-studied plants on earth.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.75rem;color:var(--text-light)">Dr. Amara Osei · Jan 2025</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--teal-mid)">Read →</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
   </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section id="faq" aria-labelledby="faq-title">
-  <div style="text-align:center;max-width:520px;margin:0 auto"><span class="tag" style="justify-content:center">Questions</span><h2 id="faq-title" style="text-align:center">Frequently <em>asked</em></h2></div>
-  <div class="faq-wrap">
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Is herbal consultation safe alongside conventional medicine?<span class="faq-chev">▾</span></div><div class="faq-a">Yes — all our herbalists are trained to screen for herb-drug interactions and will always review your current medications. They complement, never replace, your medical team.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How does the consultation process work?<span class="faq-chev">▾</span></div><div class="faq-a">You start by registering a free account and submitting your health assessment. Your assigned herbalist reviews it, schedules a video or phone consultation, then sends your personalised herbal protocol. You can message your herbalist anytime through the portal.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How is my personal health data protected?<span class="faq-chev">▾</span></div><div class="faq-a">All data is encrypted at rest and in transit via Supabase. We operate HIPAA-aligned infrastructure with role-based access controls. We never sell your data and you may request full deletion at any time.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div><div class="faq-a">Absolutely. We serve clients in 48+ countries. Video sessions work on any device with flexible timezone scheduling.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">What is included in the client portal?<span class="faq-chev">▾</span></div><div class="faq-a">Your portal includes your health assessment, personalised herbal protocol, a daily symptom diary to track your progress, direct messaging with your practitioner, and appointment scheduling — all in one secure place.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you offer a free initial consultation?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We offer a free 15-minute introductory call for all new clients. Register through the portal and our team will be in touch to schedule your complimentary call.</div></div>
+<section id="faq" style="padding:6rem 5%;background:#fff">
+  <div style="max-width:720px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:3.5rem">
+      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Questions</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">Frequently <em>asked</em></h2>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Is herbal consultation safe alongside conventional medicine?<span class="faq-chev">▾</span></div><div class="faq-a">Yes — all our herbalists are trained to screen for herb-drug interactions and will always review your current medications. They complement, never replace, your medical team.</div></div>
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How does the consultation process work?<span class="faq-chev">▾</span></div><div class="faq-a">Register a free account and submit your health assessment. Your assigned herbalist reviews it, schedules a video or phone consultation, then sends your personalised herbal protocol. You can message your herbalist anytime through the portal.</div></div>
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How is my personal health data protected?<span class="faq-chev">▾</span></div><div class="faq-a">All data is encrypted at rest and in transit via Supabase. We operate HIPAA-aligned infrastructure with role-based access controls. We never sell your data and you may request full deletion at any time.</div></div>
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div><div class="faq-a">Absolutely. We serve clients in 48+ countries. Video sessions work on any device with flexible timezone scheduling.</div></div>
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">What is included in the client portal?<span class="faq-chev">▾</span></div><div class="faq-a">Your portal includes your health assessment, personalised herbal protocol, a daily symptom diary, direct messaging with your practitioner, and appointment scheduling — all in one secure place.</div></div>
+      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you offer a free initial consultation?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We offer a free 15-minute introductory call for all new clients. Register through the portal and our team will be in touch to schedule your complimentary call.</div></div>
+    </div>
   </div>
 </section>
+
+<!-- ═══ FOOTER ═══
 
 <!-- ═══ FOOTER ═══ -->
 </main>
