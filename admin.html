@@ -883,7 +883,7 @@ async function sdel(key,shared=true){
 // AUTH
 // ══════════════════════════════════════════════════
 let currentAdmin=null;
-const DEFAULT_ADMIN={id:'admin',username:'admin',name:'System Administrator',email:'admin@trueformbotanical.com',pw:'sysadmin2025',role:'admin',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null};
+const DEFAULT_ADMIN={id:'admin',username:'admin',name:'System Administrator',email:'trueformbotanical@gmail.com',pw:'',role:'admin',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null};
 
 async function doAdminLogin(){
   const user = document.getElementById('adminUser')?.value.trim()||'';
@@ -896,7 +896,7 @@ async function doAdminLogin(){
 
   // Admin logs in with email (username = 'admin' maps to admin email)
   // Support both 'admin' username and direct email
-  const adminEmail = user==='admin' ? 'admin@trueformbotanical.com' : (user.includes('@') ? user : user+'@trueformbotanical.com');
+  const adminEmail = user==='admin' ? 'trueformbotanical@gmail.com' : (user.includes('@') ? user : user+'@trueformbotanical.com');
 
   const { data, error } = await sbSignIn(adminEmail, pw);
   if(btn){ btn.textContent='Sign In →'; btn.disabled=false; }
