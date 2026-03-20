@@ -557,6 +557,7 @@ async function dbDelete(table, filters) {
         <div class="ph">
           <div><div class="ph-title">Client <em>Accounts</em></div><div class="ph-sub">View and manage client registrations and assessment access</div></div>
           <div class="ph-actions">
+            <button class="btn btn-ghost" onclick="refreshClientList()">🔄 Refresh</button>
             <button class="btn btn-ghost" onclick="exportClients()">⬇ Export CSV</button>
             <button class="btn btn-primary" onclick="openAddUser('client')">+ Add Client</button>
           </div>
@@ -957,6 +958,7 @@ async function doAdminLogin(){
   document.getElementById('loginGate').style.display='none';
   document.getElementById('adminApp').style.display='flex';
   await loadAll();
+  startRealtimeSync();
   await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
   showToast('✅ Welcome, '+currentAdmin.name+'!');
 }
@@ -1206,6 +1208,51 @@ function renderHerbalists(list=ALL_HERBALISTS){
   }).join('');
 }
 
+async function refreshClientList(){
+  showToast('🔄 Refreshing client list…');
+  // Re-load from Supabase profiles
+  try {
+    const { data: sbClients } = await sb.from('profiles').select('*').eq('role','client');
+    if(sbClients && sbClients.length){
+      // Merge new clients in
+      sbClients.forEach(p=>{
+        if(!ALL_CLIENTS_USR.find(c=>c.id===p.id)){
+          ALL_CLIENTS_USR.push({
+            id:p.id,
+            name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+            email:p.email, role:'client', status:p.status||'active',
+            createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
+          });
+        }
+      });
+    }
+  } catch(e){}
+  // Also reload assessments
+  try {
+    const { data: sbAsm } = await sb.from('assessments').select('*').order('submitted_at',{ascending:false});
+    if(sbAsm && sbAsm.length){
+      sbAsm.forEach(a=>{
+        const email = a.client_email||(a.personal?.email);
+        if(!email) return;
+        const exists = ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===email.toLowerCase());
+        if(!exists){
+          ALL_CLIENTS_USR.push({
+            id:a.client_id||'c_'+a.ref_code, name:a.client_name||email,
+            email:email, role:'client', status:'active',
+            createdAt:a.submitted_at, hasAssessment:true, assessmentRef:a.ref_code,
+            assignedHerbalist:a.assigned_herbalist||'Unassigned',
+          });
+        } else {
+          exists.hasAssessment = true;
+          exists.assessmentRef = exists.assessmentRef || a.ref_code;
+        }
+      });
+    }
+  } catch(e){}
+  renderClients();
+  updateStats();
+  showToast('✅ Client list refreshed — '+ALL_CLIENTS_USR.length+' clients');
+}
 function renderClients(list=ALL_CLIENTS_USR){
   const tbody=document.getElementById('clientsTbody');
   if(!list.length){
@@ -3110,6 +3157,74 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 // ══ ESC to close drawer/modal ══
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal();}});
+
+// ══ REALTIME: refresh clients when new profile is inserted ══
+function startRealtimeSync(){
+  try {
+    sb.channel('admin-profiles')
+      .on('postgres_changes', {
+        event:  '*',
+        schema: 'public',
+        table:  'profiles',
+        filter: 'role=eq.client'
+      }, async function(payload){
+        console.log('New client profile detected:', payload);
+        // Re-load clients and update UI
+        const { data: sbClients } = await sb.from('profiles').select('*').eq('role','client');
+        if(sbClients){
+          sbClients.forEach(p=>{
+            if(!ALL_CLIENTS_USR.find(c=>c.id===p.id)){
+              ALL_CLIENTS_USR.push({
+                id:p.id,
+                name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+                email:p.email, role:'client', status:p.status||'active',
+                createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
+              });
+            }
+          });
+          renderClients();
+          updateStats();
+          showToast('👤 New client registered: ' + (payload.new?.email||''));
+        }
+      })
+      .subscribe();
+  } catch(e){ console.warn('Realtime sync failed:', e); }
+}
+
+// ══ AUTO-RESTORE ADMIN SESSION ON PAGE LOAD ══
+(async function initAdminSession(){
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if(!session || !session.user) return; // no session, show login
+
+    const email = session.user.email;
+    const isAdminEmail = email === 'trueformbotanical@gmail.com';
+
+    // Check profile role
+    let isAdminRole = false;
+    try {
+      const { data: pd } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
+      isAdminRole = pd?.role === 'admin';
+    } catch(e){}
+
+    if(!isAdminEmail && !isAdminRole) return; // not an admin
+
+    // Restore session — skip login gate
+    currentAdmin = {
+      id:    session.user.id,
+      name:  session.user.user_metadata?.full_name || 'System Administrator',
+      email: email,
+      role:  'admin'
+    };
+    document.getElementById('loginGate').style.display  = 'none';
+    document.getElementById('adminApp').style.display   = 'flex';
+    await loadAll();
+    startRealtimeSync();
+    showToast('✅ Session restored — welcome back, ' + currentAdmin.name + '!');
+  } catch(e){
+    console.warn('Session restore failed:', e);
+  }
+})();
 </script>
 </body>
 </html>
