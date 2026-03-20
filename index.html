@@ -2973,6 +2973,23 @@ hbg.addEventListener("click",()=>{const o=nc.classList.toggle("open");hbg.setAtt
 nc.querySelectorAll("a.nav-link").forEach(a=>a.addEventListener("click",()=>{nc.classList.remove("open");hbg.setAttribute("aria-expanded","false");}));
 
 // ══ TOAST ══
+// ── SUPABASE AUTH STATE — catch password reset tokens anywhere ──
+if(typeof sb !== 'undefined'){
+  sb.auth.onAuthStateChange((event, session) => {
+    if(event === 'PASSWORD_RECOVERY'){
+      // Redirect to admin page which has the reset form
+      window.location.href = 'admin.html' + window.location.hash;
+    }
+  });
+  // Also check URL hash immediately on load
+  (function(){
+    const h = window.location.hash + window.location.search;
+    if(h.includes('type=recovery') || (h.includes('access_token') && h.includes('recovery'))){
+      window.location.href = 'admin.html' + window.location.hash;
+    }
+  })();
+}
+
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),4200);}
 
 // ══ SCROLL ANIMATIONS ══
