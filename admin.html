@@ -1011,111 +1011,97 @@ async function loadAll(){
   // Load admin accounts
   ALL_ADMINS=await sget('tfb_admins')||[DEFAULT_ADMIN];
 
-  // Load client user accounts from storage
-  // Load clients from Supabase profiles
+  // ── Load clients ──
+  // Pull from Supabase profiles + assessments + localStorage fallback
+  ALL_CLIENTS_USR = [];
   try {
     const { data: sbClients } = await sb.from('profiles').select('*').eq('role','client');
     if(sbClients && sbClients.length){
-      ALL_CLIENTS_USR = sbClients.map(p=>({
-        id: p.id, name: p.full_name||p.email, email: p.email,
-        role:'client', status:p.status||'active',
-        createdAt: p.created_at, lastLogin: null,
-        hasAssessment: false, assessmentRef: null,
-      }));
-    } else {
-      ALL_CLIENTS_USR = await sget('tfb_client_users')||[];
-    }
-  } catch(e){ ALL_CLIENTS_USR = await sget('tfb_client_users')||[]; }
-
-  // Also scan localStorage for portal-registered clients (tfb_cp_ keys)
-  // These are written by index.html when clients register via the portal
-  try{
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k&&k.startsWith('tfb_cp_')){
-        try{
-          const rec=JSON.parse(localStorage.getItem(k));
-          if(rec&&rec.email&&rec.role==='client'){
-            // Only add if not already in the list
-            if(!ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===rec.email.toLowerCase())){
-              ALL_CLIENTS_USR.push({
-                id:rec.id||'c_'+Date.now(),
-                name:rec.name||((rec.firstName||'')+' '+(rec.lastName||'')).trim(),
-                email:rec.email,
-                role:'client',
-                status:rec.status||'active',
-                verified:rec.verified||false,
-                hasAssessment:!!rec.assessmentRef,
-                assessmentRef:rec.assessmentRef||null,
-                createdAt:rec.createdAt||new Date().toISOString(),
-                lastLogin:rec.lastLogin||null,
-              });
-            }
-          }
-        }catch(e){}
-      }
-    }
-    // Also try window.storage scan for any tfb_cp_ keys stored there
-    // by listing all keys with that prefix
-    try{
-      const lsResult=await window.storage.list('tfb_cp_',true);
-      if(lsResult&&lsResult.keys){
-        for(const k of lsResult.keys){
-          try{
-            const r=await window.storage.get(k,true);
-            if(r&&r.value){
-              const rec=JSON.parse(r.value);
-              if(rec&&rec.email&&rec.role==='client'){
-                if(!ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===rec.email.toLowerCase())){
-                  ALL_CLIENTS_USR.push({
-                    id:rec.id||'c_'+Date.now(),
-                    name:rec.name||((rec.firstName||'')+' '+(rec.lastName||'')).trim(),
-                    email:rec.email,
-                    role:'client',
-                    status:rec.status||'active',
-                    verified:rec.verified||false,
-                    hasAssessment:!!rec.assessmentRef,
-                    assessmentRef:rec.assessmentRef||null,
-                    createdAt:rec.createdAt||new Date().toISOString(),
-                    lastLogin:rec.lastLogin||null,
-                  });
-                }
-              }
-            }
-          }catch(e){}
-        }
-      }
-    }catch(e){}
-    // Save the merged list back so it's available next time
-    if(ALL_CLIENTS_USR.length>0){
-      await sset('tfb_client_users',ALL_CLIENTS_USR);
-    }
-  }catch(e){}
-  // Load assessments
-  const refs=await sget('tfb_refs')||[];
-  ALL_ASSESSMENTS=[];
-  for(const ref of refs){
-    const a=await sget('tfb_assessment_'+ref);
-    if(a){
-      const state=await sget('tfb_state_'+ref)||{};
-      ALL_ASSESSMENTS.push({...a,...state});
-    }
-  }
-  // Merge assessment clients into client users (real submitted data)
-  ALL_ASSESSMENTS.forEach(a=>{
-    const email=a.personal?.email;
-    if(email&&!ALL_CLIENTS_USR.find(c=>c.email===email)){
-      ALL_CLIENTS_USR.push({
-        id:'c_'+a.meta.refCode,name:(a.personal.firstName||'')+' '+(a.personal.lastName||''),
-        email:email,role:'client',status:'active',
-        assignedHerbalist:a.personal.herbalist||'Unassigned',
-        hasAssessment:true,assessmentRef:a.meta.refCode,
-        createdAt:a.meta.submittedAt,lastLogin:null,
-        country:a.personal.country||'',phone:a.personal.phone||''
+      sbClients.forEach(p=>{
+        ALL_CLIENTS_USR.push({
+          id:p.id,
+          name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+          email:p.email, role:'client', status:p.status||'active',
+          createdAt:p.created_at, lastLogin:null,
+          hasAssessment:false, assessmentRef:null,
+        });
       });
     }
-  });
-  // Sync client counts to herbalists
+  } catch(e){ console.warn('profiles load:', e); }
+
+  // Load from Supabase assessments table
+  ALL_ASSESSMENTS = [];
+  try {
+    const { data: sbAsm } = await sb.from('assessments').select('*').order('submitted_at',{ascending:false});
+    if(sbAsm && sbAsm.length){
+      ALL_ASSESSMENTS = sbAsm.map(a=>({
+        ...a,
+        meta:{ refCode:a.ref_code, submittedAt:a.submitted_at },
+        personal:a.personal||{},
+        symptoms:a.symptoms||{},
+      }));
+      sbAsm.forEach(a=>{
+        const email = a.client_email||(a.personal?.email);
+        if(!email) return;
+        const exists = ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===email.toLowerCase());
+        if(!exists){
+          ALL_CLIENTS_USR.push({
+            id:a.client_id||'c_'+a.ref_code,
+            name:a.client_name||email,
+            email:email, role:'client', status:'active',
+            createdAt:a.submitted_at,
+            hasAssessment:true, assessmentRef:a.ref_code,
+            assignedHerbalist:a.assigned_herbalist||(a.personal?.herbalist)||'Unassigned',
+          });
+        } else {
+          exists.hasAssessment = true;
+          exists.assessmentRef = exists.assessmentRef || a.ref_code;
+          exists.assignedHerbalist = exists.assignedHerbalist || a.assigned_herbalist || (a.personal?.herbalist) || 'Unassigned';
+        }
+      });
+    }
+  } catch(e){ console.warn('assessments load:', e); }
+
+  // localStorage fallback for pre-Supabase data
+  try {
+    const refs = await sget('tfb_refs')||[];
+    for(const ref of refs){
+      const a = await sget('tfb_assessment_'+ref);
+      if(!a) continue;
+      const state = await sget('tfb_state_'+ref)||{};
+      const merged = {...a,...state};
+      if(!ALL_ASSESSMENTS.find(x=>x.meta?.refCode===ref)) ALL_ASSESSMENTS.push(merged);
+      const email = a.personal?.email;
+      if(email && !ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===email.toLowerCase())){
+        ALL_CLIENTS_USR.push({
+          id:'c_'+ref,
+          name:(a.personal.firstName||'')+' '+(a.personal.lastName||''),
+          email:email, role:'client', status:'active',
+          hasAssessment:true, assessmentRef:ref,
+          assignedHerbalist:a.personal.herbalist||'Unassigned',
+          createdAt:a.meta?.submittedAt||new Date().toISOString(),
+        });
+      }
+    }
+    // Also scan tfb_cp_ keys
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(!k||!k.startsWith('tfb_cp_')) continue;
+      try{
+        const rec=JSON.parse(localStorage.getItem(k));
+        const email=rec?.email;
+        if(!email||ALL_CLIENTS_USR.find(c=>c.email?.toLowerCase()===email.toLowerCase())) continue;
+        ALL_CLIENTS_USR.push({
+          id:rec.id||'c_'+Date.now(), name:rec.name||email,
+          email:email, role:'client', status:rec.status||'active',
+          hasAssessment:!!rec.assessmentRef, assessmentRef:rec.assessmentRef||null,
+          createdAt:rec.createdAt||new Date().toISOString(),
+        });
+      }catch(e){}
+    }
+  } catch(e){}
+
+    // Sync client counts to herbalists
   ALL_HERBALISTS=ALL_HERBALISTS.map(h=>{
     h.clients=ALL_ASSESSMENTS.filter(a=>a.personal?.herbalist?.toLowerCase().includes(h.name.toLowerCase().split(' ')[0])||a.personal?.herbalist?.toLowerCase().includes(h.id)).length;
     return h;
@@ -1127,6 +1113,29 @@ async function loadAll(){
   renderHerbalists();
   renderClients();
   renderAdmins();
+  if(!ALL_CLIENTS_USR.length){
+    console.info('No clients loaded. Checking Supabase profiles...');
+    // Try one more time with a broader query (no role filter)
+    sb.from('profiles').select('*').then(({data})=>{
+      if(data&&data.length){
+        const nonAdmin = data.filter(p=>p.role!=='admin'&&p.role!=='herbalist');
+        if(nonAdmin.length){
+          nonAdmin.forEach(p=>{
+            if(!ALL_CLIENTS_USR.find(c=>c.email===p.email)){
+              ALL_CLIENTS_USR.push({
+                id:p.id,
+                name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+                email:p.email, role:p.role||'client', status:p.status||'active',
+                createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
+              });
+            }
+          });
+          renderClients();
+          updateStats();
+        }
+      }
+    });
+  }
   renderAuditLog(ALL_AUDIT);
   renderOverviewActivity();
   updateAssignedFilter();
@@ -1199,7 +1208,15 @@ function renderHerbalists(list=ALL_HERBALISTS){
 
 function renderClients(list=ALL_CLIENTS_USR){
   const tbody=document.getElementById('clientsTbody');
-  if(!list.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">No clients yet</div><div class="empty-msg">Clients appear here when they submit the assessment form.</div></div></td></tr>`;return;}
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">
+      <div class="empty-icon">👥</div>
+      <div class="empty-title">No clients found</div>
+      <div class="empty-msg">Clients will appear here when they register via the portal or submit an assessment.<br/>
+      <small style="color:var(--text-light)">If clients have registered, check that the Supabase <code>profiles</code> table has their rows with <code>role = client</code>.</small>
+      </div></div></td></tr>`;
+    return;
+  }
   tbody.innerHTML=list.map(c=>`
     <tr onclick="openEditUser('${c.id}','client')" data-id="${c.id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">${c.name.trim().charAt(0)||'?'}</div>${c.name||'—'}</div></td>
