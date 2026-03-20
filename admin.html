@@ -1016,22 +1016,26 @@ async function loadAll(){
   ALL_ADMINS=await sget('tfb_admins')||[DEFAULT_ADMIN];
 
   // ── Load clients ──
-  // Pull from Supabase profiles + assessments + localStorage fallback
   ALL_CLIENTS_USR = [];
   try {
-    const { data: sbClients } = await sb.from('profiles').select('*').eq('role','client');
+    // Query ALL profiles (admin RLS allows this) then filter client role in JS
+    const { data: sbClients, error: profErr } = await sb.from('profiles').select('*');
+    if(profErr) console.warn('profiles query error:', profErr.message);
     if(sbClients && sbClients.length){
-      sbClients.forEach(p=>{
-        ALL_CLIENTS_USR.push({
-          id:p.id,
-          name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
-          email:p.email, role:'client', status:p.status||'active',
-          createdAt:p.created_at, lastLogin:null,
-          hasAssessment:false, assessmentRef:null,
+      sbClients
+        .filter(p => p.role === 'client' || (!p.role && p.email !== 'trueformbotanical@gmail.com'))
+        .forEach(p=>{
+          ALL_CLIENTS_USR.push({
+            id:p.id,
+            name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+            email:p.email, role:'client', status:p.status||'active',
+            createdAt:p.created_at, lastLogin:null,
+            hasAssessment:false, assessmentRef:null,
+          });
         });
-      });
     }
-  } catch(e){ console.warn('profiles load:', e); }
+    console.log('Loaded', ALL_CLIENTS_USR.length, 'clients from profiles table');
+  } catch(e){ console.warn('profiles load error:', e); }
 
   // Load from Supabase assessments table
   ALL_ASSESSMENTS = [];
@@ -1214,19 +1218,21 @@ async function refreshClientList(){
   showToast('🔄 Refreshing client list…');
   // Re-load from Supabase profiles
   try {
-    const { data: sbClients } = await sb.from('profiles').select('*').eq('role','client');
+    const { data: sbClients, error: rErr } = await sb.from('profiles').select('*');
+    if(rErr) console.warn('refresh profiles error:', rErr.message);
     if(sbClients && sbClients.length){
-      // Merge new clients in
-      sbClients.forEach(p=>{
-        if(!ALL_CLIENTS_USR.find(c=>c.id===p.id)){
-          ALL_CLIENTS_USR.push({
-            id:p.id,
-            name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
-            email:p.email, role:'client', status:p.status||'active',
-            createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
-          });
-        }
-      });
+      sbClients
+        .filter(p => p.role === 'client' || (!p.role && p.email !== 'trueformbotanical@gmail.com'))
+        .forEach(p=>{
+          if(!ALL_CLIENTS_USR.find(c=>c.id===p.id)){
+            ALL_CLIENTS_USR.push({
+              id:p.id,
+              name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+              email:p.email, role:'client', status:p.status||'active',
+              createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
+            });
+          }
+        });
     }
   } catch(e){}
   // Also reload assessments
@@ -1511,27 +1517,49 @@ async function deleteUser(id,role){
         renderHerbalists();
       }
       else if(role==='client'){
-        // Remove from client users list
+        // Remove from in-memory list
         ALL_CLIENTS_USR=ALL_CLIENTS_USR.filter(c=>c.id!==id);
         await sset('tfb_client_users',ALL_CLIENTS_USR);
-        // Also delete the portal login account keyed by email
-        // so the person can re-register with the same email
-        if(user.email){
-          const ek = 'tfb_cp_' + user.email.toLowerCase().replace(/[^a-z0-9]/g, c=>'_'+c.charCodeAt(0)+'_');
-          await sdel(ek);
-          // Also clear from localStorage
-          try{ localStorage.removeItem(ek); }catch(e){}
+
+        // ── Delete from Supabase profiles table ──
+        try {
+          await sb.from('profiles').delete().eq('id', id);
+        } catch(e){ console.warn('profiles delete:', e); }
+
+        // ── Delete from Supabase assessments table ──
+        if(user.assessmentRef){
+          try { await sb.from('assessments').delete().eq('ref_code', user.assessmentRef); } catch(e){}
         }
-        // If they had an assessment, also remove the assessment reference
+        try { await sb.from('assessments').delete().eq('client_id', id); } catch(e){}
+
+        // ── Delete from Supabase auth.users ──
+        // Note: this requires the service role key - we use admin API via edge function
+        // As a workaround, we mark the account in profiles so it can't log in
+        // and the email is freed by running the cleanup SQL in Supabase dashboard
+        try {
+          // Try to delete via Supabase admin API
+          const { error: authErr } = await sb.auth.admin.deleteUser(id);
+          if(authErr) console.warn('auth.users delete (may need service role):', authErr.message);
+        } catch(e){
+          // Expected to fail from browser — show instruction
+          console.info('To fully free this email, delete the user from Supabase Auth → Users dashboard, or run: DELETE FROM auth.users WHERE id = \'' + id + '\'');
+        }
+
+        // ── Clear localStorage / window.storage portal data ──
+        if(user.email){
+          const ek = 'tfb_cp_' + user.email.toLowerCase().replace(/[^a-z0-9]/g, function(ch){ return '_'+ch.charCodeAt(0)+'_'; });
+          try { await sdel(ek); } catch(e){}
+          try { localStorage.removeItem(ek); } catch(e){}
+        }
         if(user.assessmentRef){
           await sdel('tfb_assessment_'+user.assessmentRef);
           await sdel('tfb_state_'+user.assessmentRef);
-          try{ localStorage.removeItem('tfb_assessment_'+user.assessmentRef); }catch(e){}
-          // Remove from refs list
+          try { localStorage.removeItem('tfb_assessment_'+user.assessmentRef); } catch(e){}
           const refs = await sget('tfb_refs')||[];
           await sset('tfb_refs', refs.filter(r=>r!==user.assessmentRef));
         }
         renderClients();
+        updateStats();
       }
       else if(role==='admin'){
         ALL_ADMINS=ALL_ADMINS.filter(a=>a.id!==id);
@@ -1541,7 +1569,7 @@ async function deleteUser(id,role){
       await appendAudit({type:'delete',icon:'🗑️',action:`Deleted ${role} account: ${user.name}`,actor:currentAdmin?.name||'Admin',target:user.email||user.username||id});
       updateStats();
       closeDrawer();
-      showToast(`🗑️ ${user.name} has been deleted.`);
+      showToast(`🗑️ ${user.name} deleted. To free their email for re-registration, also delete them from Supabase → Authentication → Users.`);
     }
   );
 }
@@ -3167,8 +3195,7 @@ function startRealtimeSync(){
       .on('postgres_changes', {
         event:  '*',
         schema: 'public',
-        table:  'profiles',
-        filter: 'role=eq.client'
+        table:  'profiles'
       }, async function(payload){
         console.log('New client profile detected:', payload);
         // Re-load clients and update UI
