@@ -411,11 +411,10 @@ async function dbDelete(table, filters) {
       <span class="login-icon">⚙️</span>
       <div class="login-title">System Admin</div>
       <div class="login-sub">This area is restricted to authorised system administrators only. All access is logged.</div>
-      <div class="login-error" id="loginError">Incorrect username or password.</div>
-      <div class="lfgrp"><label>Admin Username</label><input type="text" id="adminUser" placeholder="admin" autocomplete="username"/></div>
-      <div class="lfgrp"><label>Admin Password</label><input type="password" id="adminPw" placeholder="••••••••" autocomplete="current-password"/></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:.2rem" onclick="doAdminLogin()">Sign In to Admin</button>
-      <div class="login-hint">Default credentials: <strong>admin</strong> / <strong>sysadmin2025</strong></div>
+      <div class="login-error" id="adminLoginError" style="display:none"></div>
+      <div class="lfgrp"><label>Email Address</label><input type="email" id="adminUser" placeholder="trueformbotanical@gmail.com" autocomplete="username"/></div>
+      <div class="lfgrp"><label>Password</label><input type="password" id="adminPw" placeholder="••••••••" autocomplete="current-password"/></div>
+      <button class="btn btn-primary" id="adminLoginBtn" style="width:100%;justify-content:center;padding:11px;margin-top:.2rem" onclick="doAdminLogin()">Sign In to Admin</button>
     </div>
   </div>
 </div>
@@ -886,49 +885,86 @@ let currentAdmin=null;
 const DEFAULT_ADMIN={id:'admin',username:'admin',name:'System Administrator',email:'trueformbotanical@gmail.com',pw:'',role:'admin',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null};
 
 async function doAdminLogin(){
-  const user = document.getElementById('adminUser')?.value.trim()||'';
-  const pw   = document.getElementById('adminPw')?.value||'';
-  const btn  = document.getElementById('adminLoginBtn');
-  const err  = document.getElementById('adminLoginError');
+  const email = (document.getElementById('adminUser')?.value||'').trim();
+  const pw    = document.getElementById('adminPw')?.value||'';
+  const btn   = document.getElementById('adminLoginBtn');
+  const err   = document.getElementById('adminLoginError');
+
+  // Helper to show error
+  const showErr = msg => {
+    if(err){ err.textContent='⚠️ '+msg; err.style.display='block'; err.style.cssText='display:block;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.6rem .9rem;font-size:.82rem;color:#dc2626;font-weight:600;margin-bottom:.8rem'; }
+  };
+
   if(err) err.style.display='none';
-  if(!user||!pw){ if(err){err.textContent='⚠️ Please enter username and password.';err.style.display='block';} return; }
+  if(!email){ showErr('Please enter your email address.'); return; }
+  if(!pw)   { showErr('Please enter your password.'); return; }
   if(btn){ btn.textContent='Signing in…'; btn.disabled=true; }
 
-  // Admin logs in with email (username = 'admin' maps to admin email)
-  // Support both 'admin' username and direct email
-  const adminEmail = user==='admin' ? 'trueformbotanical@gmail.com' : (user.includes('@') ? user : user+'@trueformbotanical.com');
+  try {
+    // Sign in with Supabase Auth
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
 
-  const { data, error } = await sbSignIn(adminEmail, pw);
-  if(btn){ btn.textContent='Sign In →'; btn.disabled=false; }
+    if(btn){ btn.textContent='Sign In to Admin'; btn.disabled=false; }
 
-  if(error){
-    if(err){ err.textContent='⚠️ Incorrect credentials. Please try again.'; err.style.display='block'; }
-    return;
+    if(error){
+      showErr('Incorrect email or password. Please try again.');
+      return;
+    }
+
+    if(!data?.user){
+      showErr('Sign in failed. Please try again.');
+      return;
+    }
+
+    // Check admin access — accept trueformbotanical@gmail.com or role=admin in profiles
+    const isAdminEmail = data.user.email === 'trueformbotanical@gmail.com';
+    let profile = null;
+    try {
+      const { data: pd } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+      profile = pd;
+    } catch(e){}
+
+    const isAdminRole = profile?.role === 'admin';
+
+    if(!isAdminEmail && !isAdminRole){
+      await sb.auth.signOut();
+      showErr('This account does not have admin access.');
+      return;
+    }
+
+    // Auto-fix role if needed
+    if(profile && profile.role !== 'admin'){
+      try { await sb.from('profiles').update({ role:'admin' }).eq('id', data.user.id); } catch(e){}
+    }
+
+    // Boot dashboard
+    currentAdmin = {
+      id:    data.user.id,
+      name:  profile?.full_name || 'System Administrator',
+      email: data.user.email,
+      role:  'admin'
+    };
+
+    document.getElementById('adminLoginGate').style.display='none';
+    document.getElementById('adminApp').style.display='flex';
+    await loadAll();
+    await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
+    showToast('✅ Welcome, '+currentAdmin.name+'!');
+
+  } catch(e){
+    if(btn){ btn.textContent='Sign In to Admin'; btn.disabled=false; }
+    showErr('Connection error: '+e.message);
   }
-
-  // Verify admin role
-  const profile = await dbGetOne('profiles', { id: data.user.id });
-  if(!profile || profile.role !== 'admin'){
-    await sbSignOut();
-    if(err){ err.textContent='⚠️ This account does not have admin access.'; err.style.display='block'; }
-    return;
-  }
-
-  currentAdmin = { id: data.user.id, name: profile.full_name||'Admin', email: data.user.email, role: 'admin' };
-  document.getElementById('adminLoginGate').style.display='none';
-  document.getElementById('adminApp').style.display='flex';
-  await loadAll();
-  await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
-  showToast('✅ Welcome, '+currentAdmin.name+'!');
 }
-async async function doLogout(){
+async function doLogout(){
   await sbSignOut();
   currentAdmin = null;
   document.getElementById('adminApp').style.display='none';
   document.getElementById('adminLoginGate').style.display='flex';
   showToast('👋 Signed out.');
 }
-document.getElementById('adminPw').addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
+document.getElementById('adminPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
+document.getElementById('adminUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
 
 // ══════════════════════════════════════════════════
 // LOAD ALL DATA
