@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TrueForm Botanical — Herbalist Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal-deepest:#071e1c;--teal-deep:#0d3d3a;--teal:#115c57;--teal-mid:#1a7a74;--teal-bright:#22a89f;--teal-light:#5ec4bc;--teal-pale:#c0eae7;--teal-ghost:#eaf5f4;
+  --saffron:#e8820c;--saffron-bright:#f59d2e;--saffron-light:#fbc97a;--saffron-pale:#fef3e2;
+  --spice:#b54a1e;--spice-light:#d96b3e;
+  --green:#16a34a;--green-pale:#dcfce7;--green-border:#86efac;
+  --amber:#d97706;--amber-pale:#fef9c3;--amber-border:#fde047;
+  --red:#dc2626;--red-pale:#fee2e2;--red-border:#fca5a5;
+  --ink:#0a1a19;--text-dark:#0f2421;--text-strong:#1a3532;--text-mid:#2e5450;--text-soft:#4a7570;--text-light:#9ec5c1;
+  --surface:#fff;--surface-alt:#f4fbfa;--surface-teal:#eaf5f4;--border:#cce8e6;--border-mid:#99d0cb;
+  --shadow-sm:0 2px 8px rgba(13,61,58,.10);--shadow-md:0 6px 24px rgba(13,61,58,.14);--shadow-lg:0 16px 50px rgba(13,61,58,.18);
+  --sidebar:260px;--topbar-h:60px;
+  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Nunito Sans',sans-serif;
+}
+html,body{height:100%}
+body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark);font-weight:400;line-height:1.6;display:flex;flex-direction:column;overflow:hidden}
+@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── TOPBAR ── */
+.topbar{height:var(--topbar-h);background:var(--teal-deep);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;border-bottom:1px solid rgba(94,196,188,.18);flex-shrink:0;z-index:100}
+.tb-left{display:flex;align-items:center;gap:1rem}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.tb-mark{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.tb-name{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:#fff}.tb-name em{color:var(--saffron-bright);font-style:italic}
+.tb-divider{width:1px;height:20px;background:rgba(255,255,255,.15)}
+.tb-role{font-size:.72rem;color:var(--teal-pale);font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.08);padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15)}
+.tb-right{display:flex;align-items:center;gap:.8rem}
+.tb-notif{position:relative;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.7);font-size:.9rem;transition:all .2s}.tb-notif:hover{background:rgba(255,255,255,.16)}
+.tb-notif-badge{position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:var(--saffron);border-radius:50%;font-size:.55rem;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--teal-deep)}
+.tb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.2)}
+.tb-hname{font-size:.78rem;color:rgba(255,255,255,.75);font-weight:600}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--teal-deepest);border-right:1px solid rgba(94,196,188,.12);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:.8rem 0}
+.sidebar-section+.sidebar-section{border-top:1px solid rgba(255,255,255,.06)}
+.sidebar-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700;padding:.3rem 1.2rem .5rem}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.62rem 1.2rem;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:600;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.9)}
+.nav-item.active{background:rgba(34,168,159,.12);color:#fff;border-left-color:var(--teal-bright)}
+.nav-icon{font-size:1rem;width:22px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--saffron);color:#fff;border-radius:20px;padding:1px 7px;font-size:.62rem;font-weight:700}
+.nav-badge.green{background:var(--green)}
+.sidebar-footer{margin-top:auto;padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-herb{font-size:.72rem;color:rgba(255,255,255,.4);font-weight:600}
+.sidebar-herb strong{color:var(--saffron-bright);display:block;font-size:.8rem;margin-bottom:.15rem}
+
+/* ── CONTENT AREA ── */
+.content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.content-panel{display:none;flex:1;animation:fadeIn .25s both}
+.content-panel.active{display:flex;flex-direction:column}
+
+/* ── PANEL HEADER ── */
+.panel-header{padding:1.4rem 1.8rem 1rem;background:var(--surface);border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;flex-shrink:0}
+.panel-title{font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--text-dark)}
+.panel-title em{color:var(--teal-mid);font-style:italic}
+.panel-sub{font-size:.78rem;color:var(--text-soft);margin-top:.15rem}
+.panel-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r,5px);font-family:var(--sans);font-size:.76rem;font-weight:700;cursor:pointer;transition:all .25s;border:none;letter-spacing:.04em;text-transform:uppercase}
+.btn-primary{background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-saffron{background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff}.btn-saffron:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--surface-alt);border:1.5px solid var(--border);color:var(--text-mid)}.btn-ghost:hover{border-color:var(--teal-bright);color:var(--teal-deep);background:var(--surface-teal)}
+.btn-danger{background:var(--red-pale);border:1.5px solid var(--red-border);color:var(--red)}.btn-danger:hover{background:var(--red-border)}
+:root{--r:5px;--r-lg:10px}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;padding:1.2rem 1.8rem}
+.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.teal::before{background:linear-gradient(90deg,var(--teal-mid),var(--teal-bright))}
+.stat-card.saffron::before{background:linear-gradient(90deg,var(--saffron),var(--saffron-bright))}
+.stat-card.green::before{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.stat-card.amber::before{background:linear-gradient(90deg,var(--amber),var(--saffron-bright))}
+.stat-label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:.4rem}
+.stat-value{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--text-dark);line-height:1}
+.stat-sub{font-size:.72rem;color:var(--text-soft);margin-top:.28rem;font-weight:600}
+
+/* ── TABLE ── */
+.table-wrap{padding:0 1.8rem 1.8rem;flex:1}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:1rem}
+.search-input{padding:8px 13px;border:2px solid var(--border);border-radius:20px;background:var(--surface);font-family:var(--sans);font-size:.84rem;color:var(--text-dark);outline:none;transition:border-color .25s;width:240px}.search-input:focus{border-color:var(--teal-bright)}
+.filter-select{padding:7px 12px;border:2px solid var(--border);border-radius:20px;background:var(--surface);font-family:var(--sans);font-size:.78rem;color:var(--text-mid);outline:none;cursor:pointer;font-weight:600}
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem;background:var(--surface);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);border:1.5px solid var(--border)}
+.data-table th{background:var(--teal-deep);color:#fff;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:.8rem 1rem;text-align:left}
+.data-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text-mid)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface-teal)}
+.client-name{font-weight:700;color:var(--text-dark)}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:.66rem;font-weight:700}
+.status-new{background:var(--saffron-pale);color:var(--spice);border:1px solid var(--saffron-light)}
+.status-reviewed{background:var(--green-pale);color:var(--green);border:1px solid var(--green-border)}
+.status-pending{background:var(--amber-pale);color:var(--amber);border:1px solid var(--amber-border)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.urgency-high{color:var(--spice);font-weight:700}
+.urgency-med{color:var(--amber);font-weight:700}
+.urgency-low{color:var(--green);font-weight:700}
+.row-actions{display:flex;gap:.4rem}
+
+/* ── CLIENT DETAIL PANEL ── */
+.client-detail{padding:1.4rem 1.8rem;flex:1;overflow-y:auto}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-soft);font-size:.8rem;font-weight:700;cursor:pointer;padding:.4rem 0;margin-bottom:1rem;background:none;border:none;font-family:var(--sans);transition:color .2s}.back-btn:hover{color:var(--teal-mid)}
+.client-header-card{background:linear-gradient(135deg,var(--teal-deep),var(--teal-deepest));border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.ch-info h2{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:#fff}
+.ch-meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem}
+.ch-tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 10px;font-size:.7rem;color:rgba(255,255,255,.8);font-weight:600}
+.ch-ref{font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.4rem;font-family:monospace;letter-spacing:.06em}
+.ch-actions{display:flex;flex-direction:column;gap:.5rem;align-items:flex-end}
+
+/* ASSESSMENT GRID */
+.assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.assessment-grid.full{grid-template-columns:1fr}
+
+/* DETAIL CARD */
+.detail-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.dc-head{padding:.85rem 1.2rem;background:var(--surface-alt);border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.dc-title{font-family:var(--serif);font-size:.98rem;font-weight:700;color:var(--text-dark);display:flex;align-items:center;gap:.5rem}
+.dc-body{padding:1.1rem 1.2rem}
+.detail-pill{display:inline-flex;align-items:center;margin:.15rem;padding:3px 10px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:20px;font-size:.72rem;color:var(--teal-deep);font-weight:600}
+.detail-pill.warn{background:var(--saffron-pale);border-color:var(--saffron-light);color:var(--spice)}
+.detail-pill.danger{background:var(--red-pale);border-color:var(--red-border);color:var(--red)}
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.82rem;gap:.8rem}
+.detail-row:last-child{border-bottom:none}
+.dr-label{color:var(--text-light);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.dr-val{color:var(--text-mid);text-align:right;font-weight:600}
+
+/* SEVERITY METER */
+.sev-meter{display:flex;align-items:center;gap:.7rem;margin:.5rem 0}
+.sev-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.sev-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.sev-fill.sev1{background:var(--teal-bright);width:20%}
+.sev-fill.sev2{background:var(--teal-bright);width:40%}
+.sev-fill.sev3{background:var(--saffron-bright);width:60%}
+.sev-fill.sev4{background:var(--spice-light);width:80%}
+.sev-fill.sev5{background:var(--spice);width:100%}
+.sev-num{font-family:var(--serif);font-size:1.2rem;font-weight:700}
+
+/* ── HERBALIST TOOLS ── */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+
+/* HERB RECOMMENDATIONS */
+.herb-rec-card{display:flex;align-items:flex-start;gap:.8rem;padding:.85rem;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:8px;margin-bottom:.5rem;transition:all .25s}
+.herb-rec-card:hover{border-color:var(--teal-bright);background:var(--surface-teal)}
+.herb-rec-card.flagged{border-color:var(--saffron-light);background:var(--saffron-pale)}
+.herb-rec-card.contraindicated{border-color:var(--red-border);background:var(--red-pale)}
+.hrc-emoji-sm{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,var(--surface-teal),var(--saffron-pale));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.hrc-info{flex:1}
+.hrc-name{font-weight:700;color:var(--text-dark);font-size:.88rem}
+.hrc-latin{font-size:.7rem;color:var(--text-light);font-style:italic}
+.hrc-match{font-size:.72rem;color:var(--teal-mid);font-weight:700;margin-top:.15rem}
+.hrc-caution-tag{display:inline-flex;align-items:center;gap:3px;font-size:.62rem;padding:2px 8px;border-radius:20px;background:var(--red-pale);color:var(--red);border:1px solid var(--red-border);font-weight:700;margin-top:.2rem}
+.hrc-ok-tag{background:var(--green-pale);color:var(--green);border-color:var(--green-border)}
+.herb-score-bar{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.hsb-track{width:5px;height:40px;background:var(--border);border-radius:3px;overflow:hidden;display:flex;align-items:flex-end}
+.hsb-fill{width:100%;border-radius:3px;background:linear-gradient(var(--teal-bright),var(--teal-mid))}
+.hsb-pct{font-size:.62rem;color:var(--teal-mid);font-weight:700}
+
+/* NOTES / PROTOCOL EDITOR */
+.notes-editor{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:.86rem;color:var(--text-dark);line-height:1.7;resize:vertical;min-height:130px;outline:none;transition:border-color .25s;background:var(--surface-alt)}.notes-editor:focus{border-color:var(--teal-bright);background:#fff}
+.protocol-line{display:flex;gap:.5rem;margin-bottom:.5rem}
+.protocol-line input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.83rem;color:var(--text-dark);outline:none;background:var(--surface-alt);transition:border-color .2s}.protocol-line input:focus{border-color:var(--teal-bright)}
+.protocol-line .del-btn{padding:8px 10px;background:none;border:1.5px solid var(--border);border-radius:6px;color:var(--text-light);cursor:pointer;transition:all .2s;font-size:.75rem}.del-btn:hover{border-color:var(--spice);color:var(--spice)}
+.add-line-btn{display:flex;align-items:center;gap:5px;font-size:.74rem;color:var(--teal-mid);font-weight:700;cursor:pointer;background:none;border:1.5px dashed var(--border-mid);border-radius:6px;padding:6px 12px;width:100%;justify-content:center;transition:all .2s;font-family:var(--sans)}.add-line-btn:hover{border-color:var(--teal-bright);background:var(--surface-teal)}
+
+/* FLAGS */
+.flag-card{display:flex;align-items:flex-start;gap:.7rem;padding:.8rem;border-radius:8px;margin-bottom:.5rem;border:1.5px solid}
+.flag-danger{background:var(--red-pale);border-color:var(--red-border);color:var(--red)}
+.flag-warn{background:var(--amber-pale);border-color:var(--amber-border);color:var(--amber)}
+.flag-info{background:var(--surface-teal);border-color:var(--border-mid);color:var(--teal-deep)}
+.flag-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+.flag-text{font-size:.82rem;font-weight:600;line-height:1.5}
+.flag-text small{display:block;font-weight:400;opacity:.75;margin-top:.1rem}
+
+/* CONSTITUTION RADAR (CSS only) */
+.constitution-display{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:.6rem 0}
+.const-bar{text-align:center}
+.const-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-soft);font-weight:700;margin-bottom:.3rem}
+.const-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.const-fill{height:100%;border-radius:3px}
+.vata-fill{background:linear-gradient(90deg,var(--teal-light),var(--teal-bright))}
+.pitta-fill{background:linear-gradient(90deg,var(--saffron-light),var(--saffron))}
+.kapha-fill{background:linear-gradient(90deg,var(--green-border),var(--green))}
+.const-pct{font-size:.72rem;font-weight:700;color:var(--text-dark);margin-top:.25rem}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.timeline-item{display:flex;gap:1rem;padding:.6rem 0;border-left:2px solid var(--border);margin-left:.6rem;padding-left:1rem;position:relative}
+.timeline-item::before{content:'';position:absolute;left:-6px;top:.9rem;width:10px;height:10px;border-radius:50%;background:var(--teal-mid);border:2px solid var(--surface)}
+.tl-time{font-size:.68rem;color:var(--text-light);font-weight:700;white-space:nowrap;min-width:70px}
+.tl-text{font-size:.82rem;color:var(--text-mid);font-weight:400}
+
+/* LOGIN GATE */
+.login-gate{display:flex;align-items:center;justify-content:center;flex:1;background:linear-gradient(135deg,var(--teal-deepest),var(--teal-deep))}
+.login-box{background:var(--surface);border-radius:14px;padding:2.3rem;max-width:420px;width:90%;box-shadow:var(--shadow-lg);border:1.5px solid var(--border);animation:riseIn .4s both}
+.login-icon{font-size:2.5rem;margin-bottom:.8rem;display:block;text-align:center}
+.login-title{font-family:var(--serif);font-size:1.7rem;font-weight:700;color:var(--text-dark);text-align:center;margin-bottom:.25rem}
+.login-sub{font-size:.82rem;color:var(--text-soft);text-align:center;margin-bottom:1.4rem}
+.login-fgrp{margin-bottom:.9rem}
+.login-fgrp label{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem}
+.login-fgrp input{width:100%;padding:10px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.88rem;color:var(--text-dark);outline:none;transition:border-color .25s}.login-fgrp input:focus{border-color:var(--teal-bright);box-shadow:0 0 0 3px rgba(34,168,159,.1)}
+.login-fgrp input::placeholder{color:var(--text-light)}
+/* Suggestion item */
+.suggest-item{padding:.65rem 1rem;font-size:.84rem;cursor:pointer;display:flex;align-items:center;gap:.7rem;border-bottom:1px solid var(--border);color:var(--text-mid);font-weight:500;transition:background .15s}
+.suggest-item:last-child{border-bottom:none}
+.suggest-item:hover,.suggest-item.focused{background:var(--surface-teal);color:var(--teal-deep)}
+.suggest-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+.suggest-meta{font-size:.68rem;color:var(--text-light);display:block}
+.suggest-suspended{opacity:.5;cursor:not-allowed}
+.login-hint{font-size:.72rem;color:var(--text-light);text-align:center;margin-top:.8rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--teal-deep);color:#fff;padding:.75rem 1.4rem;border-radius:6px;font-size:.84rem;font-weight:600;box-shadow:var(--shadow-lg);transition:all .35s cubic-bezier(.22,1,.36,1);border:1px solid var(--teal-light);transform:translateX(140%);opacity:0}.toast.show{transform:translateX(0);opacity:1}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(7,30,28,.55);z-index:5000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:12px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);border:1.5px solid var(--border);animation:riseIn .3s both}
+.modal-head{padding:1.2rem 1.4rem;background:var(--surface-alt);border-bottom:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--text-dark)}
+.modal-close{background:none;border:none;font-size:1.1rem;color:var(--text-light);cursor:pointer;padding:4px;border-radius:4px}.modal-close:hover{color:var(--text-dark);background:var(--border)}
+.modal-body{padding:1.4rem}
+
+@media(max-width:900px){.assessment-grid,.tools-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}.sidebar{display:none}.constitution-display{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ SEND PROTOCOL MODAL ══ -->
+<div class="modal-bg" id="sendModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">📤 Send Protocol to Client</span><button class="modal-close" onclick="closeModal('sendModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:1rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.4rem">Delivery Method</label>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.84rem;font-weight:600;cursor:pointer"><input type="radio" name="delivery" value="email" checked/> Email</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.84rem;font-weight:600;cursor:pointer"><input type="radio" name="delivery" value="portal"/> Client Portal</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.84rem;font-weight:600;cursor:pointer"><input type="radio" name="delivery" value="print"/> Print PDF</label>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.4rem">Message to Client</label>
+        <textarea id="sendMessage" style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;color:var(--text-dark);min-height:100px;outline:none;resize:vertical;background:var(--surface-alt)" placeholder="Include a personal note with the protocol…"></textarea>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.4rem">Follow-up Appointment</label>
+        <div style="display:flex;gap:.6rem">
+          <input type="date" id="followupDate" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none"/>
+          <select id="followupTime" style="padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;outline:none;background:var(--surface-alt)"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option></select>
+        </div>
+      </div>
+      <button class="btn btn-saffron" style="width:100%;justify-content:center" onclick="confirmSend()">📤 Send Protocol to Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN GATE ══ -->
+<div id="loginGate" style="display:flex;flex-direction:column;height:100%">
+  <div class="topbar" style="flex-shrink:0">
+    <div class="tb-left"><button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button></div>
+    <div class="tb-right" style="gap:.8rem">
+      <button onclick="window.location.href='admin.html'" style="font-size:.72rem;color:rgba(255,255,255,.45);font-weight:600;text-decoration:none;transition:color .2s;background:none;border:none;cursor:pointer;font-family:var(--sans)" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">⚙️ System Admin</button>
+    </div>
+  </div>
+  <div class="login-gate">
+    <div class="login-box">
+      <span class="login-icon">🌿</span>
+      <div class="login-title">Practitioner Login</div>
+      <div class="login-sub">Sign in to your herbalist dashboard</div>
+
+      <!-- ERROR BANNER -->
+      <div id="loginError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.65rem 1rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem;display:none;align-items:center;gap:.5rem">
+        <span>⚠️</span><span id="loginErrorMsg">Incorrect username or password.</span>
+      </div>
+
+      <!-- USERNAME with autocomplete -->
+      <div class="login-fgrp" style="position:relative">
+        <label>Username</label>
+        <input
+          type="text"
+          id="loginUsername"
+          placeholder="Enter your username…"
+          autocomplete="username"
+          oninput="onUsernameInput(this.value)"
+          onfocus="onUsernameInput(this.value)"
+          onblur="setTimeout(()=>closeSuggestions(),180)"
+        />
+        <!-- SUGGESTIONS DROPDOWN -->
+        <div id="loginSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:2px solid var(--teal-bright);border-top:none;border-radius:0 0 8px 8px;z-index:200;box-shadow:0 8px 24px rgba(13,61,58,.14);max-height:200px;overflow-y:auto"></div>
+      </div>
+
+      <div class="login-fgrp">
+        <label>Password</label>
+        <div style="position:relative">
+          <input type="password" id="loginPw" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px"/>
+          <button onclick="togglePwVis()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-light);font-size:.85rem;padding:2px" id="pwToggleBtn">👁</button>
+        </div>
+      </div>
+
+      <!-- WHO AM I CARD — shows matched user preview -->
+      <div id="userPreviewCard" style="display:none;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.75rem 1rem;margin-bottom:.9rem;display:none;align-items:center;gap:.8rem">
+        <div id="previewAvatar" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0">?</div>
+        <div>
+          <div id="previewName" style="font-family:var(--serif);font-size:.96rem;font-weight:700;color:var(--text-dark)">—</div>
+          <div id="previewSpecialty" style="font-size:.72rem;color:var(--text-soft)">—</div>
+        </div>
+        <div id="previewStatus" style="margin-left:auto;font-size:.66rem;padding:2px 8px;border-radius:20px;font-weight:700"></div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:.85rem" id="loginBtn" onclick="doLogin()">Sign In to Dashboard →</button>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.9rem">
+        <button onclick="window.location.href='admin.html'" style="font-size:.72rem;color:var(--teal-mid);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:20px;transition:all .2s;cursor:pointer;font-family:var(--sans)" onmouseover="this.style.borderColor='var(--teal-bright)'" onmouseout="this.style.borderColor='var(--border-mid)'">⚙️ Admin Portal</button>
+        <button onclick="openForgotPassword()" style="font-size:.72rem;color:var(--teal-mid);font-weight:700;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:4px 0;text-decoration:underline;text-underline-offset:3px">Forgot password?</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FORGOT PASSWORD MODAL ══ -->
+<div id="forgotModal" style="display:none;position:fixed;inset:0;background:rgba(7,30,28,.55);z-index:6000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(5px)">
+  <div style="background:var(--surface);border-radius:14px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);border:1.5px solid var(--border);animation:riseIn .3s both;overflow:hidden">
+
+    <!-- MODAL TOPBAR -->
+    <div style="background:var(--teal-deep);padding:1.1rem 1.4rem;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:#fff" id="fpModalTitle">Reset Your Password</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.1rem" id="fpModalSub">Enter your registered email address</div>
+      </div>
+      <button onclick="closeForgotPassword()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">✕</button>
+    </div>
+
+    <!-- STEP INDICATORS -->
+    <div style="display:flex;border-bottom:1.5px solid var(--border);background:var(--surface-alt)" id="fpStepBar">
+      <div class="fp-step fp-step-active" data-step="1" style="flex:1;padding:.55rem;text-align:center;font-size:.68rem;font-weight:700;color:var(--teal-mid);border-bottom:2.5px solid var(--teal-mid);letter-spacing:.06em;text-transform:uppercase">1. Email</div>
+      <div class="fp-step" data-step="2" style="flex:1;padding:.55rem;text-align:center;font-size:.68rem;font-weight:700;color:var(--text-light);border-bottom:2.5px solid transparent;letter-spacing:.06em;text-transform:uppercase">2. Verify Code</div>
+      <div class="fp-step" data-step="3" style="flex:1;padding:.55rem;text-align:center;font-size:.68rem;font-weight:700;color:var(--text-light);border-bottom:2.5px solid transparent;letter-spacing:.06em;text-transform:uppercase">3. New Password</div>
+    </div>
+
+    <!-- STEP 1 — EMAIL LOOKUP -->
+    <div id="fpStep1" style="padding:1.5rem">
+      <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:1.2rem;line-height:1.65">Enter the email address linked to your practitioner account and we'll send you a reset code.</p>
+      <div style="margin-bottom:.9rem">
+        <label style="display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem">Email Address</label>
+        <input type="email" id="fpEmail" placeholder="your@email.com" autocomplete="email"
+          style="width:100%;padding:10px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.88rem;color:var(--text-dark);outline:none;transition:border-color .25s"
+          onfocus="this.style.borderColor='var(--teal-bright)'" onblur="this.style.borderColor='var(--border)'"
+          onkeydown="if(event.key==='Enter')sendResetCode()"/>
+      </div>
+      <div id="fpEmailError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.78rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
+      <!-- Found user preview -->
+      <div id="fpUserFound" style="display:none;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;align-items:center;gap:.8rem">
+        <div id="fpFoundAvatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0">?</div>
+        <div>
+          <div id="fpFoundName" style="font-family:var(--serif);font-size:.94rem;font-weight:700;color:var(--text-dark)"></div>
+          <div id="fpFoundSpec" style="font-size:.7rem;color:var(--text-soft)"></div>
+        </div>
+        <span style="margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);font-weight:700">✓ Found</span>
+      </div>
+      <button id="fpSendBtn" onclick="sendResetCode()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff;border:none;border-radius:5px;font-family:var(--sans);font-size:.84rem;font-weight:700;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;transition:all .3s">Send Reset Code →</button>
+      <p style="font-size:.7rem;color:var(--text-light);text-align:center;margin-top:.8rem;line-height:1.55">For security, reset codes are only delivered to the registered email address. If you don't have access to your email, contact your <button onclick="window.location.href='admin.html'" style="background:none;border:none;cursor:pointer;color:var(--teal-mid);font-weight:700;font-family:var(--sans);font-size:inherit;padding:0;text-decoration:underline">System Administrator</button>.</p>
+    </div>
+
+    <!-- STEP 2 — CODE VERIFICATION -->
+    <div id="fpStep2" style="display:none;padding:1.5rem">
+      <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:.5rem;line-height:1.65">A 6-digit reset code has been generated. In production this would be emailed — for this demo, the code is shown here:</p>
+      <div id="fpCodeDisplay" style="text-align:center;font-family:monospace;font-size:1.8rem;font-weight:700;letter-spacing:.3em;color:var(--teal-deep);background:var(--surface-teal);border:2px solid var(--teal-bright);border-radius:8px;padding:.8rem;margin-bottom:1.2rem"></div>
+      <div style="margin-bottom:.9rem">
+        <label style="display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem">Enter Reset Code</label>
+        <input type="text" id="fpCode" placeholder="000000" maxlength="6" autocomplete="one-time-code"
+          style="width:100%;padding:11px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:5px;font-family:monospace;font-size:1.2rem;font-weight:700;color:var(--text-dark);outline:none;text-align:center;letter-spacing:.25em;transition:border-color .25s"
+          onfocus="this.style.borderColor='var(--teal-bright)'" onblur="this.style.borderColor='var(--border)'"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+          onkeydown="if(event.key==='Enter')verifyCode()"/>
+      </div>
+      <div id="fpCodeError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.78rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
+      <div style="display:flex;gap:.7rem">
+        <button onclick="fpBack(1)" style="padding:10px 18px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text-mid);text-transform:uppercase">← Back</button>
+        <button id="fpVerifyBtn" onclick="verifyCode()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff;border:none;border-radius:5px;font-family:var(--sans);font-size:.84rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em">Verify Code →</button>
+      </div>
+      <div style="text-align:center;margin-top:.8rem">
+        <button onclick="sendResetCode()" style="font-size:.72rem;color:var(--teal-mid);font-weight:700;background:none;border:none;cursor:pointer;font-family:var(--sans);text-decoration:underline" id="fpResendBtn">Resend code</button>
+        <span id="fpResendTimer" style="font-size:.72rem;color:var(--text-light);display:none"></span>
+      </div>
+    </div>
+
+    <!-- STEP 3 — NEW PASSWORD -->
+    <div id="fpStep3" style="display:none;padding:1.5rem">
+      <div id="fpResetUserCard" style="background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.7rem 1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem">
+        <div id="fpResetAvatar" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.9rem">?</div>
+        <div><div id="fpResetName" style="font-size:.9rem;font-weight:700;color:var(--text-dark);font-family:var(--serif)"></div><div id="fpResetEmail" style="font-size:.7rem;color:var(--text-soft)"></div></div>
+      </div>
+      <div style="margin-bottom:.9rem">
+        <label style="display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem">New Password</label>
+        <div style="position:relative">
+          <input type="password" id="fpNewPw" placeholder="Minimum 8 characters"
+            style="width:100%;padding:10px 40px 10px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.88rem;color:var(--text-dark);outline:none;transition:border-color .25s"
+            onfocus="this.style.borderColor='var(--teal-bright)'" onblur="this.style.borderColor='var(--border)'"
+            oninput="checkPwStrength(this.value)" onkeydown="if(event.key==='Enter')document.getElementById('fpConfirmPw').focus()"/>
+          <button onclick="toggleFpPw('fpNewPw','fpNewEye')" id="fpNewEye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.82rem;color:var(--text-light)">👁</button>
+        </div>
+        <!-- Strength meter -->
+        <div style="margin-top:.4rem">
+          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div id="fpStrengthBar" style="height:100%;border-radius:2px;transition:all .3s;width:0%"></div></div>
+          <div id="fpStrengthLabel" style="font-size:.68rem;font-weight:700;margin-top:.2rem;color:var(--text-light)"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem">Confirm New Password</label>
+        <div style="position:relative">
+          <input type="password" id="fpConfirmPw" placeholder="Repeat new password"
+            style="width:100%;padding:10px 40px 10px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.88rem;color:var(--text-dark);outline:none;transition:border-color .25s"
+            onfocus="this.style.borderColor='var(--teal-bright)'" onblur="this.style.borderColor='var(--border)'"
+            onkeydown="if(event.key==='Enter')setNewPassword()"/>
+          <button onclick="toggleFpPw('fpConfirmPw','fpConfEye')" id="fpConfEye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.82rem;color:var(--text-light)">👁</button>
+        </div>
+      </div>
+      <div id="fpPwError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.78rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
+      <div style="display:flex;gap:.7rem">
+        <button onclick="fpBack(2)" style="padding:10px 18px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text-mid);text-transform:uppercase">← Back</button>
+        <button onclick="setNewPassword()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;border:none;border-radius:5px;font-family:var(--sans);font-size:.84rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em">Set New Password →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 — SUCCESS -->
+    <div id="fpSuccess" style="display:none;padding:2.2rem;text-align:center">
+      <div style="font-size:3.5rem;margin-bottom:.8rem">✅</div>
+      <div style="font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--teal-mid);margin-bottom:.5rem">Password Updated!</div>
+      <p style="font-size:.86rem;color:var(--text-mid);line-height:1.65;margin-bottom:1.4rem">Your password has been changed successfully. You can now sign in with your new password.</p>
+      <button onclick="closeForgotPassword();showLoginAfterReset()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff;border:none;border-radius:5px;font-family:var(--sans);font-size:.85rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em">Sign In Now →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard" style="display:none;flex-direction:column;height:100%">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button>
+      <div class="tb-divider"></div>
+      <span class="tb-role" id="tbRole">Herbalist</span>
+    </div>
+    <div class="tb-right">
+      <div class="tb-notif" onclick="showToast('🔔 2 new assessments received.')">🔔<span class="tb-notif-badge">2</span></div>
+      <span class="tb-hname" id="tbName">Dr. Amara Osei</span>
+      <div class="tb-avatar" id="tbAvatar">A</div>
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:.7rem" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Dashboard</div>
+        <div class="nav-item active" onclick="showPanel('overview')"><span class="nav-icon">📊</span>Overview<span class="nav-badge" id="nbNew">2</span></div>
+        <div class="nav-item" onclick="showPanel('clients')"><span class="nav-icon">👥</span>Clients<span class="nav-badge green" id="nbClients">4</span></div>
+        <div class="nav-item" onclick="showPanel('messages')"><span class="nav-icon">💬</span>Messages<span class="nav-badge" id="nbMessages" style="display:none">0</span></div>
+        <div class="nav-item" onclick="showPanel('calendar')"><span class="nav-icon">📅</span>Appointments</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tools</div>
+        <div class="nav-item" onclick="showPanel('herbdb')"><span class="nav-icon">🌿</span>Herb Reference</div>
+        <div class="nav-item" onclick="showPanel('protocols')"><span class="nav-icon">📋</span>Protocol Library</div>
+        <div class="nav-item" onclick="showPanel('interactions')"><span class="nav-icon">⚠️</span>Interaction Checker</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Resources</div>
+        <div class="nav-item" onclick="window.location.href='client.html'"><span class="nav-icon">📝</span>Client Assessment Form</div>
+        <div class="nav-item" onclick="showPanel('settings')"><span class="nav-icon">⚙️</span>Settings</div>
+        <div class="nav-item" onclick="window.location.href='admin.html'" style="margin-top:.4rem;border-top:1px solid rgba(255,255,255,.07);padding-top:.8rem"><span class="nav-icon">🛡️</span>System Admin</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-herb"><strong id="sbName">Dr. Amara Osei</strong><span id="sbSpecialty">African Botanicals · TCM</span></div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content" id="contentArea">
+
+      <!-- ══ OVERVIEW PANEL ══ -->
+      <div class="content-panel active" id="panel-overview">
+        <div class="panel-header">
+          <div><div class="panel-title">Good morning, <em id="greetName">Dr. Osei</em> 🌿</div><div class="panel-sub" id="greetDate"></div></div>
+          <div class="panel-actions"><button class="btn btn-ghost" onclick="refreshDashboard()">🔄 Refresh</button><button onclick="window.location.href='client.html'" class="btn btn-ghost">+ New Assessment Link</button><button class="btn btn-primary" onclick="showPanel('clients')">View All Clients →</button></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card teal"><div class="stat-label">New Assessments</div><div class="stat-value" id="statNew">2</div><div class="stat-sub">Awaiting review</div></div>
+          <div class="stat-card saffron"><div class="stat-label">Total Clients</div><div class="stat-value" id="statTotal">4</div><div class="stat-sub">Active this month</div></div>
+          <div class="stat-card green"><div class="stat-label">Protocols Sent</div><div class="stat-value">7</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card amber"><div class="stat-label">Appointments</div><div class="stat-value">3</div><div class="stat-sub">Next 7 days</div></div>
+        </div>
+        <div class="table-wrap">
+          <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:.8rem">Recent Assessments — Awaiting Review</div>
+          <div id="recentTable"></div>
+        </div>
+      </div>
+
+      <!-- ══ CLIENTS PANEL ══ -->
+      <div class="content-panel" id="panel-clients">
+        <div class="panel-header">
+          <div><div class="panel-title">Client <em>Assessments</em></div><div class="panel-sub">All submitted pre-consultation forms</div></div>
+          <div class="panel-actions"><button onclick="window.location.href='client.html'" class="btn btn-saffron">📋 Share Assessment Form</button></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <input class="search-input" type="text" placeholder="🔍 Search clients…" oninput="filterClients(this.value)"/>
+            <div style="display:flex;gap:.5rem">
+              <select class="filter-select" onchange="filterByStatus(this.value)"><option value="">All Status</option><option value="new">New</option><option value="reviewed">Reviewed</option><option value="pending">Pending</option></select>
+              <select class="filter-select" onchange="filterByUrgency(this.value)"><option value="">All Urgency</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+            </div>
+          </div>
+          <table class="data-table" id="clientsTable">
+            <thead><tr><th>Client</th><th>Submitted</th><th>Primary Complaint</th><th>Severity</th><th>Urgency</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="clientsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ CLIENT DETAIL PANEL ══ -->
+      <div class="content-panel" id="panel-clientdetail">
+        <div class="client-detail" id="clientDetailBody"></div>
+      </div>
+
+      <!-- ══ HERB DB PANEL ══ -->
+      <div class="content-panel" id="panel-herbdb">
+        <div class="panel-header"><div><div class="panel-title">Herb <em>Reference</em></div><div class="panel-sub">Complete botanical database with clinical notes</div></div></div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><input class="search-input" type="text" placeholder="🔍 Search herbs…" oninput="filterHerbs(this.value)"/></div>
+          <div id="herbDbGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem"></div>
+        </div>
+      </div>
+
+      <!-- ══ PROTOCOL LIBRARY ══ -->
+      <div class="content-panel" id="panel-protocols">
+        <div class="panel-header">
+          <div><div class="panel-title">Protocol <em>Library</em></div><div class="panel-sub">Saved templates and custom protocols</div></div>
+          <div style="display:flex;gap:.6rem">
+            <input type="text" id="protocolSearch" placeholder="Search protocols…" oninput="filterProtocols(this.value)"
+              style="padding:7px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.8rem;font-family:var(--sans);outline:none;width:180px;background:var(--surface-alt)"/>
+            <button class="btn btn-primary" onclick="openNewProtocol()">+ New Protocol</button>
+          </div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:1.4rem 1.8rem" id="protocolLibrary"></div>
+
+        <!-- Protocol Builder Drawer -->
+        <div id="protocolBuilderOverlay" style="display:none;position:absolute;inset:0;background:rgba(7,30,28,.45);z-index:800;backdrop-filter:blur(3px)"></div>
+        <div id="protocolBuilderDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:460px;background:var(--surface);border-left:1.5px solid var(--border);z-index:801;display:none;flex-direction:column;box-shadow:-12px 0 40px rgba(7,30,28,.18);overflow:hidden">
+          <div style="padding:1.2rem 1.5rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+            <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--text-dark)" id="pbTitle">New Protocol</div>
+            <button onclick="closeProtocolBuilder()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-soft)">✕</button>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:1.2rem 1.5rem">
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Protocol Name *</label>
+              <input type="text" id="pb-name" placeholder="e.g. Anxiety & Stress Support" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt)"/></div>
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Category</label>
+              <select id="pb-cat" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt)">
+                <option>Anxiety & Stress</option><option>Digestive</option><option>Hormonal</option><option>Immune</option><option>Liver & Detox</option><option>Sleep</option><option>Inflammation</option><option>Cardiovascular</option><option>Respiratory</option><option>Custom</option>
+              </select></div>
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Duration</label>
+              <input type="text" id="pb-duration" placeholder="e.g. 8 weeks" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt)"/></div>
+            <div style="margin-bottom:.9rem">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+                <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong)">Herbs & Dosages</label>
+                <button onclick="addProtocolHerbRow()" style="font-size:.72rem;padding:4px 10px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:5px;cursor:pointer;color:var(--teal-deep);font-weight:700;font-family:var(--sans)">+ Add Herb</button>
+              </div>
+              <div id="pbHerbRows"></div>
+            </div>
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Dietary Advice</label>
+              <textarea id="pb-diet" rows="2" placeholder="e.g. Avoid caffeine, increase leafy greens…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt);resize:vertical"></textarea></div>
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Lifestyle Notes</label>
+              <textarea id="pb-lifestyle" rows="2" placeholder="e.g. 30 min walk daily, avoid screen before bed…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt);resize:vertical"></textarea></div>
+            <div style="margin-bottom:.9rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Cautions / Contraindications</label>
+              <textarea id="pb-caution" rows="2" placeholder="e.g. Avoid in pregnancy, may interact with warfarin…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.87rem;outline:none;background:var(--surface-alt);resize:vertical"></textarea></div>
+          </div>
+          <div style="padding:1rem 1.5rem;border-top:1.5px solid var(--border);display:flex;gap:.7rem;flex-shrink:0">
+            <button onclick="closeProtocolBuilder()" class="btn btn-ghost" style="flex:0 0 auto">Cancel</button>
+            <button onclick="saveProtocol()" class="btn btn-primary" style="flex:1;justify-content:center">💾 Save Protocol</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ INTERACTION CHECKER ══ -->
+      <div class="content-panel" id="panel-interactions">
+        <div class="panel-header"><div><div class="panel-title">Interaction <em>Checker</em></div><div class="panel-sub">Check herb-drug and herb-herb interactions</div></div></div>
+        <div style="padding:1.4rem 1.8rem;max-width:640px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.35rem">Herb</label>
+            <select id="intHerb" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface-alt)" onchange="checkInteraction()">
+              <option value="">Select herb…</option>
+            </select></div>
+            <div><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.35rem">Medication / Substance</label>
+            <input id="intDrug" type="text" placeholder="e.g. warfarin, SSRI, alcohol…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface-alt)" oninput="checkInteraction()"/>
+            </div>
+          </div>
+          <div id="intResult"></div>
+        </div>
+      </div>
+
+      <!-- ══ MESSAGES & NOTES ══ -->
+      <div class="content-panel" id="panel-messages">
+        <div class="panel-header">
+          <div><div class="panel-title">Messages <em>&amp; Notes</em></div><div class="panel-sub">Client communications and internal clinical notes</div></div>
+          <div style="display:flex;gap:.6rem">
+            <button class="btn btn-ghost" onclick="refreshMessages()">🔄 Refresh</button>
+            <button class="btn btn-primary" onclick="openNewMessage()">+ New Message</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 130px);overflow:hidden">
+
+          <!-- LEFT: Thread list -->
+          <div style="border-right:1.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden">
+            <div style="padding:.7rem .9rem;border-bottom:1px solid var(--border);flex-shrink:0">
+              <input type="text" placeholder="Search clients…" oninput="filterMessageThreads(this.value)"
+                style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:.8rem;font-family:var(--sans);outline:none;background:var(--surface-alt)"/>
+            </div>
+            <div style="flex:1;overflow-y:auto" id="messageThreadList">
+              <div style="padding:2rem 1rem;text-align:center;color:var(--text-light);font-size:.82rem">Loading…</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Active thread -->
+          <div style="display:flex;flex-direction:column;overflow:hidden" id="messagePane">
+
+            <!-- Empty state -->
+            <div id="msgEmptyState" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-light);gap:.7rem">
+              <div style="font-size:3rem">💬</div>
+              <div style="font-size:.9rem;font-weight:700;color:var(--text-soft)">Select a client to view messages</div>
+              <div style="font-size:.8rem">Or start a new conversation</div>
+              <button class="btn btn-primary" style="margin-top:.3rem" onclick="openNewMessage()">+ New Message</button>
+            </div>
+
+            <!-- Thread view (hidden until client selected) -->
+            <div id="msgThreadView" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+
+              <!-- Thread header -->
+              <div id="msgThreadHeader" style="padding:.9rem 1.2rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.8rem;flex-shrink:0;background:var(--surface)">
+                <div id="msgClientAvatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.9rem;flex-shrink:0">?</div>
+                <div style="flex:1">
+                  <div id="msgClientName" style="font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--text-dark)"></div>
+                  <div id="msgClientMeta" style="font-size:.72rem;color:var(--text-soft)"></div>
+                </div>
+                <div style="display:flex;gap:.5rem">
+                  <button class="btn btn-ghost btn-sm" onclick="openInternalNoteModal()" title="Add internal note">📋 Internal Note</button>
+                  <button class="btn btn-ghost btn-sm" onclick="openClientFromMessages()" title="Open client file">👤 Client File</button>
+                </div>
+              </div>
+
+              <!-- Messages scroll area -->
+              <div id="msgScrollArea" style="flex:1;overflow-y:auto;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem;background:var(--surface-alt)"></div>
+
+              <!-- Tab bar: Client Messages | Internal Notes -->
+              <div style="border-top:1.5px solid var(--border);border-bottom:1px solid var(--border);display:flex;background:var(--surface);flex-shrink:0">
+                <button id="msgTabClient" onclick="switchMsgTab('client')"
+                  style="flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:var(--surface-teal);color:var(--teal-deep);border-bottom:2.5px solid var(--teal-mid)">
+                  💬 Client Message
+                </button>
+                <button id="msgTabNote" onclick="switchMsgTab('note')"
+                  style="flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:transparent;color:var(--text-soft);border-bottom:2.5px solid transparent">
+                  📋 Internal Note
+                </button>
+              </div>
+
+              <!-- Compose area -->
+              <div style="padding:.85rem 1.2rem;background:var(--surface);flex-shrink:0">
+                <div id="msgComposeClient">
+                  <textarea id="msgComposeText" rows="2" placeholder="Type a message to your client…"
+                    style="width:100%;padding:9px 11px;border:1.5px solid var(--border-mid);border-radius:8px;font-family:var(--sans);font-size:.84rem;outline:none;background:var(--surface-alt);resize:none;line-height:1.55;color:var(--text-dark)"
+                    onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))sendMessage()"></textarea>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem">
+                    <span style="font-size:.7rem;color:var(--text-light)">Ctrl+Enter to send</span>
+                    <button class="btn btn-primary" style="padding:7px 18px;font-size:.8rem" onclick="sendMessage()">Send →</button>
+                  </div>
+                </div>
+                <div id="msgComposeNote" style="display:none">
+                  <textarea id="msgNoteText" rows="2" placeholder="Internal note — not visible to client…"
+                    style="width:100%;padding:9px 11px;border:1.5px solid var(--saffron-light);border-radius:8px;font-family:var(--sans);font-size:.84rem;outline:none;background:var(--saffron-pale);resize:none;line-height:1.55;color:var(--text-dark)"
+                    onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))sendNote()"></textarea>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem">
+                    <span style="font-size:.7rem;color:var(--spice)">🔒 Only visible to practitioners</span>
+                    <button class="btn btn-saffron" style="padding:7px 18px;font-size:.8rem" onclick="sendNote()">Save Note</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CALENDAR ══ -->
+      <div class="content-panel" id="panel-calendar">
+        <div class="panel-header"><div><div class="panel-title">Appointments <em>Calendar</em></div><div class="panel-sub">Upcoming client consultations</div></div></div>
+        <div style="padding:1.4rem 1.8rem" id="calendarView"></div>
+      </div>
+
+      <!-- ══ SETTINGS ══ -->
+      <div class="content-panel" id="panel-settings">
+        <div class="panel-header"><div><div class="panel-title">Practice <em>Settings</em></div></div></div>
+        <div style="padding:1.4rem 1.8rem;max-width:540px">
+          <div class="detail-card" style="margin-bottom:1rem"><div class="dc-head"><span class="dc-title">👤 Practitioner Profile</span></div><div class="dc-body">
+            <div style="margin-bottom:.8rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Display Name</label><input id="settName" type="text" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none"/></div>
+            <div style="margin-bottom:.8rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Specialty</label><input id="settSpec" type="text" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none"/></div>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+          </div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-layout -->
+</div><!-- /dashboard -->
+
+<script>
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const HERBALISTS={
+  amara:{name:'Dr. Amara Osei',initial:'A',specialty:'African Botanicals · Ayurveda',greet:'Dr. Osei',pw:'herb2025'},
+  liang:{name:'Liang Wei PhD',initial:'L',specialty:'TCM · Phytochemistry',greet:'Dr. Wei',pw:'herb2025'},
+  sofia:{name:'Sofia Navarro',initial:'S',specialty:'Western Phytotherapy',greet:'Sofia',pw:'herb2025'},
+  priya:{name:'Dr. Priya Sharma',initial:'P',specialty:'Ayurveda · Panchakarma',greet:'Dr. Sharma',pw:'herb2025'},
+};
+
+const herbDB=[
+  {id:'ashwagandha',name:'Ashwagandha',latin:'Withania somnifera',emoji:'🌱',trad:'Ayurveda',forms:['capsule','tincture'],syms:['anxiety','fatigue','stress','memory','mood','immunity','hormones'],notSafe:['pregnancy'],prep:'300–600mg extract (5% withanolides) daily. With fat for absorption.',caution:'Avoid in pregnancy, thyroid disorders. May interact with thyroid meds, immunosuppressants, sedatives.'},
+  {id:'chamomile',name:'Chamomile',latin:'Matricaria chamomilla',emoji:'🌼',trad:'Western',forms:['tea','tincture','oil'],syms:['anxiety','insomnia','digestion','stress','skin'],notSafe:[],prep:'2 tsp dried flowers steeped 10 min. 2–3 cups daily.',caution:'Safe. Rare allergy in Asteraceae family.'},
+  {id:'reishi',name:'Reishi Mushroom',latin:'Ganoderma lucidum',emoji:'🍄',trad:'TCM',forms:['tincture','tea','capsule'],syms:['immunity','stress','fatigue','insomnia','mood','liver'],notSafe:[],prep:'Dual-extract 1–2g daily. 4–8 weeks for full effect.',caution:'May potentiate blood thinners and immunosuppressants. Stop 2 weeks pre-surgery.'},
+  {id:'valerian',name:'Valerian Root',latin:'Valeriana officinalis',emoji:'🟤',trad:'Western',forms:['tincture','capsule','tea'],syms:['insomnia','anxiety','stress'],notSafe:['pregnancy','children'],prep:'400–900mg extract 30 min before bed.',caution:'Avoid with alcohol, sedatives. Not for under 12s. Do not drive after use.'},
+  {id:'turmeric',name:'Turmeric',latin:'Curcuma longa',emoji:'🟡',trad:'Ayurveda',forms:['capsule','tea','oil'],syms:['inflammation','joints','digestion','skin','liver','mood'],notSafe:[],prep:'500mg curcumin + piperine 2–3x daily.',caution:'Interacts with warfarin. Avoid high doses in gallstone disease.'},
+  {id:'rhodiola',name:'Rhodiola',latin:'Rhodiola rosea',emoji:'🔴',trad:'Western',forms:['capsule','tincture'],syms:['fatigue','stress','memory','mood','anxiety'],notSafe:['pregnancy'],prep:'200–400mg standardised (3% rosavins). Morning, empty stomach.',caution:'Avoid in bipolar disorder. Stimulant effect. Cycle 6 weeks on / 2 off.'},
+  {id:'elderberry',name:'Elderberry',latin:'Sambucus nigra',emoji:'🫐',trad:'Western',forms:['tea','tincture','capsule'],syms:['immunity','respiratory'],notSafe:[],prep:'1 tbsp syrup daily (prevention). Short-term use only (max 14 days acute).',caution:'Raw berries toxic — use processed only. Caution with autoimmune conditions.'},
+  {id:'stjohnswort',name:"St. John's Wort",latin:'Hypericum perforatum',emoji:'☀️',trad:'Western',forms:['tincture','capsule','oil'],syms:['mood','anxiety','skin'],notSafe:['pregnancy','medication'],prep:'300mg extract (0.3% hypericin) 3x daily. 4–6 week onset.',caution:'MAJOR: Reduces efficacy of oral contraceptives, antiretrovirals, anticoagulants. Always check meds first.'},
+  {id:'ginger',name:'Ginger',latin:'Zingiber officinale',emoji:'🫚',trad:'Ayurveda',forms:['tea','capsule','tincture'],syms:['digestion','inflammation','joints','immunity','circulation'],notSafe:[],prep:'250–500mg dried powder 3x daily with food.',caution:'Mild blood thinner. Caution pre-surgery. >5g/day may cause GI upset.'},
+  {id:'shatavari',name:'Shatavari',latin:'Asparagus racemosus',emoji:'🌸',trad:'Ayurveda',forms:['capsule','tea'],syms:['hormones','fatigue','immunity','digestion'],notSafe:[],prep:'500mg–1g twice daily in warm milk with ghee. Long-term use (3+ months).',caution:'Caution in oestrogen-sensitive conditions (ER+ breast cancer).'},
+  {id:'astragalus',name:'Astragalus',latin:'Astragalus membranaceus',emoji:'🌾',trad:'TCM',forms:['tea','tincture','capsule'],syms:['immunity','fatigue','stress','circulation'],notSafe:['autoimmune'],prep:'4–7g root decoction daily or 2–4ml tincture 2x daily.',caution:'Avoid in active autoimmune flares. May interact with immunosuppressants.'},
+  {id:'moringa',name:'Moringa',latin:'Moringa oleifera',emoji:'🌳',trad:'African',forms:['tea','capsule'],syms:['fatigue','immunity','inflammation','weight','circulation'],notSafe:[],prep:'1–2 tsp leaf powder daily. Start gradually.',caution:'Avoid root extract in pregnancy. Leaf powder generally safe.'},
+  {id:'milkthistle',name:'Milk Thistle',latin:'Silybum marianum',emoji:'🟣',trad:'Western',forms:['capsule','tincture'],syms:['liver','digestion','skin','inflammation'],notSafe:[],prep:'140–210mg silymarin 3x daily with meals.',caution:'Mild oestrogenic effects. Caution in hormone-sensitive conditions.'},
+  {id:'brahmi',name:'Brahmi / Bacopa',latin:'Bacopa monnieri',emoji:'🧠',trad:'Ayurveda',forms:['capsule','oil','tincture'],syms:['memory','anxiety','stress','mood'],notSafe:[],prep:'300mg standardised (20% bacosides) daily with food. 8–12 weeks.',caution:'May slow heart rate. Nausea if taken without food.'},
+  {id:'rooibos',name:'Rooibos',latin:'Aspalathus linearis',emoji:'🫖',trad:'African',forms:['tea'],syms:['immunity','stress','skin','inflammation','anxiety'],notSafe:[],prep:'1 tsp steeped 5–7 min. 2–6 cups daily. Caffeine-free.',caution:'No known contraindications. Very safe for all populations.'},
+  {id:'echinacea',name:'Echinacea',latin:'Echinacea purpurea',emoji:'💜',trad:'Western',forms:['tincture','capsule','tea'],syms:['immunity','respiratory'],notSafe:['autoimmune','medication'],prep:'2–4ml tincture 3–4x daily. Short-term only (max 14 days).',caution:'Avoid autoimmune conditions. Interacts with immunosuppressants.'},
+];
+
+
+let ALL_CLIENTS=[];
+let currentHerbalist=null;
+let currentClientRef=null;
+let protocolLines={};
+
+function logout(){
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('loginGate').style.display='flex';
+  // Clear sensitive fields
+  document.getElementById('loginUsername').value='';
+  document.getElementById('loginPw').value='';
+  document.getElementById('userPreviewCard').style.display='none';
+  selectedLoginUser=null;
+  currentHerbalist=null;
+}
+
+// ══════════════════════════════════════
+// LOGIN — USERNAME BASED + ADMIN LINKED
+// ══════════════════════════════════════
+let loginHerbalistList = []; // loaded from storage
+let selectedLoginUser = null; // the matched user object
+let suggestFocusIdx = -1;
+
+// Built-in accounts (fallback if storage empty)
+const BUILT_IN_HERBALISTS = [
+  {id:'amara',        name:'Dr. Amara Osei',    username:'amara',        specialty:'African Botanicals · Ayurveda', tradition:'African / Ayurveda', pw:'herb2025', status:'active'},
+  {id:'liang',        name:'Liang Wei PhD',     username:'liang',        specialty:'TCM · Phytochemistry',          tradition:'TCM',                pw:'herb2025', status:'active'},
+  {id:'sofia',        name:'Sofia Navarro',     username:'sofia',        specialty:'Western Phytotherapy',           tradition:'Western',            pw:'herb2025', status:'active'},
+  {id:'priya',        name:'Dr. Priya Sharma',  username:'priya',        specialty:'Ayurveda · Panchakarma',        tradition:'Ayurveda',           pw:'herb2025', status:'active'},
+  {id:'miller.jerome',name:'Jerome Miller',     username:'miller.jerome',specialty:'Herbal Medicine',                tradition:'Western',            pw:'herb2025', status:'active'},
+];
+
+// Merge built-ins with storage so both always work
+async function loadHerbalistList() {
+  let storageList = [];
+  try {
+    const res = await window.storage.get('tfb_herbalists', true);
+    if (res && res.value) {
+      const parsed = JSON.parse(res.value);
+      if (Array.isArray(parsed)) storageList = parsed;
+    }
+  } catch(e) {}
+  if (!storageList.length) {
+    try {
+      const v = localStorage.getItem('tfb_herbalists');
+      if (v) {
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed)) storageList = parsed;
+      }
+    } catch(e) {}
+  }
+  const merged = [...BUILT_IN_HERBALISTS];
+  for (const s of storageList) {
+    const idx = merged.findIndex(b => b.id === s.id || b.username === s.username);
+    if (idx >= 0) merged[idx] = s;
+    else merged.push(s);
+  }
+  return merged;
+}
+
+(async function initLogin(){
+  loginHerbalistList = await loadHerbalistList();
+})();
+
+function onUsernameInput(val) {
+  const q = val.trim().toLowerCase();
+  selectedLoginUser = null;
+  hidePreviewCard();
+  if (!q) { closeSuggestions(); return; }
+
+  // Find exact match first (username, id, email, or name)
+  const exact = loginHerbalistList.find(h =>
+    h.username?.toLowerCase() === q ||
+    h.id?.toLowerCase()       === q ||
+    h.email?.toLowerCase()    === q ||
+    h.name?.toLowerCase()     === q
+  );
+  if (exact) {
+    selectedLoginUser = exact;
+    showPreviewCard(exact);
+  }
+
+  // Filter for suggestions
+  const matches = loginHerbalistList.filter(h =>
+    h.username?.toLowerCase().includes(q) ||
+    h.id?.toLowerCase().includes(q) ||
+    h.name?.toLowerCase().includes(q) ||
+    h.email?.toLowerCase().includes(q)
+  );
+
+  if (!matches.length) { closeSuggestions(); return; }
+  showSuggestions(matches);
+}
+
+function showSuggestions(list) {
+  const box = document.getElementById('loginSuggestions');
+  suggestFocusIdx = -1;
+  box.innerHTML = list.map((h, i) => `
+    <div class="suggest-item${h.status === 'suspended' ? ' suggest-suspended' : ''}"
+         data-idx="${i}"
+         onmousedown="selectSuggest('${h.id}')"
+         onmouseover="highlightSuggest(${i})">
+      <div class="suggest-avatar">${h.name.charAt(0)}</div>
+      <div>
+        <strong>${h.name}</strong>
+        <span class="suggest-meta">${h.username || h.email || ''} · ${h.specialty || h.tradition || ''}</span>
+      </div>
+      ${h.status === 'suspended' ? '<span style="margin-left:auto;font-size:.62rem;color:var(--spice);font-weight:700">Suspended</span>' : ''}
+    </div>`).join('');
+  box.style.display = 'block';
+}
+
+function closeSuggestions() {
+  document.getElementById('loginSuggestions').style.display = 'none';
+}
+
+function highlightSuggest(idx) {
+  suggestFocusIdx = idx;
+  document.querySelectorAll('.suggest-item').forEach((el, i) => {
+    el.classList.toggle('focused', i === idx);
+  });
+}
+
+function selectSuggest(id) {
+  const user = loginHerbalistList.find(h => h.id === id);
+  if (!user) return;
+  selectedLoginUser = user;
+  document.getElementById('loginUsername').value = user.username || user.email || user.name;
+  closeSuggestions();
+  showPreviewCard(user);
+  document.getElementById('loginPw').focus();
+}
+
+function showPreviewCard(user) {
+  const card = document.getElementById('userPreviewCard');
+  document.getElementById('previewAvatar').textContent = user.name.charAt(0);
+  document.getElementById('previewName').textContent = user.name;
+  document.getElementById('previewSpecialty').textContent = user.specialty || user.tradition || 'Herbalist';
+  const statusEl = document.getElementById('previewStatus');
+  if (user.status === 'active') {
+    statusEl.textContent = '● Active';
+    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border)';
+  } else if (user.status === 'suspended') {
+    statusEl.textContent = '● Suspended';
+    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--red-pale);color:var(--red);border:1px solid var(--red-border)';
+  } else {
+    statusEl.textContent = user.status;
+    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--surface-alt);color:var(--text-light);border:1px solid var(--border)';
+  }
+  card.style.display = 'flex';
+}
+
+function hidePreviewCard() {
+  document.getElementById('userPreviewCard').style.display = 'none';
+}
+
+// Keyboard nav on suggestions
+document.addEventListener('keydown', function(e) {
+  const box = document.getElementById('loginSuggestions');
+  if (box.style.display === 'none') return;
+  const items = box.querySelectorAll('.suggest-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') { e.preventDefault(); suggestFocusIdx = Math.min(suggestFocusIdx + 1, items.length - 1); highlightSuggest(suggestFocusIdx); }
+  if (e.key === 'ArrowUp')   { e.preventDefault(); suggestFocusIdx = Math.max(suggestFocusIdx - 1, 0); highlightSuggest(suggestFocusIdx); }
+  if (e.key === 'Enter' && suggestFocusIdx >= 0) { e.preventDefault(); const focusedId = items[suggestFocusIdx]?.onmousedown?.toString().match(/'([^']+)'/)?.[1]; if(focusedId) selectSuggest(focusedId); }
+  if (e.key === 'Escape') closeSuggestions();
+});
+
+function togglePwVis() {
+  const inp = document.getElementById('loginPw');
+  const btn = document.getElementById('pwToggleBtn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  document.getElementById('loginErrorMsg').textContent = msg;
+  el.style.display = 'flex';
+  document.getElementById('loginUsername').style.borderColor = 'var(--spice)';
+  document.getElementById('loginPw').style.borderColor = 'var(--spice)';
+  setTimeout(() => {
+    el.style.display = 'none';
+    document.getElementById('loginUsername').style.borderColor = '';
+    document.getElementById('loginPw').style.borderColor = '';
+  }, 4000);
+}
+
+// ══════════════════════════════════════
+// FORGOT PASSWORD — SELF-SERVICE RESET
+// ══════════════════════════════════════
+let fpUser = null;       // matched herbalist object
+let fpResetCode = null;  // generated 6-digit code
+let fpResendTimerInterval = null;
+
+function openForgotPassword() {
+  fpUser = null; fpResetCode = null;
+  clearInterval(fpResendTimerInterval);
+  // Reset all steps
+  ['fpStep1','fpStep2','fpStep3','fpSuccess'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === 'fpStep1' ? 'block' : 'none';
+  });
+  document.getElementById('fpEmail').value = '';
+  document.getElementById('fpCode').value = '';
+  document.getElementById('fpNewPw').value = '';
+  document.getElementById('fpConfirmPw').value = '';
+  document.getElementById('fpUserFound').style.display = 'none';
+  document.getElementById('fpEmailError').style.display = 'none';
+  document.getElementById('fpCodeError').style.display = 'none';
+  document.getElementById('fpPwError').style.display = 'none';
+  document.getElementById('fpStrengthBar').style.width = '0%';
+  document.getElementById('fpStrengthLabel').textContent = '';
+  fpSetStep(1);
+  document.getElementById('forgotModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('fpEmail').focus(), 300);
+}
+
+function closeForgotPassword() {
+  document.getElementById('forgotModal').style.display = 'none';
+  clearInterval(fpResendTimerInterval);
+}
+
+function fpSetStep(n) {
+  document.querySelectorAll('.fp-step').forEach(el => {
+    const sn = parseInt(el.dataset.step);
+    el.style.color = sn === n ? 'var(--teal-mid)' : 'var(--text-light)';
+    el.style.borderBottomColor = sn === n ? 'var(--teal-mid)' : 'transparent';
+    el.style.fontWeight = sn === n ? '700' : '600';
+  });
+  document.getElementById('fpModalTitle').textContent = ['','Reset Your Password','Enter Verification Code','Set New Password',''][n] || 'Reset Password';
+  document.getElementById('fpModalSub').textContent = ['','Enter your registered email address','Check your email for the reset code','Choose a strong new password',''][n] || '';
+}
+
+function fpBack(toStep) {
+  const steps = {1: 'fpStep1', 2: 'fpStep2', 3: 'fpStep3'};
+  Object.values(steps).forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+  document.getElementById(steps[toStep]).style.display = 'block';
+  fpSetStep(toStep);
+}
+
+// STEP 1 — look up email
+async function sendResetCode() {
+  const email = document.getElementById('fpEmail').value.trim().toLowerCase();
+  const errEl = document.getElementById('fpEmailError');
+  errEl.style.display = 'none';
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    document.getElementById('fpEmail').focus();
+    return;
+  }
+
+  const btn = document.getElementById('fpSendBtn');
+  btn.textContent = 'Searching…'; btn.disabled = true;
+
+  // Search in storage first, then built-ins
+  let match = null;
+  try {
+    const res = await window.storage.get('tfb_herbalists', true);
+    if (res && res.value) {
+      match = JSON.parse(res.value).find(h => h.email?.toLowerCase() === email);
+    }
+  } catch(e) {}
+  if (!match) match = BUILT_IN_HERBALISTS.find(h => h.email?.toLowerCase() === email);
+
+  btn.textContent = 'Send Reset Code →'; btn.disabled = false;
+
+  if (!match) {
+    errEl.textContent = 'No practitioner account found with that email address. Check the spelling or contact your administrator.';
+    errEl.style.display = 'block';
+    document.getElementById('fpUserFound').style.display = 'none';
+    return;
+  }
+
+  if (match.status === 'suspended') {
+    errEl.textContent = 'This account is suspended. Contact your System Administrator to reset your password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Show found user
+  fpUser = match;
+  document.getElementById('fpFoundAvatar').textContent = match.name.charAt(0);
+  document.getElementById('fpFoundName').textContent = match.name;
+  document.getElementById('fpFoundSpec').textContent = match.specialty || match.tradition || 'Practitioner';
+  document.getElementById('fpUserFound').style.display = 'flex';
+  errEl.style.display = 'none';
+
+  // Generate 6-digit code
+  fpResetCode = String(Math.floor(100000 + Math.random() * 900000));
+
+  // Save reset request to storage (so admin can see it)
+  try {
+    await window.storage.set('tfb_reset_' + match.id, JSON.stringify({
+      code: fpResetCode,
+      email: email,
+      name: match.name,
+      requestedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 15 * 60000).toISOString(), // 15 min
+      used: false
+    }), true);
+  } catch(e) {}
+
+  // Move to step 2
+  document.getElementById('fpStep1').style.display = 'none';
+  document.getElementById('fpStep2').style.display = 'block';
+  fpSetStep(2);
+
+  // Show code (in production this would be emailed — demo shows it on screen)
+  document.getElementById('fpCodeDisplay').textContent = fpResetCode;
+
+  // Populate step 3 user card
+  document.getElementById('fpResetAvatar').textContent = match.name.charAt(0);
+  document.getElementById('fpResetName').textContent = match.name;
+  document.getElementById('fpResetEmail').textContent = email;
+
+  // Start resend cooldown timer (60s)
+  startResendTimer(60);
+  setTimeout(() => document.getElementById('fpCode').focus(), 200);
+}
+
+function startResendTimer(seconds) {
+  const btn = document.getElementById('fpResendBtn');
+  const timer = document.getElementById('fpResendTimer');
+  btn.style.display = 'none';
+  timer.style.display = 'inline';
+  let remaining = seconds;
+  timer.textContent = `Resend available in ${remaining}s`;
+  clearInterval(fpResendTimerInterval);
+  fpResendTimerInterval = setInterval(() => {
+    remaining--;
+    timer.textContent = `Resend available in ${remaining}s`;
+    if (remaining <= 0) {
+      clearInterval(fpResendTimerInterval);
+      timer.style.display = 'none';
+      btn.style.display = 'inline';
+    }
+  }, 1000);
+}
+
+// STEP 2 — verify code
+function verifyCode() {
+  const entered = document.getElementById('fpCode').value.trim();
+  const errEl = document.getElementById('fpCodeError');
+  errEl.style.display = 'none';
+
+  if (!entered || entered.length !== 6) {
+    errEl.textContent = 'Please enter the 6-digit code.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (entered !== fpResetCode) {
+    errEl.textContent = 'Incorrect code. Please check and try again, or request a new code.';
+    errEl.style.display = 'block';
+    document.getElementById('fpCode').value = '';
+    document.getElementById('fpCode').focus();
+    return;
+  }
+
+  // Move to step 3
+  document.getElementById('fpStep2').style.display = 'none';
+  document.getElementById('fpStep3').style.display = 'block';
+  fpSetStep(3);
+  setTimeout(() => document.getElementById('fpNewPw').focus(), 200);
+}
+
+// STEP 3 — password strength + set
+function checkPwStrength(pw) {
+  const bar = document.getElementById('fpStrengthBar');
+  const lbl = document.getElementById('fpStrengthLabel');
+  if (!pw) { bar.style.width = '0%'; lbl.textContent = ''; return; }
+  let score = 0;
+  if (pw.length >= 8)  score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const levels = [
+    {pct:'20%', color:'var(--spice)',          label:'Very Weak'},
+    {pct:'40%', color:'var(--spice-light)',     label:'Weak'},
+    {pct:'60%', color:'var(--saffron-bright)',  label:'Fair'},
+    {pct:'80%', color:'var(--teal-bright)',     label:'Strong'},
+    {pct:'100%',color:'var(--green)',           label:'Very Strong'},
+  ];
+  const l = levels[Math.min(score, 4)];
+  bar.style.width = l.pct;
+  bar.style.background = l.color;
+  lbl.style.color = l.color;
+  lbl.textContent = l.label;
+}
+
+function toggleFpPw(inputId, btnId) {
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+async function setNewPassword() {
+  const newPw = document.getElementById('fpNewPw').value;
+  const confirm = document.getElementById('fpConfirmPw').value;
+  const errEl = document.getElementById('fpPwError');
+  errEl.style.display = 'none';
+
+  if (!newPw || newPw.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.style.display = 'block';
+    document.getElementById('fpNewPw').focus();
+    return;
+  }
+  if (newPw !== confirm) {
+    errEl.textContent = 'Passwords do not match. Please try again.';
+    errEl.style.display = 'block';
+    document.getElementById('fpConfirmPw').value = '';
+    document.getElementById('fpConfirmPw').focus();
+    return;
+  }
+  if (!fpUser) {
+    errEl.textContent = 'Session expired. Please start over.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Update password in storage
+  try {
+    const res = await window.storage.get('tfb_herbalists', true);
+    let list = res && res.value ? JSON.parse(res.value) : BUILT_IN_HERBALISTS.map(h => ({...h}));
+    let updated = false;
+    list = list.map(h => {
+      if (h.id === fpUser.id) { updated = true; return {...h, pw: newPw, lastPasswordReset: new Date().toISOString()}; }
+      return h;
+    });
+    if (!updated) list.push({...fpUser, pw: newPw});
+    await window.storage.set('tfb_herbalists', JSON.stringify(list), true);
+    // Also update local list
+    loginHerbalistList = list;
+    // Mark reset token as used
+    await window.storage.set('tfb_reset_' + fpUser.id, JSON.stringify({used: true, usedAt: new Date().toISOString()}), true);
+  } catch(e) {
+    errEl.textContent = 'Failed to save new password. Please try again.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Show success
+  document.getElementById('fpStep3').style.display = 'none';
+  document.getElementById('fpSuccess').style.display = 'block';
+  document.getElementById('fpModalTitle').textContent = 'Password Updated!';
+  document.getElementById('fpModalSub').textContent = 'Your new password is now active';
+  clearInterval(fpResendTimerInterval);
+}
+
+function showLoginAfterReset() {
+  // Pre-fill the username so they just need to type password
+  if (fpUser) {
+    document.getElementById('loginUsername').value = fpUser.username || fpUser.email || '';
+    onUsernameInput(fpUser.username || fpUser.email || '');
+    setTimeout(() => document.getElementById('loginPw').focus(), 100);
+  }
+  showToast('✅ Password updated! Enter your new password to sign in.');
+}
+
+document.getElementById('loginPw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginUsername').addEventListener('keydown', e => { if (e.key === 'Enter') { closeSuggestions(); document.getElementById('loginPw').focus(); } });
+
+// ── AUTO-LOGIN from portal ──
+// Fires when practitioner navigated here from index.html portal
+(async function checkAutoLogin(){
+  try {
+    const raw = sessionStorage.getItem('tfb_pract_autologin');
+    if (!raw) return;
+    const token = JSON.parse(raw);
+    // Token expires after 30 seconds (prevents stale auto-logins)
+    if (!token || Date.now() - token.ts > 30000) {
+      sessionStorage.removeItem('tfb_pract_autologin');
+      return;
+    }
+    // Clear immediately so it can't be reused
+    sessionStorage.removeItem('tfb_pract_autologin');
+
+    // Verify credentials are still valid against current list
+    const freshList = await loadHerbalistList();
+    const candidate = freshList.find(h =>
+      (h.id === token.id || h.username === token.username) && h.pw === token.pw
+    ) || (token.pw === token.pw ? {
+      // Fallback: trust token if fresh list lookup fails
+      id: token.id, name: token.name, username: token.username,
+      specialty: token.specialty, tradition: token.tradition, pw: token.pw, status: 'active'
+    } : null);
+
+    if (!candidate || candidate.status === 'suspended' || candidate.status === 'inactive') return;
+
+    // Build herbalist data and boot directly into dashboard
+    const firstName = candidate.name.split(' ').find(p => p.length > 1 && !p.endsWith('.')) || candidate.name.split(' ')[0];
+    const herbalistData = {
+      name:      candidate.name,
+      initial:   candidate.name.charAt(0),
+      specialty: candidate.specialty || candidate.tradition || 'Herbalist',
+      greet:     firstName,
+      id:        candidate.id,
+      tradition: candidate.tradition || '',
+      permissions: candidate,
+    };
+
+    currentHerbalist = herbalistData;
+    document.getElementById('loginGate').style.display  = 'none';
+    document.getElementById('dashboard').style.display  = 'flex';
+    document.getElementById('tbName').textContent        = herbalistData.name;
+    document.getElementById('tbAvatar').textContent      = herbalistData.initial;
+    document.getElementById('tbRole').textContent        = herbalistData.specialty.split(' ')[0] + ' Herbalist';
+    document.getElementById('greetName').textContent     = herbalistData.greet;
+    document.getElementById('sbName').textContent        = herbalistData.name;
+    document.getElementById('sbSpecialty').textContent   = herbalistData.specialty;
+    document.getElementById('settName').value            = herbalistData.name;
+    document.getElementById('settSpec').value            = herbalistData.specialty;
+    document.getElementById('greetDate').textContent     = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+    showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
+    ALL_CLIENTS = await loadAllClients();
+    document.getElementById('statNew').textContent    = ALL_CLIENTS.filter(c => !c._reviewed).length;
+    document.getElementById('statTotal').textContent  = ALL_CLIENTS.length;
+    document.getElementById('nbNew').textContent      = ALL_CLIENTS.filter(c => !c._reviewed).length;
+    document.getElementById('nbClients').textContent  = ALL_CLIENTS.length;
+    renderRecentTable();
+    renderClientsTable(ALL_CLIENTS);
+    renderHerbDb();
+    renderProtocolLibrary(); loadProtocols();
+    await loadAllThreads();
+    await refreshMessages();
+    await loadProtocols();
+    await renderCalendar();
+    populateIntHerbs();
+    showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+  } catch(e) {
+    // Auto-login failed silently — user sees normal login screen
+    sessionStorage.removeItem('tfb_pract_autologin');
+  }
+})();
+
+async function doLogin() {
+  const usernameRaw = document.getElementById('loginUsername').value.trim();
+  const pw = document.getElementById('loginPw').value;
+
+  if (!usernameRaw) { showLoginError('Please enter your username.'); document.getElementById('loginUsername').focus(); return; }
+  if (!pw)          { showLoginError('Please enter your password.'); document.getElementById('loginPw').focus(); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+
+  // Always reload fresh merged list (built-ins + storage) so all accounts work
+  const freshList = await loadHerbalistList();
+  loginHerbalistList = freshList;
+
+  const q = usernameRaw.toLowerCase();
+  // Match by username, id, email, or full name — then check password
+  let found = freshList.find(h =>
+    (h.username?.toLowerCase() === q ||
+     h.id?.toLowerCase()       === q ||
+     h.email?.toLowerCase()    === q ||
+     h.name?.toLowerCase()     === q) && h.pw === pw
+  );
+  // Also check built-ins directly (in case storage list is empty or outdated)
+  if (!found) {
+    found = BUILT_IN_HERBALISTS.find(h =>
+      (h.username === q || h.id === q || h.name?.toLowerCase() === q) && h.pw === pw
+    );
+  }
+
+  btn.textContent = 'Sign In to Dashboard →';
+  btn.disabled = false;
+
+  if (!found) { showLoginError('Incorrect username or password. Contact your administrator.'); return; }
+  if (found.status === 'suspended') { showLoginError('This account has been suspended. Contact your system administrator.'); return; }
+  if (found.status === 'inactive')  { showLoginError('This account is inactive. Contact your system administrator.'); return; }
+
+  // Update last login in both storages
+  try {
+    const updated = freshList.map(h => h.id === found.id ? {...h, lastLogin: new Date().toISOString()} : h);
+    try { await window.storage.set('tfb_herbalists', JSON.stringify(updated), true); } catch(e) {}
+    try { localStorage.setItem('tfb_herbalists', JSON.stringify(updated)); } catch(e) {}
+  } catch(e) {}
+
+  // Build herbalistData from found record + fallback defaults
+  const herbalistData = {
+    name:      found.name,
+    initial:   found.name.charAt(0),
+    specialty: found.specialty || found.tradition || 'Herbalist',
+    greet:     found.name.split(' ').find(p => p.length > 2 && !p.includes('.')) || found.name.split(' ')[0],
+    pw:        found.pw,
+    id:        found.id,
+    tradition: found.tradition || '',
+    permissions: found,
+  };
+
+  currentHerbalist = herbalistData;
+  document.getElementById('loginGate').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'flex';
+  document.getElementById('tbName').textContent = herbalistData.name;
+  document.getElementById('tbAvatar').textContent = herbalistData.initial;
+  document.getElementById('tbRole').textContent = (herbalistData.specialty || 'Herbalist').split(' ')[0] + ' Herbalist';
+  document.getElementById('greetName').textContent = herbalistData.greet;
+  document.getElementById('sbName').textContent = herbalistData.name;
+  document.getElementById('sbSpecialty').textContent = herbalistData.specialty;
+  document.getElementById('settName').value = herbalistData.name;
+  document.getElementById('settSpec').value = herbalistData.specialty;
+  document.getElementById('greetDate').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+  showToast('🌿 Loading client assessments…');
+  ALL_CLIENTS = await loadAllClients();
+  document.getElementById('statNew').textContent = ALL_CLIENTS.filter(c => !c._reviewed).length;
+  document.getElementById('statTotal').textContent = ALL_CLIENTS.length;
+  document.getElementById('nbNew').textContent = ALL_CLIENTS.filter(c => !c._reviewed).length;
+  document.getElementById('nbClients').textContent = ALL_CLIENTS.length;
+  renderRecentTable();
+  renderClientsTable(ALL_CLIENTS);
+  renderHerbDb();
+  renderProtocolLibrary(); loadProtocols();
+  await renderCalendar();
+  populateIntHerbs();
+  showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+}
+
+// ══ NAVIGATION ══
+function showPanel(id){
+  document.querySelectorAll('.content-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id)?.classList.add('active');
+  document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`)?.classList.add('active');
+}
+
+// ══ OVERVIEW TABLE ══
+function renderRecentTable(){
+  const pending=ALL_CLIENTS.filter(c=>!c._reviewed).slice(0,5);
+  if(!pending.length){document.getElementById('recentTable').innerHTML='<p style="color:var(--text-light);font-size:.88rem;padding:1rem 0">✅ All assessments reviewed. No new submissions.</p>';return;}
+  document.getElementById('recentTable').innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Submitted</th><th>Severity</th><th>Top Symptoms</th><th>Actions</th></tr></thead><tbody>${pending.map(c=>{
+    const sev=parseInt(c.symptoms.severity)||3;
+    const syms=c.symptoms.selected.slice(0,3).join(', ');
+    return`<tr><td><span class="client-name">${c.personal.firstName} ${c.personal.lastName}</span><br/><small style="color:var(--text-light)">${c.personal.email}</small></td><td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td><td>${sevBadge(sev)}</td><td style="font-size:.78rem;color:var(--text-mid);max-width:180px">${syms||'—'}</td><td><button class="btn btn-primary" style="padding:6px 12px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Review →</button></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+// ══ CLIENTS TABLE ══
+function renderClientsTable(list){
+  const tbody=document.getElementById('clientsTbody');
+  tbody.innerHTML=list.map(c=>{
+    const sev=parseInt(c.symptoms.severity)||3;
+    const urg=sev>=4?'high':sev>=3?'medium':'low';
+    const status=c._reviewed?'reviewed':'new';
+    return`<tr>
+      <td><span class="client-name">${c.personal.firstName} ${c.personal.lastName}</span><br/><small style="color:var(--text-light);font-size:.72rem">${c.personal.email}</small></td>
+      <td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td>
+      <td style="font-size:.8rem;color:var(--text-mid);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.symptoms.primaryComplaint}">${c.symptoms.primaryComplaint?.substring(0,55)||'—'}${c.symptoms.primaryComplaint?.length>55?'…':''}</td>
+      <td>${sevBadge(sev)}</td>
+      <td><span class="urgency-${urg}">${urg.toUpperCase()}</span></td>
+      <td><span class="status-badge status-${status}"><span class="status-dot"></span>${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
+      <td><div class="row-actions"><button class="btn btn-primary" style="padding:5px 11px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Open</button></div></td>
+    </tr>`;
+  }).join('');
+}
+function filterClients(q){const f=ALL_CLIENTS.filter(c=>JSON.stringify(c.personal).toLowerCase().includes(q.toLowerCase())||c.symptoms.primaryComplaint?.toLowerCase().includes(q.toLowerCase()));renderClientsTable(f);}
+function filterByStatus(s){renderClientsTable(s?ALL_CLIENTS.filter(c=>(c._reviewed?'reviewed':'new')===s):ALL_CLIENTS);}
+function filterByUrgency(u){renderClientsTable(u?ALL_CLIENTS.filter(c=>{const s=parseInt(c.symptoms.severity)||3;const urg=s>=4?'high':s>=3?'medium':'low';return urg===u;}):ALL_CLIENTS);}
+
+// ══ CLIENT DETAIL ══
+function openClient(ref){
+  currentClientRef=ref;
+  const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
+  if(!c)return;
+  c._reviewed=true;
+  showPanel('clientdetail');
+  // Analyse herbs
+  const scored=herbDB.map(h=>{let sc=0;c.symptoms.selected.forEach(s=>{if(h.syms.includes(s))sc+=25;});c.bodyAreas.zones.forEach(z=>{if(h.syms.includes(z)||h.syms.some(s=>z.includes(s)))sc+=8;});const conflict=h.notSafe.filter(ns=>c.history.conditions.join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications&&c.history.medications.toLowerCase().includes(ns))).length;sc-=conflict*50;return{...h,score:Math.max(0,sc)};}).filter(h=>h.score>0).sort((a,b)=>b.score-a.score);
+  const maxSc=scored[0]?.score||1;
+  scored.forEach(h=>{h.pct=Math.round(Math.min(97,(h.score/maxSc)*92)+5);});
+  // Constitution
+  const quiz=c.personal._quiz||{};
+  const allText=JSON.stringify(c.symptoms).toLowerCase();
+  const vataSig=allText.includes('anxiety')||allText.includes('insomnia')||allText.includes('fatigue')||allText.includes('irregular');
+  const pittaSig=allText.includes('inflammation')||allText.includes('liver')||allText.includes('skin')||allText.includes('stress');
+  const kaphaSig=allText.includes('weight')||allText.includes('fatigue')||allText.includes('congestion')||allText.includes('hormones');
+  const vataPct=vataSig?Math.min(95,35+(c.symptoms.selected.filter(s=>['anxiety','insomnia','fatigue'].includes(s)).length*15)):20;
+  const pittaPct=pittaSig?Math.min(95,30+(c.symptoms.selected.filter(s=>['inflammation','liver','skin'].includes(s)).length*15)):20;
+  const kaphaPct=kaphaSig?Math.min(95,25+(c.symptoms.selected.filter(s=>['weight','hormones'].includes(s)).length*15)):20;
+  // Flags
+  const flags=[];
+  if(c.history.medications&&c.history.medications.toLowerCase().includes('warfarin'))flags.push({type:'danger',icon:'⚠️',text:'Client is on Warfarin',sub:'Avoid: Turmeric (high dose), Ginger, St. John\'s Wort, Dong Quai, Garlic (therapeutic)'});
+  if(c.history.medications&&(c.history.medications.toLowerCase().includes('sertraline')||c.history.medications.toLowerCase().includes('ssri')||c.history.medications.toLowerCase().includes('antidepressant')))flags.push({type:'danger',icon:'⚠️',text:'Client is on SSRI medication',sub:"Contraindicated: St. John's Wort (serotonin syndrome risk). Use Saffron, Lavender, Rhodiola instead."});
+  if(c.history.medications&&(c.history.medications.toLowerCase().includes('omeprazole')||c.history.medications.toLowerCase().includes('ppi')))flags.push({type:'warn',icon:'💊',text:'PPI medication detected',sub:'Monitor: High-tannin herbs (black walnut, oak bark) may interfere with absorption. Space dosing by 2+ hours.'});
+  if(c.history.pregnant&&c.history.pregnant.includes('pregnant'))flags.push({type:'danger',icon:'🤰',text:'Client is pregnant',sub:'Contraindicated: Valerian, Black Cohosh, Blue Cohosh, Dong Quai, Pennyroyal, Wormwood, Senna (high dose).'});
+  if(c.history.conditions.some(c=>c.includes('autoimmune')))flags.push({type:'warn',icon:'🔬',text:'Autoimmune condition reported',sub:'Caution: Echinacea, Astragalus (immune stimulants). May exacerbate flares. Consider adaptogens instead.'});
+  if(c.history.conditions.some(c=>c.includes('Liver')))flags.push({type:'warn',icon:'🫀',text:'Liver condition reported',sub:'Avoid: Comfrey, Kava, Pyrrolizidine alkaloid herbs. Use: Milk Thistle, Dandelion Root, Artichoke Leaf.'});
+  if(c.lifestyle.substances.includes('Alcohol (regular)'))flags.push({type:'warn',icon:'🍷',text:'Regular alcohol use',sub:'Caution: Valerian, Kava potentiate sedative effects. Advise reduced intake for full protocol efficacy.'});
+  if(parseInt(c.symptoms.severity)>=4)flags.push({type:'warn',icon:'🔴',text:'High severity — consider GP referral',sub:'Symptoms rated 4–5/5. Recommend concurrent conventional medical assessment alongside herbal support.'});
+  // Protocol lines
+  if(!protocolLines[ref])protocolLines[ref]=[{herb:'',dose:'',frequency:'',duration:'',notes:''}];
+  // Build HTML
+  document.getElementById('clientDetailBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+      <button class="back-btn" onclick="showPanel('clients')">← All Clients</button>
+      <button class="btn btn-ghost" style="font-size:.75rem;padding:6px 13px" onclick="openMessageThreadForClient('${ref}')">💬 Message Client</button>
+      <button class="btn btn-ghost" style="font-size:.75rem;padding:6px 13px" onclick="quickNoteForClient('${ref}')">📋 Add Note</button>
+    </div>
+    <div class="client-header-card">
+      <div class="ch-info">
+        <h2>${c.personal.firstName} ${c.personal.lastName}</h2>
+        <div class="ch-meta">
+          <span class="ch-tag">📅 ${c.personal.dob||'DOB not provided'}</span>
+          <span class="ch-tag">${c.personal.bioSex||'Sex not specified'}</span>
+          <span class="ch-tag">🌍 ${c.personal.country||'—'}</span>
+          <span class="ch-tag">🌿 ${c.personal.herbalist||'Unassigned'}</span>
+          ${c.history.pregnant!=='No'?`<span class="ch-tag" style="background:rgba(232,130,12,.25);border-color:var(--saffron-light);color:var(--saffron-bright)">⚠️ ${c.history.pregnant}</span>`:''}
+        </div>
+        <div class="ch-ref">REF: ${c.meta.refCode} · Submitted: ${formatDate(c.meta.submittedAt)}</div>
+      </div>
+      <div class="ch-actions">
+        <button class="btn btn-saffron" onclick="openModal('sendModal')">📤 Send Protocol</button>
+        <button class="btn btn-ghost" onclick="printClient()">🖨️ Print Assessment</button>
+        <button class="btn btn-danger" onclick="deleteClient('${ref}')" style="font-size:.7rem;padding:6px 12px">🗑️ Delete Record</button>
+      </div>
+    </div>
+
+    ${flags.length?`<div class="detail-card" style="margin-bottom:1rem;border-color:var(--red-border)">
+      <div class="dc-head" style="background:var(--red-pale)"><span class="dc-title" style="color:var(--red)">🚨 Clinical Flags & Interactions (${flags.length})</span></div>
+      <div class="dc-body">${flags.map(f=>`<div class="flag-card flag-${f.type}"><span class="flag-icon">${f.icon}</span><div class="flag-text">${f.text}<small>${f.sub}</small></div></div>`).join('')}</div>
+    </div>`:''}
+
+    <div class="assessment-grid">
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">📝 Primary Complaint</span></div>
+        <div class="dc-body">
+          <p style="font-size:.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:.8rem">"${c.symptoms.primaryComplaint||'Not provided'}"</p>
+          <div class="detail-row"><span class="dr-label">Duration</span><span class="dr-val">${c.symptoms.duration||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Severity</span><span class="dr-val">
+            <div class="sev-meter"><div class="sev-track"><div class="sev-fill sev${c.symptoms.severity}"></div></div><span class="sev-num" style="color:${parseInt(c.symptoms.severity)>=4?'var(--spice)':'var(--teal-mid)'}">${c.symptoms.severity}/5</span></div>
+          </span></div>
+          <div class="detail-row"><span class="dr-label">Pain Level</span><span class="dr-val">${c.bodyAreas.painLevel}/10 — ${c.bodyAreas.painType.join(', ')||'None reported'}</span></div>
+          <div class="detail-row"><span class="dr-label">Variation</span><span class="dr-val" style="text-align:right;max-width:200px">${c.symptoms.variation.join('; ')||'None noted'}</span></div>
+          ${c.symptoms.notes?`<div style="margin-top:.7rem;padding:.7rem;background:var(--surface-teal);border-radius:6px;font-size:.8rem;color:var(--text-mid);font-style:italic">"${c.symptoms.notes}"</div>`:''}
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">🔴 Active Symptoms (${c.symptoms.selected.length})</span></div>
+        <div class="dc-body"><div>${c.symptoms.selected.map(s=>`<span class="detail-pill">${s}</span>`).join('')||'<em style="font-size:.82rem;color:var(--text-light)">None selected</em>'}</div>
+          <div style="margin-top:1rem"><div class="dc-title" style="font-size:.82rem;margin-bottom:.5rem">🫀 Affected Body Areas</div><div>${c.bodyAreas.zones.map(z=>`<span class="detail-pill">${z}</span>`).join('')||'—'}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="assessment-grid">
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">📋 Medical History</span></div>
+        <div class="dc-body">
+          ${c.history.conditions.length?`<div style="margin-bottom:.8rem"><div style="font-size:.7rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Conditions</div>${c.history.conditions.map(cond=>`<span class="detail-pill warn">⚕ ${cond}</span>`).join('')}</div>`:''}
+          <div class="detail-row"><span class="dr-label">Medications</span><span class="dr-val" style="font-size:.78rem;text-align:right;max-width:200px">${c.history.medications||'None reported'}</span></div>
+          <div class="detail-row"><span class="dr-label">Supplements</span><span class="dr-val" style="font-size:.78rem">${c.history.supplements||'None'}</span></div>
+          <div class="detail-row"><span class="dr-label">Allergies</span><span class="dr-val" style="font-size:.78rem">${c.history.allergies||'None known'}</span></div>
+          <div class="detail-row"><span class="dr-label">Prev. Herbal Tx</span><span class="dr-val" style="font-size:.78rem">${c.history.prevHerbal}</span></div>
+          <div class="detail-row"><span class="dr-label">Pregnancy</span><span class="dr-val" style="font-size:.78rem;color:${c.history.pregnant!=='No'?'var(--spice)':'inherit'}">${c.history.pregnant}</span></div>
+          ${c.history.familyHistory?`<div class="detail-row"><span class="dr-label">Family Hx</span><span class="dr-val" style="font-size:.77rem;text-align:right;max-width:200px">${c.history.familyHistory}</span></div>`:''}
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">🌱 Lifestyle Profile</span></div>
+        <div class="dc-body">
+          <div class="detail-row"><span class="dr-label">Diet</span><span class="dr-val">${c.lifestyle.diet.join(', ')||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Exercise</span><span class="dr-val">${c.lifestyle.exercise}</span></div>
+          <div class="detail-row"><span class="dr-label">Sleep Quality</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle.sleepQuality}</span></div>
+          <div class="detail-row"><span class="dr-label">Sleep Hours</span><span class="dr-val">${c.lifestyle.sleepHrs}</span></div>
+          <div class="detail-row"><span class="dr-label">Stress Level</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle.stressLevel}</span></div>
+          <div class="detail-row"><span class="dr-label">Substances</span><span class="dr-val">${c.lifestyle.substances.join(', ')||'None'}</span></div>
+          <div class="detail-row"><span class="dr-label">Water Intake</span><span class="dr-val">${c.lifestyle.water}</span></div>
+          <div class="detail-row"><span class="dr-label">Occupation</span><span class="dr-val">${c.lifestyle.occupation||'—'}</span></div>
+          ${c.lifestyle.emotional?`<div style="margin-top:.7rem;padding:.7rem;background:var(--surface-teal);border-radius:6px;font-size:.78rem;color:var(--text-mid);font-style:italic">"${c.lifestyle.emotional}"</div>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div class="assessment-grid">
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">⚗️ Ayurvedic Constitution Analysis</span><span style="font-size:.7rem;color:var(--text-light)">AI-estimated from symptoms</span></div>
+        <div class="dc-body">
+          <div class="constitution-display">
+            <div class="const-bar"><div class="const-label">Vata</div><div class="const-track"><div class="const-fill vata-fill" style="width:${vataPct}%"></div></div><div class="const-pct">${vataPct}%</div></div>
+            <div class="const-bar"><div class="const-label">Pitta</div><div class="const-track"><div class="const-fill pitta-fill" style="width:${pittaPct}%"></div></div><div class="const-pct">${pittaPct}%</div></div>
+            <div class="const-bar"><div class="const-label">Kapha</div><div class="const-track"><div class="const-fill kapha-fill" style="width:${kaphaPct}%"></div></div><div class="const-pct">${kaphaPct}%</div></div>
+          </div>
+          <div style="font-size:.78rem;color:var(--text-soft);margin-top:.6rem;line-height:1.6">
+            ${vataPct>pittaPct&&vataPct>kaphaPct?'Predominantly <strong>Vata</strong>: Focus on grounding, warming, nourishing herbs. Ashwagandha, Shatavari, Brahmi.':pittaPct>kaphaPct?'Predominantly <strong>Pitta</strong>: Focus on cooling, calming herbs. Aloe, Shatavari, Guduchi, Coriander.':'Predominantly <strong>Kapha</strong>: Focus on stimulating, energising, drying herbs. Ginger, Tulsi, Turmeric, Trikatu.'}
+          </div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">🎯 Health Goals</span></div>
+        <div class="dc-body">
+          <p style="font-size:.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:1rem">${c.lifestyle.healthGoals||'Not provided'}</p>
+          <div class="dc-title" style="font-size:.82rem;margin-bottom:.5rem">📞 Contact</div>
+          <div class="detail-row"><span class="dr-label">Email</span><span class="dr-val"><a href="mailto:${c.personal.email}" style="color:var(--teal-mid)">${c.personal.email}</a></span></div>
+          ${c.personal.phone?`<div class="detail-row"><span class="dr-label">Phone</span><span class="dr-val">${c.personal.phone}</span></div>`:''}
+          <div class="detail-row"><span class="dr-label">Language</span><span class="dr-val">${c.personal.lang||'English'}</span></div>
+          <div class="detail-row"><span class="dr-label">Referral</span><span class="dr-val">${c.lifestyle.referral||'—'}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERB RECOMMENDATIONS -->
+    <div class="tools-grid">
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">🌿 Matched Herb Recommendations</span><span style="font-size:.7rem;color:var(--text-light)">${scored.length} matches</span></div>
+        <div class="dc-body" style="max-height:340px;overflow-y:auto" id="herbRecsFor${ref}">
+          ${scored.slice(0,8).map(h=>{
+            const hasConflict=h.notSafe.some(ns=>c.history.conditions.join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications?.toLowerCase().includes(ns)));
+            return`<div class="herb-rec-card ${hasConflict?'contraindicated':''}">
+              <div class="hrc-emoji-sm">${h.emoji}</div>
+              <div class="hrc-info"><div class="hrc-name">${h.name} <span style="font-size:.68rem;color:var(--text-light);font-weight:400">${h.trad}</span></div>
+              <div class="hrc-latin">${h.latin}</div>
+              <div class="hrc-match">Match: ${h.pct}% · ${h.forms.join(', ')}</div>
+              ${hasConflict?`<div class="hrc-caution-tag">⚠️ Potential conflict with client's conditions/meds</div>`:`<div class="hrc-caution-tag hrc-ok-tag">✓ No conflicts detected</div>`}
+              </div>
+              <div class="herb-score-bar"><div class="hsb-track"><div class="hsb-fill" style="height:${h.pct}%"></div></div><div class="hsb-pct">${h.pct}%</div></div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <!-- PRACTITIONER NOTES -->
+      <div class="detail-card">
+        <div class="dc-head"><span class="dc-title">📝 Practitioner Notes</span></div>
+        <div class="dc-body">
+          <textarea class="notes-editor" id="notes_${ref}" placeholder="Clinical observations, differential considerations, TCM pattern, Ayurvedic imbalances, emotional factors…">${c._notes||''}</textarea>
+          <button class="btn btn-ghost" style="margin-top:.5rem;font-size:.72rem;padding:6px 12px" onclick="saveNotes('${ref}')">💾 Save Notes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROTOCOL BUILDER -->
+    <div class="detail-card" style="margin-bottom:1rem">
+      <div class="dc-head" style="display:flex;align-items:center;justify-content:space-between">
+        <span class="dc-title">⚗️ Protocol Builder</span>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-ghost" style="font-size:.7rem;padding:5px 11px" onclick="addProtocolLine('${ref}')">+ Add Herb</button>
+          <button class="btn btn-primary" style="font-size:.7rem;padding:5px 11px" onclick="openModal('sendModal')">📤 Send Protocol</button>
+        </div>
+      </div>
+      <div class="dc-body">
+        <div style="display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.4rem">
+          <div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em">Herb / Preparation</div>
+          <div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em">Dose</div>
+          <div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em">Frequency</div>
+          <div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em">Duration</div>
+          <div></div>
+        </div>
+        <div id="protocolLines_${ref}"></div>
+        <button class="add-line-btn" onclick="addProtocolLine('${ref}')">+ Add herb to protocol</button>
+        <div style="margin-top:1rem">
+          <div style="font-size:.7rem;color:var(--text-strong);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">General Instructions for Client</div>
+          <textarea class="notes-editor" style="min-height:80px" id="instructions_${ref}" placeholder="e.g. Take all tinctures in warm water 15 minutes before meals. Avoid caffeine for first 2 weeks. Recheck in 4 weeks…">${c._instructions||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY TIMELINE -->
+    <div class="detail-card" style="margin-bottom:1.5rem">
+      <div class="dc-head"><span class="dc-title">🕐 Activity Timeline</span></div>
+      <div class="dc-body">
+        <div class="timeline">
+          <div class="timeline-item"><span class="tl-time">${formatDate(c.meta.submittedAt)}</span><span class="tl-text">Assessment submitted by client</span></div>
+          ${c._reviewed?`<div class="timeline-item"><span class="tl-time">Today</span><span class="tl-text">Assessment reviewed by ${currentHerbalist?.name||'Practitioner'}</span></div>`:''}
+          ${c._protocolSent?`<div class="timeline-item"><span class="tl-time">Today</span><span class="tl-text">Protocol sent to client via ${c._sendMethod||'email'}</span></div>`:''}
+        </div>
+      </div>
+    </div>
+  `;
+  renderProtocolLines(ref);
+}
+
+async function saveNotes(ref){
+  const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
+  if(!c)return;
+  c._notes=document.getElementById('notes_'+ref)?.value||c._notes||'';
+  c._instructions=document.getElementById('instructions_'+ref)?.value||c._instructions||'';
+  c._reviewed=true;
+  const state={_notes:c._notes,_instructions:c._instructions,_reviewed:true,_protocolLines:protocolLines[ref]||[]};
+  try{await window.storage.set('tfb_state_'+ref,JSON.stringify(state),true);}
+  catch(e){localStorage.setItem('tfb_state_'+ref,JSON.stringify(state));}
+  showToast('💾 Notes saved for '+c.personal.firstName);
+}
+
+function addProtocolLine(ref){protocolLines[ref]=protocolLines[ref]||[];protocolLines[ref].push({herb:'',dose:'',frequency:'',duration:''});renderProtocolLines(ref);}
+function removeProtocolLine(ref,i){protocolLines[ref].splice(i,1);renderProtocolLines(ref);}
+function renderProtocolLines(ref){
+  const container=document.getElementById('protocolLines_'+ref);
+  if(!container)return;
+  container.innerHTML=(protocolLines[ref]||[]).map((l,i)=>`
+    <div class="protocol-line">
+      <input type="text" value="${l.herb}" placeholder="e.g. Ashwagandha root tincture" oninput="protocolLines['${ref}'][${i}].herb=this.value"/>
+      <input type="text" value="${l.dose}" placeholder="e.g. 2ml" oninput="protocolLines['${ref}'][${i}].dose=this.value"/>
+      <input type="text" value="${l.frequency}" placeholder="e.g. 3x daily" oninput="protocolLines['${ref}'][${i}].frequency=this.value"/>
+      <input type="text" value="${l.duration}" placeholder="e.g. 8 weeks" oninput="protocolLines['${ref}'][${i}].duration=this.value"/>
+      <button class="del-btn" onclick="removeProtocolLine('${ref}',${i})">✕</button>
+    </div>`).join('');
+}
+
+// ══ HERB DB ══
+function renderHerbDb(q=''){
+  const list=q?herbDB.filter(h=>h.name.toLowerCase().includes(q)||h.trad.toLowerCase().includes(q)||h.syms.join().includes(q)):herbDB;
+  document.getElementById('herbDbGrid').innerHTML=list.map(h=>`
+    <div class="detail-card">
+      <div class="dc-head"><span class="dc-title">${h.emoji} ${h.name}</span><span style="font-size:.68rem;color:var(--text-light)">${h.trad}</span></div>
+      <div class="dc-body">
+        <div style="font-size:.72rem;font-style:italic;color:var(--text-light);margin-bottom:.6rem">${h.latin}</div>
+        <div style="margin-bottom:.6rem"><div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Indications</div><div>${h.syms.slice(0,5).map(s=>`<span style="font-size:.68rem;padding:2px 8px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:20px;color:var(--teal-deep);font-weight:600;margin:.1rem;display:inline-flex">${s}</span>`).join('')}</div></div>
+        <div style="margin-bottom:.6rem"><div style="font-size:.66rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.2rem">Dosage</div><div style="font-size:.78rem;color:var(--text-mid)">${h.prep}</div></div>
+        ${h.caution?`<div style="padding:.55rem .7rem;background:var(--amber-pale);border:1px solid var(--amber-border);border-radius:6px;font-size:.74rem;color:#92400e;line-height:1.55">⚠️ ${h.caution}</div>`:''}
+        ${h.notSafe.length?`<div style="margin-top:.5rem">${h.notSafe.map(ns=>`<span class="detail-pill" style="background:var(--red-pale);border-color:var(--red-border);color:var(--red)">✕ Avoid: ${ns}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+function filterHerbs(q){renderHerbDb(q.toLowerCase());}
+
+// ══ PROTOCOL LIBRARY ══
+// ══════════════════════════════════════
+// PROTOCOL LIBRARY — FULL IMPLEMENTATION
+// ══════════════════════════════════════
+const DEFAULT_PROTOCOLS = [
+  {id:'proto_1',name:'Anxiety & Stress Support',category:'Anxiety & Stress',herbs:['Ashwagandha 300mg 2x daily','Chamomile tea 3 cups/day','Brahmi 300mg morning'],duration:'8 weeks',diet:'Reduce caffeine and refined sugar. Increase magnesium-rich foods.',lifestyle:'30 min daily walk. Limit screen time before bed.',caution:'Avoid Ashwagandha in hyperthyroid conditions.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+  {id:'proto_2',name:'Digestive Restoration',category:'Digestive',herbs:['Ginger root tincture 2ml before meals','Milk Thistle 200mg 2x daily','Slippery Elm 500mg with meals'],duration:'6 weeks',diet:'Eat slowly, chew thoroughly. Avoid raw food if digestion is weak.',lifestyle:'Gentle abdominal massage. Rest after meals.',caution:'Slippery Elm may slow absorption of medications — take separately.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+  {id:'proto_3',name:'Hormonal Balance — Female',category:'Hormonal',herbs:['Shatavari 500mg 2x daily','Ashwagandha 300mg evening','Vitex berry 1ml morning'],duration:'12 weeks',diet:'Increase phytoestrogen foods: flaxseed, soy. Reduce processed foods.',lifestyle:'Track cycle. Prioritise sleep consistency.',caution:'Vitex may interact with hormonal contraceptives. Avoid in pregnancy.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+  {id:'proto_4',name:'Immune Boost Protocol',category:'Immune',herbs:['Astragalus root decoction daily','Elderberry syrup 1 tbsp 2x daily','Reishi 1g dual-extract daily'],duration:'4 weeks',diet:'Increase zinc-rich foods. Reduce sugar.',lifestyle:'Prioritise 8 hours sleep. Moderate exercise.',caution:'Astragalus not recommended in autoimmune conditions.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+  {id:'proto_5',name:'Liver & Detox Support',category:'Liver & Detox',herbs:['Milk Thistle 200mg 3x daily','Dandelion root tea 2 cups/day','Turmeric 500mg curcumin 2x daily'],duration:'6 weeks',diet:'Reduce alcohol and processed food. Increase cruciferous vegetables.',lifestyle:'Daily movement. Stay hydrated — 2L water/day.',caution:'Consult GP if on hepatic medications.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+  {id:'proto_6',name:'Sleep & Nervous System',category:'Sleep',herbs:['Valerian root 600mg at bedtime','Chamomile & Lavender tea evening','Magnesium glycinate 400mg at night'],duration:'4 weeks',diet:'Avoid caffeine after 2pm. Eat light evening meals.',lifestyle:'Fixed sleep schedule. No screens 1hr before bed.',caution:'Valerian may cause vivid dreams initially.',isDefault:true,createdAt:'2025-01-01T00:00:00Z'},
+];
+
+let ALL_PROTOCOLS = [];
+let editingProtocolId = null;
+
+async function loadProtocols(){
+  const saved = await loadFromStorage('tfb_protocols');
+  const custom = saved ? JSON.parse(saved) : [];
+  // Merge defaults with custom (custom overrides matching defaults)
+  ALL_PROTOCOLS = [...DEFAULT_PROTOCOLS];
+  for(const p of custom){
+    const idx = ALL_PROTOCOLS.findIndex(x=>x.id===p.id);
+    if(idx>=0) ALL_PROTOCOLS[idx]=p; else ALL_PROTOCOLS.push(p);
+  }
+  renderProtocolLibrary(); loadProtocols();
+}
+
+async function saveProtocolsToStorage(){
+  // Only persist custom/modified protocols
+  const toSave = ALL_PROTOCOLS.filter(p=>!p.isDefault||p._modified);
+  await saveToStorage('tfb_protocols', JSON.stringify(toSave));
+}
+
+function renderProtocolLibrary(list=ALL_PROTOCOLS){
+  const el = document.getElementById('protocolLibrary');
+  if(!el) return;
+  if(!list.length){
+    el.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--text-light)"><div style="font-size:2.5rem;margin-bottom:.7rem">📋</div><div style="font-weight:700;font-size:1rem;margin-bottom:.3rem">No protocols found</div><div style="font-size:.84rem">Create your first protocol using the button above.</div></div>`;
+    return;
+  }
+  // Group by category
+  const cats = [...new Set(list.map(p=>p.category||'Custom'))];
+  el.innerHTML = cats.map(cat=>{
+    const catProtos = list.filter(p=>(p.category||'Custom')===cat);
+    return`<div style="margin-bottom:1.6rem">
+      <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:.8rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)">${cat} (${catProtos.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:.9rem">
+        ${catProtos.map(p=>`
+          <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;transition:all .2s;box-shadow:var(--shadow-sm)" onmouseover="this.style.borderColor='var(--teal-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="padding:.9rem 1.1rem;border-bottom:1px solid var(--border);background:var(--surface-alt);display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
+              <div>
+                <div style="font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--text-dark);line-height:1.3">${p.name}</div>
+                <div style="font-size:.72rem;color:var(--teal-mid);font-weight:600;margin-top:.2rem">⏱ ${p.duration||'—'}</div>
+              </div>
+              ${p.isDefault&&!p._modified?'<span style="font-size:.6rem;padding:2px 7px;border-radius:20px;background:var(--surface-teal);color:var(--teal-deep);border:1px solid var(--border-mid);font-weight:700;flex-shrink:0">Default</span>':'<span style="font-size:.6rem;padding:2px 7px;border-radius:20px;background:var(--saffron-pale);color:var(--spice);border:1px solid var(--saffron-light);font-weight:700;flex-shrink:0">Custom</span>'}
+            </div>
+            <div style="padding:.85rem 1.1rem">
+              <div style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:.4rem">Herbs</div>
+              ${p.herbs.slice(0,3).map(h=>`<div style="font-size:.78rem;color:var(--text-mid);padding:.25rem 0;border-bottom:1px solid var(--border);line-height:1.4">${h}</div>`).join('')}
+              ${p.herbs.length>3?`<div style="font-size:.72rem;color:var(--text-light);margin-top:.3rem">+${p.herbs.length-3} more herbs</div>`:''}
+              ${p.caution?`<div style="margin-top:.6rem;font-size:.72rem;color:var(--spice);background:var(--saffron-pale);padding:.35rem .6rem;border-radius:5px;border:1px solid var(--saffron-light)">⚠️ ${p.caution.substring(0,80)}${p.caution.length>80?'…':''}</div>`:''}
+            </div>
+            <div style="padding:.7rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:.5rem">
+              <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:.73rem;padding:7px" onclick="applyProtocolToClient('${p.id}')">Apply to Client</button>
+              <button class="btn btn-ghost" style="font-size:.73rem;padding:7px 12px" onclick="editProtocol('${p.id}')">Edit</button>
+              ${!p.isDefault?`<button class="btn btn-danger" style="font-size:.73rem;padding:7px 10px" onclick="deleteProtocol('${p.id}')">✕</button>`:''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProtocols(q){
+  const lq=q.toLowerCase();
+  renderProtocolLibrary(q?ALL_PROTOCOLS.filter(p=>p.name.toLowerCase().includes(lq)||p.category?.toLowerCase().includes(lq)||p.herbs.some(h=>h.toLowerCase().includes(lq))):ALL_PROTOCOLS);
+}
+
+// ── PROTOCOL BUILDER ──
+function openNewProtocol(){
+  editingProtocolId = null;
+  document.getElementById('pbTitle').textContent = 'New Protocol';
+  document.getElementById('pb-name').value = '';
+  document.getElementById('pb-cat').value = 'Anxiety & Stress';
+  document.getElementById('pb-duration').value = '';
+  document.getElementById('pb-diet').value = '';
+  document.getElementById('pb-lifestyle').value = '';
+  document.getElementById('pb-caution').value = '';
+  document.getElementById('pbHerbRows').innerHTML = '';
+  addProtocolHerbRow(); addProtocolHerbRow(); addProtocolHerbRow();
+  openProtocolBuilder();
+}
+
+function editProtocol(id){
+  const p = ALL_PROTOCOLS.find(x=>x.id===id);
+  if(!p) return;
+  editingProtocolId = id;
+  document.getElementById('pbTitle').textContent = 'Edit Protocol';
+  document.getElementById('pb-name').value = p.name||'';
+  document.getElementById('pb-cat').value = p.category||'Custom';
+  document.getElementById('pb-duration').value = p.duration||'';
+  document.getElementById('pb-diet').value = p.diet||'';
+  document.getElementById('pb-lifestyle').value = p.lifestyle||'';
+  document.getElementById('pb-caution').value = p.caution||'';
+  document.getElementById('pbHerbRows').innerHTML = '';
+  (p.herbs||[]).forEach(h=>addProtocolHerbRow(h));
+  if(!p.herbs?.length) addProtocolHerbRow();
+  openProtocolBuilder();
+}
+
+function openProtocolBuilder(){
+  const overlay = document.getElementById('protocolBuilderOverlay');
+  const drawer  = document.getElementById('protocolBuilderDrawer');
+  if(overlay){ overlay.style.display='block'; overlay.onclick=closeProtocolBuilder; }
+  if(drawer){ drawer.style.display='flex'; }
+}
+
+function closeProtocolBuilder(){
+  const overlay = document.getElementById('protocolBuilderOverlay');
+  const drawer  = document.getElementById('protocolBuilderDrawer');
+  if(overlay) overlay.style.display='none';
+  if(drawer) drawer.style.display='none';
+}
+
+function addProtocolHerbRow(value=''){
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:.4rem;margin-bottom:.4rem;align-items:center';
+  row.innerHTML = `<input type="text" value="${value}" placeholder="e.g. Ashwagandha 300mg 2x daily" style="flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:5px;font-family:var(--sans);font-size:.84rem;outline:none;background:var(--surface-alt)"/>
+    <button onclick="this.parentElement.remove()" style="width:28px;height:28px;flex-shrink:0;background:var(--red-pale);border:1px solid var(--red-border);border-radius:5px;cursor:pointer;color:var(--red);font-size:.9rem;font-weight:700;font-family:var(--sans)">✕</button>`;
+  document.getElementById('pbHerbRows').appendChild(row);
+}
+
+async function saveProtocol(){
+  const name = document.getElementById('pb-name')?.value.trim();
+  if(!name){ showToast('⚠️ Protocol name is required.'); return; }
+  const herbs = [...document.querySelectorAll('#pbHerbRows input')].map(i=>i.value.trim()).filter(Boolean);
+  if(!herbs.length){ showToast('⚠️ Add at least one herb.'); return; }
+  const protocol = {
+    id:          editingProtocolId || 'proto_'+Date.now(),
+    name,
+    category:    document.getElementById('pb-cat')?.value||'Custom',
+    duration:    document.getElementById('pb-duration')?.value.trim()||'',
+    herbs,
+    diet:        document.getElementById('pb-diet')?.value.trim()||'',
+    lifestyle:   document.getElementById('pb-lifestyle')?.value.trim()||'',
+    caution:     document.getElementById('pb-caution')?.value.trim()||'',
+    isDefault:   false,
+    _modified:   true,
+    createdBy:   currentHerbalist?.name||'Herbalist',
+    updatedAt:   new Date().toISOString(),
+    createdAt:   editingProtocolId ? (ALL_PROTOCOLS.find(p=>p.id===editingProtocolId)?.createdAt||new Date().toISOString()) : new Date().toISOString(),
+  };
+  if(editingProtocolId){
+    const idx = ALL_PROTOCOLS.findIndex(p=>p.id===editingProtocolId);
+    if(idx>=0) ALL_PROTOCOLS[idx]=protocol; else ALL_PROTOCOLS.push(protocol);
+  } else {
+    ALL_PROTOCOLS.push(protocol);
+  }
+  await saveProtocolsToStorage();
+  renderProtocolLibrary(); loadProtocols();
+  closeProtocolBuilder();
+  showToast(`✅ Protocol "${name}" saved.`);
+}
+
+async function deleteProtocol(id){
+  const p = ALL_PROTOCOLS.find(x=>x.id===id);
+  if(!p||p.isDefault){ showToast('⚠️ Default protocols cannot be deleted.'); return; }
+  if(!confirm(`Delete protocol "${p.name}"?`)) return;
+  ALL_PROTOCOLS = ALL_PROTOCOLS.filter(x=>x.id!==id);
+  await saveProtocolsToStorage();
+  renderProtocolLibrary();
+  showToast('🗑️ Protocol deleted.');
+}
+
+function applyProtocolToClient(id){
+  const p = ALL_PROTOCOLS.find(x=>x.id===id);
+  if(!p) return;
+  // Switch to clients panel and show a toast
+  showPanel('clients');
+  showToast('📋 Select a client to apply the "'+p.name+'" protocol.');
+  // Store the protocol to apply so client detail can pick it up
+  window._pendingProtocol = p;
+}
+
+// ══════════════════════════════════════════════════
+// MESSAGES & INTERNAL NOTES
+// ══════════════════════════════════════════════════
+let activeMessageClient = null;  // {ref, name, email}
+let activeMsgTab        = 'client'; // 'client' | 'note'
+let allThreads          = {};    // keyed by ref
+
+// Storage helpers (localStorage first, window.storage second)
+async function loadFromStorage(key, shared=true){
+  try{const r=await window.storage.get(key,shared);if(r&&r.value)return r.value;}catch(e){}
+  try{const v=localStorage.getItem(key);if(v)return v;}catch(e){}
+  return null;
+}
+async function saveToStorage(key, val, shared=true){
+  try{localStorage.setItem(key, val);}catch(e){}
+  try{await window.storage.set(key, val, shared);}catch(e){}
+}
+
+function msgKey(ref){ return 'tfb_messages_' + ref; }
+
+async function loadAllThreads(){
+  allThreads = {};
+  for(const client of ALL_CLIENTS){
+    const ref = client.meta?.refCode;
+    if(!ref) continue;
+    const raw = await loadFromStorage(msgKey(ref), true);
+    allThreads[ref] = raw ? JSON.parse(raw) : [];
+  }
+}
+
+function unreadCount(ref){
+  return (allThreads[ref]||[]).filter(m=>m.type==='client'&&!m.readByHerbalist).length;
+}
+
+function totalUnread(){
+  return Object.keys(allThreads).reduce((n,r)=>n+unreadCount(r),0);
+}
+
+async function refreshMessages(){
+  await loadAllThreads();
+  renderThreadList();
+  if(activeMessageClient) openMessageThread(activeMessageClient.ref);
+  const total = totalUnread();
+  const badge = document.getElementById('nbMessages');
+  if(badge){ badge.textContent=total; badge.style.display=total?'':'none'; }
+}
+
+function renderThreadList(filter=''){
+  const el = document.getElementById('messageThreadList');
+  if(!el) return;
+  const lf = filter.toLowerCase();
+  const clients = ALL_CLIENTS.filter(c=>{
+    if(!filter) return true;
+    const n = (c.personal?.firstName||'')+' '+(c.personal?.lastName||'');
+    return n.toLowerCase().includes(lf)||c.personal?.email?.toLowerCase().includes(lf);
+  });
+  if(!clients.length){
+    el.innerHTML=`<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.82rem">No clients found</div>`;
+    return;
+  }
+  el.innerHTML = clients.map(c=>{
+    const ref  = c.meta?.refCode;
+    const name = (c.personal?.firstName||'')+ ' '+(c.personal?.lastName||'');
+    const msgs = allThreads[ref]||[];
+    const last = msgs[msgs.length-1];
+    const unread = unreadCount(ref);
+    const isActive = activeMessageClient?.ref===ref;
+    const preview = last ? (last.text.length>42?last.text.slice(0,42)+'…':last.text) : 'No messages yet';
+    const timeStr = last ? formatMsgTime(last.ts) : '';
+    return`<div onclick="openMessageThread('${ref}')"
+      style="padding:.75rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;background:${isActive?'rgba(34,168,159,.1)':'transparent'}"
+      onmouseover="this.style.background='rgba(34,168,159,.06)'"
+      onmouseout="this.style.background='${isActive?'rgba(34,168,159,.1)':'transparent'}'">
+      <div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.2rem">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.72rem;flex-shrink:0">${name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.82rem;font-weight:${unread?'700':'600'};color:var(--text-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
+            <span style="font-size:.66rem;color:var(--text-light);flex-shrink:0;margin-left:.3rem">${timeStr}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem">
+            <span style="font-size:.72rem;color:${unread?'var(--text-mid)':'var(--text-light)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${last?.type==='note'?'📋 ':last?.type==='client'?'💬 ':''}${preview}</span>
+            ${unread?`<span style="width:16px;height:16px;border-radius:50%;background:var(--teal-mid);color:#fff;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${unread}</span>`:''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterMessageThreads(q){ renderThreadList(q); }
+
+async function openMessageThread(ref){
+  const client = ALL_CLIENTS.find(c=>c.meta?.refCode===ref);
+  if(!client) return;
+  const name  = (client.personal?.firstName||'')+' '+(client.personal?.lastName||'');
+  const email = client.personal?.email||'';
+  const ref_  = client.meta?.refCode;
+
+  activeMessageClient = {ref:ref_, name, email};
+
+  // Mark all client messages as read
+  const msgs = allThreads[ref_]||[];
+  let changed = false;
+  msgs.forEach(m=>{ if(m.type==='client'&&!m.readByHerbalist){m.readByHerbalist=true;changed=true;} });
+  if(changed){
+    await saveToStorage(msgKey(ref_), JSON.stringify(msgs), true);
+    allThreads[ref_] = msgs;
+  }
+
+  // Update header
+  document.getElementById('msgClientAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('msgClientName').textContent   = name;
+  document.getElementById('msgClientMeta').textContent   = email + (client.personal?.herbalist?' · '+client.personal.herbalist:'');
+  document.getElementById('msgEmptyState').style.display = 'none';
+  document.getElementById('msgThreadView').style.display = 'flex';
+  document.getElementById('msgThreadView').style.flexDirection = 'column';
+
+  renderMessages(ref_);
+  renderThreadList();
+
+  // Update unread badge
+  const total = totalUnread();
+  const badge = document.getElementById('nbMessages');
+  if(badge){ badge.textContent=total; badge.style.display=total?'':'none'; }
+}
+
+function renderMessages(ref){
+  const el = document.getElementById('msgScrollArea');
+  if(!el) return;
+  const msgs = allThreads[ref]||[];
+
+  if(!msgs.length){
+    el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--text-light);font-size:.82rem">
+      <div style="font-size:2rem;margin-bottom:.5rem">💬</div>
+      <div>No messages yet. Send your first message below.</div>
+    </div>`;
+    return;
+  }
+
+  // Group by date
+  let lastDate='';
+  el.innerHTML = msgs.map(m=>{
+    const d   = new Date(m.ts);
+    const dateStr = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    const timeStr = d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    const isHerbalist = m.from==='herbalist';
+    const isNote = m.type==='note';
+    const dateDivider = dateStr!==lastDate ? `<div style="text-align:center;margin:.8rem 0;font-size:.68rem;color:var(--text-light);font-weight:700;letter-spacing:.1em;text-transform:uppercase">${dateStr}</div>` : '';
+    lastDate = dateStr;
+
+    if(isNote){
+      return`${dateDivider}<div style="background:var(--saffron-pale);border:1px solid var(--saffron-light);border-radius:8px;border-left:3px solid var(--saffron);padding:.65rem .85rem;font-size:.8rem;color:var(--text-mid);line-height:1.6">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem">
+          <span style="font-size:.65rem;font-weight:700;color:var(--spice);text-transform:uppercase;letter-spacing:.1em">📋 Internal Note · ${m.author||'Herbalist'}</span>
+          <span style="font-size:.65rem;color:var(--text-light)">${timeStr}</span>
+        </div>
+        ${escapeHtml(m.text)}
+      </div>`;
+    }
+
+    // Regular message bubble
+    const bubbleStyle = isHerbalist
+      ? 'background:var(--teal-mid);color:#fff;border-radius:14px 14px 4px 14px;margin-left:auto'
+      : 'background:var(--surface);color:var(--text-dark);border:1.5px solid var(--border);border-radius:14px 14px 14px 4px;margin-right:auto';
+
+    return`${dateDivider}<div style="display:flex;flex-direction:column;max-width:78%;${isHerbalist?'align-self:flex-end':'align-self:flex-start'}">
+      <div style="font-size:.65rem;color:var(--text-light);margin-bottom:.2rem;${isHerbalist?'text-align:right':''}">
+        ${isHerbalist?'You':(activeMessageClient?.name||'Client')} · ${timeStr}
+      </div>
+      <div style="padding:.6rem .85rem;font-size:.82rem;line-height:1.6;${bubbleStyle}">
+        ${escapeHtml(m.text)}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Scroll to bottom
+  setTimeout(()=>{ el.scrollTop = el.scrollHeight; }, 50);
+}
+
+function escapeHtml(str){
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function formatMsgTime(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if(diff < 60)    return 'now';
+  if(diff < 3600)  return Math.floor(diff/60)+'m';
+  if(diff < 86400) return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  if(diff < 604800)return d.toLocaleDateString('en-US',{weekday:'short'});
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function switchMsgTab(tab){
+  activeMsgTab = tab;
+  const clientTab  = document.getElementById('msgTabClient');
+  const noteTab    = document.getElementById('msgTabNote');
+  const clientPane = document.getElementById('msgComposeClient');
+  const notePane   = document.getElementById('msgComposeNote');
+  if(tab==='client'){
+    clientTab.style.cssText='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:var(--surface-teal);color:var(--teal-deep);border-bottom:2.5px solid var(--teal-mid)';
+    noteTab.style.cssText  ='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:transparent;color:var(--text-soft);border-bottom:2.5px solid transparent';
+    clientPane.style.display='block'; notePane.style.display='none';
+    document.getElementById('msgComposeText')?.focus();
+  } else {
+    noteTab.style.cssText  ='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:var(--saffron-pale);color:var(--spice);border-bottom:2.5px solid var(--saffron)';
+    clientTab.style.cssText='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:transparent;color:var(--text-soft);border-bottom:2.5px solid transparent';
+    notePane.style.display='block'; clientPane.style.display='none';
+    document.getElementById('msgNoteText')?.focus();
+  }
+}
+
+async function sendMessage(){
+  if(!activeMessageClient){ showToast('⚠️ Select a client first.'); return; }
+  const input = document.getElementById('msgComposeText');
+  const text  = (input?.value||'').trim();
+  if(!text){ showToast('⚠️ Please type a message.'); return; }
+
+  const msg = {
+    id:              'm_'+Date.now(),
+    ref:             activeMessageClient.ref,
+    from:            'herbalist',
+    type:            'client',
+    text,
+    author:          currentHerbalist?.name||'Herbalist',
+    ts:              new Date().toISOString(),
+    readByHerbalist: true,
+    readByClient:    false,
+  };
+
+  const ref  = activeMessageClient.ref;
+  const msgs = allThreads[ref]||[];
+  msgs.push(msg);
+  allThreads[ref] = msgs;
+  await saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
+
+  if(input) input.value='';
+  renderMessages(ref);
+  renderThreadList();
+  showToast('✉️ Message sent to '+activeMessageClient.name);
+}
+
+async function sendNote(){
+  if(!activeMessageClient){ showToast('⚠️ Select a client first.'); return; }
+  const input = document.getElementById('msgNoteText');
+  const text  = (input?.value||'').trim();
+  if(!text){ showToast('⚠️ Please type a note.'); return; }
+
+  const note = {
+    id:     'n_'+Date.now(),
+    ref:    activeMessageClient.ref,
+    from:   'herbalist',
+    type:   'note',
+    text,
+    author: currentHerbalist?.name||'Herbalist',
+    ts:     new Date().toISOString(),
+  };
+
+  const ref  = activeMessageClient.ref;
+  const msgs = allThreads[ref]||[];
+  msgs.push(note);
+  allThreads[ref] = msgs;
+  await saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
+
+  if(input) input.value='';
+  switchMsgTab('client');
+  renderMessages(ref);
+  renderThreadList();
+  showToast('📋 Internal note saved.');
+}
+
+function openClientFromMessages(){
+  if(activeMessageClient?.ref) openClient(activeMessageClient.ref);
+}
+
+function openNewMessage(){
+  showPanel('messages');
+  // Focus thread list search
+  setTimeout(()=>document.querySelector('#panel-messages input')?.focus(), 150);
+}
+
+// ── Open message thread from client detail ──
+function openMessageThreadForClient(ref){
+  showPanel('messages');
+  setTimeout(()=>openMessageThread(ref), 150);
+}
+
+// ── Quick note from client detail ──
+function quickNoteForClient(ref){
+  showPanel('messages');
+  setTimeout(()=>{ openMessageThread(ref); switchMsgTab('note'); }, 200);
+}
+
+// ══ CALENDAR ══
+async function renderCalendar(){
+  // Build real appointments from stored data + any booked appointments
+  const stored=[];
+  try{const r=await window.storage.get('tfb_appointments',true);if(r&&r.value)stored.push(...JSON.parse(r.value));}catch(e){}
+  // Add any protocol-sent clients that have a followup scheduled
+  ALL_CLIENTS.filter(c=>c._followupDate).forEach(c=>{
+    if(!stored.find(a=>a.ref===c.meta.refCode&&a.date===c._followupDate)){
+      stored.push({ref:c.meta.refCode,date:c._followupDate,time:c._followupTime||'TBD',client:c.personal.firstName+' '+c.personal.lastName,type:c._sendMethod==='phone'?'Phone Call':'Video Call'});
+    }
+  });
+  stored.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const apptEl=document.getElementById('calendarView');
+  if(!stored.length){
+    apptEl.innerHTML=`<div style="max-width:600px"><div style="padding:2rem;text-align:center;color:var(--text-light);background:var(--surface);border:1.5px solid var(--border);border-radius:10px"><div style="font-size:2rem;margin-bottom:.5rem">📅</div><p style="font-weight:600">No appointments scheduled yet.</p><p style="font-size:.82rem;margin-top:.3rem">Appointments are created when you send a protocol with a follow-up date.</p></div></div>`;
+    return;
+  }
+  apptEl.innerHTML=`<div style="max-width:600px">
+    <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:1rem">Scheduled Appointments (${stored.length})</div>
+    ${stored.map(a=>{
+      const isPast=a.date&&new Date(a.date)<new Date();
+      return`<div style="display:flex;align-items:center;gap:1rem;padding:.9rem 1.1rem;background:var(--surface);border:1.5px solid ${isPast?'var(--border)':'var(--teal-bright)'};border-radius:8px;margin-bottom:.6rem;box-shadow:var(--shadow-sm);opacity:${isPast?'.6':'1'}">
+        <div style="width:6px;height:40px;border-radius:3px;background:linear-gradient(${isPast?'var(--border),var(--border)':'var(--teal-bright),var(--teal-mid)'});flex-shrink:0"></div>
+        <div style="flex:1"><div style="font-weight:700;font-size:.88rem;color:var(--text-dark)">${a.client}</div>
+        <div style="font-size:.76rem;color:var(--text-soft)">${a.date} at ${a.time} · ${a.type}${isPast?' · <em>Past</em>':''}</div></div>
+        <div style="display:flex;gap:.4rem">
+          ${a.ref?`<button class="btn btn-ghost" style="font-size:.7rem;padding:5px 11px" onclick="openClient('${a.ref}')">View File</button>`:''}
+          <button class="btn btn-danger" style="font-size:.7rem;padding:5px 11px" onclick="cancelAppointment('${a.ref}','${a.date}')">Cancel</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+async function cancelAppointment(ref,date){
+  if(!confirm('Cancel this appointment?'))return;
+  try{
+    const r=await window.storage.get('tfb_appointments',true);
+    let appts=r&&r.value?JSON.parse(r.value):[];
+    appts=appts.filter(a=>!(a.ref===ref&&a.date===date));
+    await window.storage.set('tfb_appointments',JSON.stringify(appts),true);
+    // Also clear followup on client
+    const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
+    if(c){delete c._followupDate;delete c._followupTime;}
+  }catch(e){}
+  await renderCalendar();
+  showToast('✅ Appointment cancelled.');
+}
+
+// ══ INTERACTION CHECKER ══
+function populateIntHerbs(){
+  const sel=document.getElementById('intHerb');
+  herbDB.forEach(h=>{const o=document.createElement('option');o.value=h.id;o.textContent=h.name;sel.appendChild(o);});
+}
+function checkInteraction(){
+  const herbId=document.getElementById('intHerb').value;
+  const drug=document.getElementById('intDrug').value.toLowerCase().trim();
+  const res=document.getElementById('intResult');
+  if(!herbId||!drug){res.innerHTML='';return;}
+  const herb=herbDB.find(h=>h.id===herbId);
+  if(!herb){return;}
+  const known={
+    'warfarin':['turmeric','ginger','stjohnswort','garlic','dong quai'],
+    'ssri':['stjohnswort','rhodiola','saffron'],
+    'sertraline':['stjohnswort'],
+    'antidepressant':['stjohnswort'],
+    'immunosuppressant':['echinacea','astragalus','reishi'],
+    'sedative':['valerian','kava'],
+    'alcohol':['valerian'],
+    'thyroid':['ashwagandha'],
+    'contraceptive':['stjohnswort'],
+    'hiv':['stjohnswort'],
+    'diabetes':['ginger','cinnamon'],
+    'blood pressure':['licorice','ginseng'],
+  };
+  let found=false;
+  for(const[med,herbs] of Object.entries(known)){
+    if(drug.includes(med)&&herbs.includes(herb.id)){
+      res.innerHTML=`<div class="flag-card flag-danger"><span class="flag-icon">⚠️</span><div class="flag-text">Potential interaction: <strong>${herb.name}</strong> + <strong>${drug}</strong><small>${herb.caution}</small></div></div>`;
+      found=true;break;
+    }
+  }
+  if(!found)res.innerHTML=`<div class="flag-card flag-info"><span class="flag-icon">✅</span><div class="flag-text">No known major interaction found between <strong>${herb.name}</strong> and <strong>${drug}</strong>.<small>Always verify with up-to-date clinical resources. This tool is for guidance only.</small></div></div>`;
+}
+
+// ══ MODALS ══
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+async function confirmSend(){
+  const c=currentClientRef?ALL_CLIENTS.find(x=>x.meta.refCode===currentClientRef):null;
+  const delivery=document.querySelector('input[name="delivery"]:checked')?.value||'email';
+  const msg=document.getElementById('sendMessage')?.value||'';
+  const followupDate=document.getElementById('followupDate')?.value;
+  const followupTime=document.getElementById('followupTime')?.value;
+  if(c){
+    c._protocolSent=true;
+    c._sendMethod=delivery;
+    c._followupDate=followupDate||'';
+    c._followupTime=followupTime||'';
+    // Save protocol to shared storage
+    const state={
+      _notes:c._notes||'',
+      _instructions:c._instructions||'',
+      _reviewed:true,
+      _protocolSent:true,
+      _sendMethod:delivery,
+      _followupDate:c._followupDate,
+      _followupTime:c._followupTime,
+      _protocolLines:protocolLines[currentClientRef]||[],
+      _protocolMessage:msg,
+      _protocolSentAt:new Date().toISOString(),
+      _protocolSentBy:currentHerbalist?.name||'Practitioner',
+    };
+    try{await window.storage.set('tfb_state_'+currentClientRef,JSON.stringify(state),true);}
+    catch(e){localStorage.setItem('tfb_state_'+currentClientRef,JSON.stringify(state));}
+    // Schedule appointment if date provided
+    if(followupDate){
+      try{
+        const r=await window.storage.get('tfb_appointments',true);
+        const appts=r&&r.value?JSON.parse(r.value):[];
+        if(!appts.find(a=>a.ref===currentClientRef&&a.date===followupDate)){
+          appts.push({ref:currentClientRef,date:followupDate,time:followupTime||'TBD',client:c.personal.firstName+' '+c.personal.lastName,type:delivery==='phone'?'Phone Call':'Video Call'});
+          await window.storage.set('tfb_appointments',JSON.stringify(appts),true);
+        }
+      }catch(e){}
+      showToast('📅 Follow-up appointment scheduled for '+followupDate);
+    }
+  }
+  closeModal('sendModal');
+  showToast('📤 Protocol sent to client successfully!');
+  if(currentClientRef)openClient(currentClientRef);
+  await renderCalendar();
+}
+
+// ══ SETTINGS ══
+function saveSettings(){
+  const name=document.getElementById('settName').value;
+  const spec=document.getElementById('settSpec').value;
+  if(currentHerbalist){currentHerbalist.name=name;currentHerbalist.specialty=spec;}
+  document.getElementById('tbName').textContent=name;
+  document.getElementById('sbName').textContent=name;
+  document.getElementById('sbSpecialty').textContent=spec;
+  showToast('✅ Settings saved.');
+}
+async function deleteClient(ref){
+  if(!confirm('Permanently delete this client record? This cannot be undone.'))return;
+  try{
+    await window.storage.delete('tfb_assessment_'+ref,true);
+    await window.storage.delete('tfb_state_'+ref,true);
+    const r=await window.storage.get('tfb_refs',true);
+    if(r&&r.value){
+      let refs=JSON.parse(r.value);
+      refs=refs.filter(x=>x!==ref);
+      await window.storage.set('tfb_refs',JSON.stringify(refs),true);
+    }
+  }catch(e){}
+  ALL_CLIENTS=ALL_CLIENTS.filter(c=>c.meta.refCode!==ref);
+  renderClientsTable(ALL_CLIENTS);
+  document.getElementById('statNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  document.getElementById('statTotal').textContent=ALL_CLIENTS.length;
+  showPanel('clients');
+  showToast('🗑️ Client record deleted.');
+}
+
+// ══ PRINT ══
+function printClient(){window.print();showToast('🖨️ Opening print dialog…');}
+
+function applyTemplate(card){
+  if(!currentClientRef){showToast('⚠️ Open a client first to apply a template.');return;}
+  const herbs=[...card.querySelectorAll('div[style*="border-bottom"]')].map(d=>d.textContent.trim());
+  protocolLines[currentClientRef]=herbs.map(h=>{const parts=h.split(' ');const dose=parts.find(p=>/\d/.test(p))||'';return{herb:h.split(dose)[0].trim(),dose:dose,frequency:h.includes('daily')?'Daily':h.includes('cups')?'3 cups/day':'As directed',duration:''};});
+  openClient(currentClientRef);
+  showPanel('clientdetail');
+  showToast('✅ Template applied to '+ALL_CLIENTS.find(c=>c.meta.refCode===currentClientRef)?.personal?.firstName||'client');
+}
+// ══ HELPERS ══
+function formatDate(iso){try{return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return iso||'—';}}
+function sevBadge(n){const cls=n<=2?'status-reviewed':n<=3?'status-pending':'status-new';const labels=['','1 — Mild','2 — Mild','3 — Moderate','4 — Severe','5 — Debilitating'];return`<span class="status-badge ${cls}">${labels[n]||n+'/5'}</span>`;}
+
+async function refreshDashboard(){
+  showToast('🔄 Refreshing client data…');
+  ALL_CLIENTS=await loadAllClients();
+  document.getElementById('statNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  document.getElementById('statTotal').textContent=ALL_CLIENTS.length;
+  document.getElementById('nbNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  document.getElementById('nbClients').textContent=ALL_CLIENTS.length;
+  renderRecentTable();
+  renderClientsTable(ALL_CLIENTS);
+  await renderCalendar();
+  showToast('✅ Data refreshed — '+ALL_CLIENTS.length+' client'+(ALL_CLIENTS.length!==1?'s':'')+' loaded.');
+}
+// ══ TOAST ══
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
+</script>
+</body>
+</html>

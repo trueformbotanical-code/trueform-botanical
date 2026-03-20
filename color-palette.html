@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TrueForm Botanical — Color Palette</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal-deepest:#071e1c;
+  --teal-deep:#0d3d3a;
+  --teal:#115c57;
+  --teal-mid:#1a7a74;
+  --teal-bright:#22a89f;
+  --teal-light:#5ec4bc;
+  --teal-pale:#c0eae7;
+  --teal-ghost:#e8f8f7;
+  --saffron:#e8820c;
+  --saffron-bright:#f59d2e;
+  --saffron-light:#fbc97a;
+  --saffron-pale:#fef3e2;
+  --spice:#b54a1e;
+  --spice-light:#d96b3e;
+  --ink:#0a1a19;
+  --charcoal:#1c2c2b;
+  --text-dark:#0f2421;
+  --text-strong:#1a3532;
+  --text-mid:#2e5450;
+  --text-soft:#4a7570;
+  --text-muted:#6b9e99;
+  --text-light:#9ec5c1;
+  --surface:#ffffff;
+  --surface-alt:#f4fbfa;
+  --surface-teal:#eaf5f4;
+  --border:#cce8e6;
+  --border-mid:#99d0cb;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Nunito Sans',sans-serif;
+}
+
+body{
+  background: var(--teal-deepest);
+  font-family: var(--sans);
+  min-height: 100vh;
+  padding: 0 0 60px;
+  color: #fff;
+}
+
+/* ── HEADER ── */
+.page-header{
+  background: linear-gradient(135deg, var(--teal-deep), #0a2e2b);
+  border-bottom: 1px solid rgba(94,196,188,.2);
+  padding: 40px 5% 36px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.logo-row{display:flex;align-items:center;gap:12px}
+.logo-dot{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#e8820c,#b54a1e);display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 0 0 4px rgba(232,130,12,.2)}
+.logo-name{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:#fff}
+.logo-name em{color:#f59d2e;font-style:italic}
+.header-right{text-align:right}
+.palette-title{font-family:var(--serif);font-size:2.4rem;font-weight:700;color:#fff;line-height:1.1}
+.palette-title em{color:#f59d2e;font-style:italic}
+.palette-sub{font-size:.8rem;color:rgba(255,255,255,.5);letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-top:.3rem}
+
+/* ── CONTENT ── */
+.content{padding: 48px 5% 0;}
+
+/* ── GROUP HEADER ── */
+.group-label{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .72rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #f59d2e;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  margin-top: 2.8rem;
+}
+.group-label:first-of-type{margin-top:0}
+.group-label::before{content:'';width:24px;height:2px;background:#e8820c;display:block}
+.group-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);display:block}
+
+/* ── SWATCH GRID ── */
+.swatch-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+}
+.swatch-grid.wide{grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));}
+
+/* ── SWATCH CARD ── */
+.swatch{
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: transform .25s, box-shadow .25s;
+  cursor: pointer;
+  position: relative;
+}
+.swatch:hover{transform: translateY(-4px);box-shadow: 0 12px 36px rgba(0,0,0,.4)}
+.swatch:hover .copy-hint{opacity:1}
+
+.swatch-color{
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  position: relative;
+}
+.swatch-color.tall{height:130px}
+.swatch-color.short{height:72px}
+
+/* Usage badge on swatch */
+.use-tag{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.28);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+.use-tag.light-text{color:rgba(255,255,255,.9)}
+.use-tag.dark-text{color:rgba(0,0,0,.65)}
+
+.copy-hint{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: .6rem;
+  padding: 3px 8px;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+  font-weight: 600;
+}
+
+.swatch-info{
+  padding: 12px 13px 13px;
+}
+.swatch-var{
+  font-size: .68rem;
+  color: rgba(255,255,255,.4);
+  font-weight: 600;
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+  font-family: 'Courier New', monospace;
+}
+.swatch-name{
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+.swatch-hex{
+  font-size: .78rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+.swatch-desc{
+  font-size: .7rem;
+  color: rgba(255,255,255,.42);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ── USAGE PREVIEW ROW ── */
+.usage-section{
+  margin-top: 3.2rem;
+}
+.usage-title{
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1.6rem;
+  display:flex;align-items:center;gap:12px
+}
+.usage-title em{color:#f59d2e;font-style:italic}
+.usage-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.usage-card{
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1);
+}
+.usage-card-label{
+  font-size: .64rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 7px 14px;
+  background: rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.5);
+}
+.usage-demo{padding: 18px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+/* ── NAV DEMO ── */
+.demo-nav{background:#0d3d3a;padding:10px 16px;border-radius:8px;display:flex;align-items:center;gap:8px;width:100%}
+.demo-nav-logo{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#e8820c,#b54a1e);font-size:.7rem;display:flex;align-items:center;justify-content:center}
+.demo-nav-link{font-size:.65rem;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px}
+.demo-nav-finder{background:#e8820c;color:#fff;padding:4px 10px;border-radius:12px;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.demo-nav-btn{background:#1a7a74;color:#fff;padding:4px 10px;border-radius:4px;font-size:.65rem;font-weight:700;margin-left:auto}
+
+/* ── BUTTON DEMOS ── */
+.demo-btn-primary{background:linear-gradient(135deg,#22a89f,#1a7a74);color:#fff;padding:9px 18px;border-radius:5px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:default}
+.demo-btn-saffron{background:linear-gradient(135deg,#e8820c,#b54a1e);color:#fff;padding:9px 18px;border-radius:5px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:default}
+.demo-btn-outline{background:transparent;color:#1a7a74;padding:8px 17px;border-radius:5px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:2px solid #1a7a74;cursor:default}
+
+/* ── BADGE DEMOS ── */
+.demo-badge{font-size:.62rem;padding:3px 10px;border-radius:20px;font-weight:700}
+.demo-badge-teal{background:#1a7a74;color:#fff}
+.demo-badge-saffron{background:#e8820c;color:#fff}
+.demo-badge-spice{background:#b54a1e;color:#fff}
+.demo-badge-safe{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.demo-badge-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.demo-badge-outline{background:transparent;color:#1a7a74;border:1.5px solid #99d0cb}
+
+/* ── CARD DEMO ── */
+.demo-card{background:#fff;border-radius:10px;overflow:hidden;width:100%;border:1.5px solid #cce8e6}
+.demo-card-img{height:58px;background:linear-gradient(135deg,#eaf5f4,#fef3e2);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.demo-card-body{padding:10px 12px}
+.demo-card-trad{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#22a89f;font-weight:700;margin-bottom:3px}
+.demo-card-title{font-family:var(--serif);font-size:.95rem;color:#0f2421;font-weight:700;margin-bottom:3px}
+.demo-card-text{font-size:.68rem;color:#2e5450;margin-bottom:7px}
+.demo-card-footer{display:flex;justify-content:space-between;align-items:center}
+.demo-card-price{font-family:var(--serif);font-size:1rem;color:#b54a1e;font-weight:700}
+.demo-card-add{background:#1a7a74;color:#fff;font-size:.62rem;font-weight:700;padding:4px 10px;border-radius:4px;border:none}
+
+/* ── TEXT DEMO ── */
+.demo-text-block{background:var(--surface-alt,#f4fbfa);border-radius:8px;padding:14px;border:1px solid #cce8e6;width:100%}
+.demo-text-h{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:#0f2421;margin-bottom:4px}
+.demo-text-h em{color:#1a7a74;font-style:italic}
+.demo-text-tag{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#22a89f;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.demo-text-tag::before{content:'';width:14px;height:2px;background:#e8820c;display:block}
+.demo-text-p{font-size:.74rem;color:#2e5450;line-height:1.6}
+.demo-text-muted{font-size:.66rem;color:#9ec5c1;margin-top:5px;font-weight:600}
+
+/* ── GRADIENT DEMOS ── */
+.grad-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:1.4rem}
+.grad-card{border-radius:12px;height:70px;display:flex;align-items:flex-end;padding:10px 13px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.07)}
+.grad-card-name{font-size:.7rem;color:rgba(255,255,255,.9);font-weight:700}
+.grad-card-code{font-size:.62rem;color:rgba(255,255,255,.55);font-family:'Courier New',monospace;margin-top:1px}
+
+/* ── COPY TOAST ── */
+.copy-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(60px);background:#1a7a74;color:#fff;padding:.65rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:700;box-shadow:0 8px 28px rgba(13,61,58,.4);transition:transform .35s cubic-bezier(.22,1,.36,1);z-index:999;border:1px solid #5ec4bc;white-space:nowrap}.copy-toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── FOOTER ── */
+.page-footer{margin-top:3.5rem;padding:22px 5%;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
+.page-footer p{font-size:.72rem;color:rgba(255,255,255,.3);font-weight:600}
+.font-info{display:flex;gap:1.5rem}
+.font-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 12px;font-size:.7rem;color:rgba(255,255,255,.6);font-weight:600}
+.font-pill span{color:rgba(255,255,255,.3)}
+
+@media(max-width:600px){.palette-title{font-size:1.6rem}.page-header{padding:28px 5%}.header-right{text-align:left}}
+</style>
+</head>
+<body>
+
+<div class="copy-toast" id="copyToast"></div>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="logo-row">
+    <div class="logo-dot">🌿</div>
+    <div class="logo-name">TrueForm <em>Botanical</em></div>
+  </div>
+  <div class="header-right">
+    <div class="palette-title">Color <em>Palette</em></div>
+    <div class="palette-sub">Spiced Saffron & Deep Teal · Design System</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══ TEAL FAMILY ═══ -->
+  <div class="group-label">Teal Family — Primary Brand Colors</div>
+  <div class="swatch-grid">
+
+    <div class="swatch" onclick="copySwatch('#071e1c','--teal-deepest')">
+      <div class="swatch-color tall" style="background:#071e1c">
+        <span class="use-tag light-text">Hero BG · Footer</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-deepest</div>
+        <div class="swatch-name">Abyss</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#071E1C</div>
+        <div class="swatch-desc">Deepest background. Hero, footer, dark sections.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#0d3d3a','--teal-deep')">
+      <div class="swatch-color tall" style="background:#0d3d3a">
+        <span class="use-tag light-text">Nav · Promo Bar</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-deep</div>
+        <div class="swatch-name">Forest</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#0D3D3A</div>
+        <div class="swatch-desc">Navigation, promo bar, feature sections.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#115c57','--teal')">
+      <div class="swatch-color tall" style="background:#115c57">
+        <span class="use-tag light-text">Section BG</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal</div>
+        <div class="swatch-name">Deep Teal</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#115C57</div>
+        <div class="swatch-desc">Mid-depth backgrounds and gradients.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#1a7a74','--teal-mid')">
+      <div class="swatch-color tall" style="background:#1a7a74">
+        <span class="use-tag light-text">Buttons · Badges</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-mid</div>
+        <div class="swatch-name">Teal</div>
+        <div class="swatch-hex" style="color:#c0eae7">#1A7A74</div>
+        <div class="swatch-desc">Primary buttons, product badges, active tabs.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#22a89f','--teal-bright')">
+      <div class="swatch-color tall" style="background:#22a89f">
+        <span class="use-tag light-text">Tags · Accents</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-bright</div>
+        <div class="swatch-name">Bright Teal</div>
+        <div class="swatch-hex" style="color:#071e1c">#22A89F</div>
+        <div class="swatch-desc">Section tags, focus rings, hover borders.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#5ec4bc','--teal-light')">
+      <div class="swatch-color tall" style="background:#5ec4bc">
+        <span class="use-tag dark-text">Scrollbar · Hints</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-light</div>
+        <div class="swatch-name">Aqua</div>
+        <div class="swatch-hex" style="color:#0d3d3a">#5EC4BC</div>
+        <div class="swatch-desc">Scrollbar thumb, hero grid lines, footer links hover.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#c0eae7','--teal-pale')">
+      <div class="swatch-color" style="background:#c0eae7">
+        <span class="use-tag dark-text">Promo Text</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-pale</div>
+        <div class="swatch-name">Mist</div>
+        <div class="swatch-hex" style="color:#115c57">#C0EAE7</div>
+        <div class="swatch-desc">Light teal text on dark backgrounds, muted labels.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#e8f8f7','--teal-ghost')">
+      <div class="swatch-color short" style="background:#e8f8f7;border-bottom:1px solid rgba(0,0,0,.06)">
+        <span class="use-tag dark-text">Ghost BG</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--teal-ghost</div>
+        <div class="swatch-name">Ghost</div>
+        <div class="swatch-hex" style="color:#1a7a74">#E8F8F7</div>
+        <div class="swatch-desc">Barely-there teal tint. Background wash.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ SAFFRON FAMILY ═══ -->
+  <div class="group-label">Saffron Family — Accent & CTA Colors</div>
+  <div class="swatch-grid">
+
+    <div class="swatch" onclick="copySwatch('#e8820c','--saffron')">
+      <div class="swatch-color tall" style="background:#e8820c">
+        <span class="use-tag light-text">CTA · Finder Btn</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--saffron</div>
+        <div class="swatch-name">Saffron</div>
+        <div class="swatch-hex" style="color:#fef3e2">#E8820C</div>
+        <div class="swatch-desc">Primary CTA buttons, Herb Finder nav pill, logo mark.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#f59d2e','--saffron-bright')">
+      <div class="swatch-color tall" style="background:#f59d2e">
+        <span class="use-tag dark-text">Logo Em · Stats</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--saffron-bright</div>
+        <div class="swatch-name">Amber</div>
+        <div class="swatch-hex" style="color:#0d3d3a">#F59D2E</div>
+        <div class="swatch-desc">Logo italic, hero stats, newsletter highlights.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#fbc97a','--saffron-light')">
+      <div class="swatch-color" style="background:#fbc97a">
+        <span class="use-tag dark-text">Selection</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--saffron-light</div>
+        <div class="swatch-name">Honey</div>
+        <div class="swatch-hex" style="color:#b54a1e">#FBC97A</div>
+        <div class="swatch-desc">Text selection highlight, light form accents.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#fef3e2','--saffron-pale')">
+      <div class="swatch-color short" style="background:#fef3e2;border-bottom:1px solid rgba(0,0,0,.06)">
+        <span class="use-tag dark-text">Card BG</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--saffron-pale</div>
+        <div class="swatch-name">Cream</div>
+        <div class="swatch-hex" style="color:#b54a1e">#FEF3E2</div>
+        <div class="swatch-desc">Warm card backgrounds, product image gradient.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ SPICE ═══ -->
+  <div class="group-label">Spice — Prices, Warnings & Depth</div>
+  <div class="swatch-grid">
+
+    <div class="swatch" onclick="copySwatch('#b54a1e','--spice')">
+      <div class="swatch-color" style="background:#b54a1e">
+        <span class="use-tag light-text">Prices · Sale Badge</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--spice</div>
+        <div class="swatch-name">Spice</div>
+        <div class="swatch-hex" style="color:#fbc97a">#B54A1E</div>
+        <div class="swatch-desc">Product prices, sale badges, caution borders, error states.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#d96b3e','--spice-light')">
+      <div class="swatch-color" style="background:#d96b3e">
+        <span class="use-tag light-text">Hover State</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--spice-light</div>
+        <div class="swatch-name">Terracotta</div>
+        <div class="swatch-hex" style="color:#fef3e2">#D96B3E</div>
+        <div class="swatch-desc">Hover state for spice elements, safety card borders.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ TEXT SCALE ═══ -->
+  <div class="group-label">Text Scale — Typography Colors</div>
+  <div class="swatch-grid wide">
+
+    <div class="swatch" onclick="copySwatch('#0a1a19','--ink')">
+      <div class="swatch-color short" style="background:#0a1a19">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--ink</div>
+        <div class="swatch-name">Ink</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#0A1A19</div>
+        <div class="swatch-desc">Text selection foreground.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#0f2421','--text-dark')">
+      <div class="swatch-color short" style="background:#0f2421">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-dark</div>
+        <div class="swatch-name">Almost Black</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#0F2421</div>
+        <div class="swatch-desc">Body text on white. Headings, labels.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#1a3532','--text-strong')">
+      <div class="swatch-color short" style="background:#1a3532">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-strong</div>
+        <div class="swatch-name">Deep Forest</div>
+        <div class="swatch-hex" style="color:#5ec4bc">#1A3532</div>
+        <div class="swatch-desc">Strong labels, form field labels.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#2e5450','--text-mid')">
+      <div class="swatch-color short" style="background:#2e5450">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-mid</div>
+        <div class="swatch-name">Dark Sage</div>
+        <div class="swatch-hex" style="color:#c0eae7">#2E5450</div>
+        <div class="swatch-desc">Secondary body text, descriptions, card text.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#4a7570','--text-soft')">
+      <div class="swatch-color short" style="background:#4a7570">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-soft</div>
+        <div class="swatch-name">Sage</div>
+        <div class="swatch-hex" style="color:#e8f8f7">#4A7570</div>
+        <div class="swatch-desc">Tertiary text, nav links, supporting copy.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#6b9e99','--text-muted')">
+      <div class="swatch-color short" style="background:#6b9e99">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-muted</div>
+        <div class="swatch-name">Muted</div>
+        <div class="swatch-hex" style="color:#071e1c">#6B9E99</div>
+        <div class="swatch-desc">Placeholders, subtle metadata, muted copy.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#9ec5c1','--text-light')">
+      <div class="swatch-color short" style="background:#9ec5c1;border-bottom:1px solid rgba(0,0,0,.06)">
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--text-light</div>
+        <div class="swatch-name">Pale Teal</div>
+        <div class="swatch-hex" style="color:#0d3d3a">#9EC5C1</div>
+        <div class="swatch-desc">Disabled text, footnotes, timestamps.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ SURFACES & BORDERS ═══ -->
+  <div class="group-label">Surfaces & Borders — Light Backgrounds</div>
+  <div class="swatch-grid">
+
+    <div class="swatch" onclick="copySwatch('#ffffff','--surface')">
+      <div class="swatch-color short" style="background:#ffffff;border-bottom:1px solid #cce8e6">
+        <span class="use-tag dark-text">Cards · Forms</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--surface</div>
+        <div class="swatch-name">White</div>
+        <div class="swatch-hex" style="color:#1a7a74">#FFFFFF</div>
+        <div class="swatch-desc">Product cards, booking form, modal backgrounds.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#f4fbfa','--surface-alt')">
+      <div class="swatch-color short" style="background:#f4fbfa;border-bottom:1px solid #cce8e6">
+        <span class="use-tag dark-text">Page BG</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--surface-alt</div>
+        <div class="swatch-name">Tinted White</div>
+        <div class="swatch-hex" style="color:#1a7a74">#F4FBFA</div>
+        <div class="swatch-desc">Main page background. Subtle warm teal tint.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#eaf5f4','--surface-teal')">
+      <div class="swatch-color short" style="background:#eaf5f4;border-bottom:1px solid #cce8e6">
+        <span class="use-tag dark-text">Hover · Active</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--surface-teal</div>
+        <div class="swatch-name">Teal Wash</div>
+        <div class="swatch-hex" style="color:#1a7a74">#EAF5F4</div>
+        <div class="swatch-desc">Hover states, active chip backgrounds, trad cards.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#cce8e6','--border')">
+      <div class="swatch-color short" style="background:#cce8e6;border-bottom:1px solid #99d0cb">
+        <span class="use-tag dark-text">Card Borders</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--border</div>
+        <div class="swatch-name">Light Border</div>
+        <div class="swatch-hex" style="color:#115c57">#CCE8E6</div>
+        <div class="swatch-desc">Default card, input, and section divider borders.</div>
+      </div>
+    </div>
+
+    <div class="swatch" onclick="copySwatch('#99d0cb','--border-mid')">
+      <div class="swatch-color short" style="background:#99d0cb;border-bottom:1px solid #5ec4bc">
+        <span class="use-tag dark-text">Focus Borders</span>
+        <span class="copy-hint">Click to copy</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-var">--border-mid</div>
+        <div class="swatch-name">Mid Border</div>
+        <div class="swatch-hex" style="color:#0d3d3a">#99D0CB</div>
+        <div class="swatch-desc">Active/focus chip borders, mid-weight separators.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ GRADIENTS ═══ -->
+  <div class="group-label">Key Gradients</div>
+  <div class="grad-row">
+    <div class="grad-card" style="background:linear-gradient(135deg,#0d3d3a,#071e1c)">
+      <div><div class="grad-card-name">Hero / Footer</div><div class="grad-card-code">#0D3D3A → #071E1C</div></div>
+    </div>
+    <div class="grad-card" style="background:linear-gradient(135deg,#e8820c,#b54a1e)">
+      <div><div class="grad-card-name">CTA / Logo Mark</div><div class="grad-card-code">#E8820C → #B54A1E</div></div>
+    </div>
+    <div class="grad-card" style="background:linear-gradient(135deg,#22a89f,#1a7a74)">
+      <div><div class="grad-card-name">Primary Button</div><div class="grad-card-code">#22A89F → #1A7A74</div></div>
+    </div>
+    <div class="grad-card" style="background:linear-gradient(135deg,#eaf5f4,#fef3e2)">
+      <div><div class="grad-card-name" style="color:rgba(0,0,0,.6)">Product Image BG</div><div class="grad-card-code" style="color:rgba(0,0,0,.4)">#EAF5F4 → #FEF3E2</div></div>
+    </div>
+    <div class="grad-card" style="background:linear-gradient(90deg,#0d3d3a,#115c57,#0d3d3a)">
+      <div><div class="grad-card-name">Promo Bar</div><div class="grad-card-code">#0D3D3A → #115C57 → …</div></div>
+    </div>
+    <div class="grad-card" style="background:linear-gradient(135deg,#071e1c,#0f4840)">
+      <div><div class="grad-card-name">Featured Section</div><div class="grad-card-code">#071E1C → #0F4840</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ USAGE PREVIEW ═══ -->
+  <div class="usage-section">
+    <div class="usage-title">Colors <em>in context</em></div>
+    <div class="usage-grid">
+
+      <div class="usage-card">
+        <div class="usage-card-label">Navigation Bar</div>
+        <div class="usage-demo" style="background:#0d3d3a;border-radius:0 0 8px 8px">
+          <div class="demo-nav">
+            <div class="demo-nav-logo">🌿</div>
+            <span class="demo-nav-link">Shop</span>
+            <span class="demo-nav-link">Book</span>
+            <span class="demo-nav-finder">🌿 Herb Finder</span>
+            <span class="demo-nav-btn">Book Now</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-card">
+        <div class="usage-card-label">Buttons</div>
+        <div class="usage-demo">
+          <button class="demo-btn-primary">Primary</button>
+          <button class="demo-btn-saffron">CTA / Finder</button>
+          <button class="demo-btn-outline">Outline</button>
+        </div>
+      </div>
+
+      <div class="usage-card">
+        <div class="usage-card-label">Badges & Chips</div>
+        <div class="usage-demo">
+          <span class="demo-badge demo-badge-teal">Best Seller</span>
+          <span class="demo-badge demo-badge-saffron">New</span>
+          <span class="demo-badge demo-badge-spice">Sale</span>
+          <span class="demo-badge demo-badge-safe">✓ Pregnancy</span>
+          <span class="demo-badge demo-badge-warn">⚠ Caution</span>
+          <span class="demo-badge demo-badge-outline">Ayurveda</span>
+        </div>
+      </div>
+
+      <div class="usage-card">
+        <div class="usage-card-label">Product Card</div>
+        <div class="usage-demo">
+          <div class="demo-card">
+            <div class="demo-card-img">🌱</div>
+            <div class="demo-card-body">
+              <div class="demo-card-trad">Ayurveda</div>
+              <div class="demo-card-title">Ashwagandha Extract</div>
+              <div class="demo-card-text">KSM-66® tincture. 5% withanolides.</div>
+              <div class="demo-card-footer">
+                <span class="demo-card-price">$32</span>
+                <button class="demo-card-add">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-card">
+        <div class="usage-card-label">Typography & Tags</div>
+        <div class="usage-demo">
+          <div class="demo-text-block">
+            <div class="demo-text-tag">Four Traditions</div>
+            <div class="demo-text-h">Ancient herbs. <em>Modern wisdom.</em></div>
+            <div class="demo-text-p">Shop premium botanicals curated by expert herbalists across Ayurveda, TCM, Western & African traditions.</div>
+            <div class="demo-text-muted">Updated March 2025 · Dr. Priya Sharma</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <p>TrueForm Botanical · Color Palette Reference · 25 colors · 6 gradients</p>
+  <div class="font-info">
+    <div class="font-pill">Display: <span>Cormorant Garamond</span></div>
+    <div class="font-pill">Body: <span>Nunito Sans</span></div>
+  </div>
+</div>
+
+<script>
+function copySwatch(hex, varName) {
+  const text = hex + '  /  var(' + varName + ')';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(hex).then(() => showToast('Copied ' + hex));
+  } else {
+    showToast('Copied ' + hex);
+  }
+}
+function showToast(msg) {
+  const t = document.getElementById('copyToast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
