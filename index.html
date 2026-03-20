@@ -745,7 +745,7 @@ async function dbDelete(table, filters) {
       </div>
 
       <!-- Tabs -->
-      <div style="display:flex;border-bottom:2px solid var(--border);flex-shrink:0">
+      <div id="clientTabBar" style="display:flex;border-bottom:2px solid var(--border);flex-shrink:0">
         <button id="clientTabSignin" onclick="clientTab('signin')"
           style="flex:1;padding:.75rem;font-size:.82rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:transparent;color:var(--teal-mid);border-bottom:2.5px solid var(--teal-mid);margin-bottom:-2px">
           Sign In
@@ -1642,11 +1642,20 @@ function clientTab(tab){
   const changePw = document.getElementById('portalChangePw');
   const tabSI    = document.getElementById('clientTabSignin');
   const tabReg   = document.getElementById('clientTabRegister');
-  // Hide all
+  const tabBar   = document.getElementById('clientTabBar');
+
+  // Hide all content panels
   [signin,register,verify,forgot,dash,changePw].forEach(function(el){ if(el) el.style.display='none'; });
+
+  // When logged in: hide tab bar entirely, show only relevant panel
+  const loggedIn = !!portalCurrentUser;
+  if(tabBar){
+    tabBar.style.display = (loggedIn || tab==='verify' || tab==='forgot' || tab==='dashboard' || tab==='changePw') ? 'none' : 'flex';
+  }
+
   if(tab==='signin'){
     if(signin) signin.style.display='block';
-    if(tabSI){ try{tabSI.style.color='var(--teal-mid)'; tabSI.style.borderBottomColor='var(--teal-mid)';}catch(e){} }
+    if(tabSI){ tabSI.style.color='var(--teal-mid)'; tabSI.style.borderBottomColor='var(--teal-mid)'; }
     if(tabReg){ tabReg.style.color='var(--text-soft)'; tabReg.style.borderBottomColor='transparent'; }
     setTimeout(function(){ document.getElementById('si-email')?.focus(); }, 100);
   } else if(tab==='register'){
@@ -1829,6 +1838,22 @@ async function portalSignIn(){
     };
   }
 
+  // Ensure profile row exists in Supabase (fixes admin visibility)
+  if(supabaseOk && user){
+    try {
+      await sb.from('profiles').upsert({
+        id:         user.id,
+        email:      user.email,
+        full_name:  portalCurrentUser.name,
+        first_name: portalCurrentUser.firstName,
+        last_name:  portalCurrentUser.lastName,
+        role:       'client',
+        status:     'active',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' });
+    } catch(e){}
+  }
+
   // Find assessment ref if not set
   if(!portalCurrentUser.assessmentRef){
     try {
@@ -1888,6 +1913,23 @@ async function portalRegister(){
         showPortalError('roleRegError', error.message || 'Registration failed. Please try again.');
       }
       return;
+    }
+
+    // Force-create profile row in Supabase so admin can see this client immediately
+    if(data.user?.id){
+      try {
+        await sb.from('profiles').upsert({
+          id:         data.user.id,
+          email:      email,
+          full_name:  fn+' '+ln,
+          first_name: fn,
+          last_name:  ln,
+          role:       'client',
+          status:     'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
+      } catch(profileErr){ console.warn('Profile upsert:', profileErr); }
     }
 
     // Store pending user details for verification step
