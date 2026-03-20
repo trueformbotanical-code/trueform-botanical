@@ -240,7 +240,9 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 <script>
 const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+});
 
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {

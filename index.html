@@ -608,7 +608,25 @@ input[type=range].sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width
 <script>
 const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession:   false,   // don't save session to localStorage
+    autoRefreshToken: false,   // don't auto-renew tokens
+    detectSessionInUrl: true,  // still needed for password reset links
+  }
+});
+
+// Sign out any lingering Supabase session on page load (belt-and-suspenders)
+(function clearOldSession(){
+  try {
+    // Remove any Supabase auth keys from localStorage
+    Object.keys(localStorage).forEach(function(k){
+      if(k.startsWith('sb-') || k.includes('supabase')) {
+        localStorage.removeItem(k);
+      }
+    });
+  } catch(e){}
+})();
 
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {
@@ -1590,34 +1608,15 @@ function openLogin(){
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
   clearPortalErrors();
+  // If already signed in this session, show dashboard
   if(portalCurrentUser){
     showArea('portalClientArea');
     clientTab('dashboard');
     return;
   }
+  // Always show the role selector — never auto-login
   showArea('portalRoleSelect');
-  modal.scrollTop = 0;
-  // Check Supabase session in background
-  try {
-    if(typeof sb !== 'undefined'){
-      sbSession().then(function(session){
-        if(session && session.user && !portalCurrentUser){
-          dbGetOne('profiles',{id:session.user.id}).then(function(profile){
-            portalCurrentUser = {
-              id:        session.user.id,
-              email:     session.user.email,
-              firstName: profile?.first_name || session.user.email.split('@')[0],
-              lastName:  profile?.last_name  || '',
-              name:      profile?.full_name  || session.user.email.split('@')[0],
-              role:      'client', status:'active', verified:true
-            };
-            showArea('portalClientArea');
-            loadPortalDashboard();
-          });
-        }
-      }).catch(function(){});
-    }
-  } catch(e){}
+  if(modal) modal.scrollTop = 0;
 }
 function closeLogin(){
   const modal = document.getElementById('loginModal');
@@ -2110,11 +2109,22 @@ async function loadPortalDashboard(){
   updateDiaryBtnSub();
 }
 async function portalLogout(){
-  await sbSignOut();
+  // Sign out from Supabase
+  try { await sb.auth.signOut(); } catch(e){}
+  // Clear all local session data
   portalCurrentUser = null;
+  try {
+    Object.keys(localStorage).forEach(function(k){
+      if(k.startsWith('sb-') || k.includes('supabase') || k.startsWith('tfb_portal_')) {
+        localStorage.removeItem(k);
+      }
+    });
+  } catch(e){}
+  // Update nav button
   const navBtn = document.querySelector('.nav-login');
-  if(navBtn){ navBtn.textContent='Portal'; navBtn.style.borderColor=''; navBtn.style.color=''; }
-  showArea('portalRoleSelect');
+  if(navBtn){ navBtn.textContent='Client Portal'; navBtn.style.borderColor=''; navBtn.style.color=''; }
+  // Close modal
+  closeLogin();
   showToast('👋 Signed out successfully.');
 }
 function pdOpenChangePassword(){portalView('changePw');}
@@ -3002,6 +3012,14 @@ hbg.addEventListener("click",()=>{const o=nc.classList.toggle("open");hbg.setAtt
 nc.querySelectorAll("a.nav-link").forEach(a=>a.addEventListener("click",()=>{nc.classList.remove("open");hbg.setAttribute("aria-expanded","false");}));
 
 // ══ TOAST ══
+// ── SIGN OUT ON BROWSER CLOSE / TAB CLOSE ──
+window.addEventListener('beforeunload', function(){
+  try {
+    portalCurrentUser = null;
+    sb.auth.signOut(); // fire-and-forget is fine here
+  } catch(e){}
+});
+
 // ── SUPABASE AUTH STATE — catch password reset tokens anywhere ──
 if(typeof sb !== 'undefined'){
   sb.auth.onAuthStateChange((event, session) => {
