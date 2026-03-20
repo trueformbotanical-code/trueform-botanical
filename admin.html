@@ -1015,27 +1015,54 @@ async function loadAll(){
   // Load admin accounts
   ALL_ADMINS=await sget('tfb_admins')||[DEFAULT_ADMIN];
 
-  // ── Load clients ──
+  // ── Load clients — 3 source approach ──
   ALL_CLIENTS_USR = [];
+
+  function addClient(obj){
+    if(!obj.email) return;
+    if(ALL_CLIENTS_USR.find(x=>x.email?.toLowerCase()===obj.email.toLowerCase())) return;
+    ALL_CLIENTS_USR.push(obj);
+  }
+
+  // Source 1: client_registrations table (simple open-read table, no RLS issues)
   try {
-    // Query ALL profiles (admin RLS allows this) then filter client role in JS
-    const { data: sbClients, error: profErr } = await sb.from('profiles').select('*');
-    if(profErr) console.warn('profiles query error:', profErr.message);
-    if(sbClients && sbClients.length){
-      sbClients
-        .filter(p => p.role === 'client' || (!p.role && p.email !== 'trueformbotanical@gmail.com'))
-        .forEach(p=>{
-          ALL_CLIENTS_USR.push({
-            id:p.id,
-            name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
-            email:p.email, role:'client', status:p.status||'active',
-            createdAt:p.created_at, lastLogin:null,
-            hasAssessment:false, assessmentRef:null,
-          });
-        });
+    const { data: regs, error: regErr } = await sb.from('client_registrations').select('*').order('created_at',{ascending:false});
+    if(regErr) console.warn('[Admin] client_registrations:', regErr.message);
+    if(regs && regs.length){
+      regs.forEach(r => addClient({
+        id:          r.id || r.user_id,
+        name:        r.full_name || ((r.first_name||'')+' '+(r.last_name||'')).trim() || r.email,
+        email:       r.email,
+        role:        'client',
+        status:      r.status || 'active',
+        createdAt:   r.created_at,
+        hasAssessment: false,
+        assessmentRef: null,
+      }));
+      console.log('[Admin] clients from client_registrations:', ALL_CLIENTS_USR.length);
     }
-    console.log('Loaded', ALL_CLIENTS_USR.length, 'clients from profiles table');
-  } catch(e){ console.warn('profiles load error:', e); }
+  } catch(e){ console.warn('[Admin] client_registrations error:', e); }
+
+  // Source 2: profiles table (may be blocked by RLS — try anyway)
+  try {
+    const { data: profs, error: profErr } = await sb.from('profiles').select('*');
+    if(profErr) console.warn('[Admin] profiles:', profErr.message);
+    if(profs && profs.length){
+      profs
+        .filter(p => p.role === 'client' || (!p.role && p.email && p.email !== 'trueformbotanical@gmail.com'))
+        .forEach(p => addClient({
+          id:        p.id,
+          name:      ((p.first_name||'')+' '+(p.last_name||'')).trim() || p.full_name || p.email,
+          email:     p.email,
+          role:      'client',
+          status:    p.status || 'active',
+          createdAt: p.created_at,
+          hasAssessment: false,
+          assessmentRef: null,
+        }));
+      console.log('[Admin] clients after profiles merge:', ALL_CLIENTS_USR.length);
+    }
+  } catch(e){ console.warn('[Admin] profiles error:', e); }
 
   // Load from Supabase assessments table
   ALL_ASSESSMENTS = [];
@@ -1218,21 +1245,31 @@ async function refreshClientList(){
   showToast('🔄 Refreshing client list…');
   // Re-load from Supabase profiles
   try {
-    const { data: sbClients, error: rErr } = await sb.from('profiles').select('*');
-    if(rErr) console.warn('refresh profiles error:', rErr.message);
-    if(sbClients && sbClients.length){
-      sbClients
-        .filter(p => p.role === 'client' || (!p.role && p.email !== 'trueformbotanical@gmail.com'))
-        .forEach(p=>{
-          if(!ALL_CLIENTS_USR.find(c=>c.id===p.id)){
-            ALL_CLIENTS_USR.push({
-              id:p.id,
-              name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
-              email:p.email, role:'client', status:p.status||'active',
-              createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
-            });
-          }
-        });
+    // Refresh from client_registrations first
+    const { data: regsR } = await sb.from('client_registrations').select('*').order('created_at',{ascending:false});
+    if(regsR && regsR.length){
+      regsR.forEach(r=>{
+        if(!ALL_CLIENTS_USR.find(x=>x.email?.toLowerCase()===r.email?.toLowerCase())){
+          ALL_CLIENTS_USR.push({
+            id:r.id||r.user_id, name:r.full_name||((r.first_name||'')+' '+(r.last_name||'')).trim()||r.email,
+            email:r.email, role:'client', status:r.status||'active',
+            createdAt:r.created_at, hasAssessment:false, assessmentRef:null,
+          });
+        }
+      });
+    }
+    // Also try profiles
+    const { data: profsR } = await sb.from('profiles').select('*');
+    if(profsR && profsR.length){
+      profsR.filter(p=>p.role==='client'||(!p.role&&p.email!=='trueformbotanical@gmail.com')).forEach(p=>{
+        if(!ALL_CLIENTS_USR.find(x=>x.email?.toLowerCase()===p.email?.toLowerCase())){
+          ALL_CLIENTS_USR.push({
+            id:p.id, name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+            email:p.email, role:'client', status:p.status||'active',
+            createdAt:p.created_at, hasAssessment:false, assessmentRef:null,
+          });
+        }
+      });
     }
   } catch(e){}
   // Also reload assessments

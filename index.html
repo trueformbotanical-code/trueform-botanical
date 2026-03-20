@@ -1837,18 +1837,25 @@ async function portalSignIn(){
     };
   }
 
-  // Ensure profile row exists in Supabase (fixes admin visibility)
+  // Ensure profile + client_registrations rows exist on every sign-in
   if(supabaseOk && user){
+    const now2 = new Date().toISOString();
     try {
       await sb.from('profiles').upsert({
-        id:         user.id,
-        email:      user.email,
-        full_name:  portalCurrentUser.name,
+        id: user.id, email: user.email,
+        full_name: portalCurrentUser.name,
         first_name: portalCurrentUser.firstName,
-        last_name:  portalCurrentUser.lastName,
-        role:       'client',
-        status:     'active',
-        updated_at: new Date().toISOString(),
+        last_name: portalCurrentUser.lastName,
+        role: 'client', status: 'active', updated_at: now2,
+      }, { onConflict: 'id' });
+    } catch(e){}
+    try {
+      await sb.from('client_registrations').upsert({
+        id: user.id, user_id: user.id, email: user.email,
+        full_name: portalCurrentUser.name,
+        first_name: portalCurrentUser.firstName,
+        last_name: portalCurrentUser.lastName,
+        status: 'active', created_at: now2,
       }, { onConflict: 'id' });
     } catch(e){}
   }
@@ -1923,21 +1930,31 @@ async function portalRegister(){
       return;
     }
 
-    // Force-create profile row in Supabase so admin can see this client immediately
+    // Write to both profiles AND client_registrations (admin-visible)
     if(data.user?.id){
+      const now = new Date().toISOString();
+      // 1. profiles table
       try {
         await sb.from('profiles').upsert({
+          id: data.user.id, email, full_name: fn+' '+ln,
+          first_name: fn, last_name: ln, role: 'client',
+          status: 'active', created_at: now, updated_at: now,
+        }, { onConflict: 'id' });
+      } catch(e){ console.warn('profiles upsert:', e); }
+
+      // 2. client_registrations table — simple insert, wide-open insert policy
+      try {
+        await sb.from('client_registrations').upsert({
           id:         data.user.id,
-          email:      email,
+          user_id:    data.user.id,
+          email,
           full_name:  fn+' '+ln,
           first_name: fn,
           last_name:  ln,
-          role:       'client',
           status:     'active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          created_at: now,
         }, { onConflict: 'id' });
-      } catch(profileErr){ console.warn('Profile upsert:', profileErr); }
+      } catch(e){ console.warn('client_registrations upsert:', e); }
     }
 
     // Store pending user details for verification step
