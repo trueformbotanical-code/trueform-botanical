@@ -1293,33 +1293,30 @@ async function dbDelete(table, filters) {
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <a href="#" class="logo"><div class="logo-mark" aria-hidden="true">🌿</div><span class="logo-text">TrueForm <em>Botanical</em></span></a>
   <div class="nav-center" id="navCenter" role="list">
-    <a href="#shop" class="nav-link">Shop</a>
-    <a href="#booking" class="nav-link">Book</a>
-    <a href="#herbalists" class="nav-link">Herbalists</a>
+    <a href="#booking" class="nav-link">Book a Consultation</a>
     <a href="#blog" class="nav-link">Blog</a>
     <a href="#faq" class="nav-link">FAQ</a>
     <button class="nav-link nav-finder-btn" data-action="openFinder" aria-label="Open Herb Finder"><span class="finder-pulse" aria-hidden="true"></span>🌿 Herb Finder</button>
   </div>
   <div class="nav-right">
-    <button class="nav-cart" aria-label="Cart">🛒<span class="cart-badge" id="cartBadge" style="display:none">0</span></button>
     <button class="nav-login">Portal</button>
-    <button class="nav-book">Book Now</button>
     <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <main id="main">
+
 <!-- ═══ HERO ═══ -->
 <section id="hero" aria-label="Hero">
   <div class="hero-geo" aria-hidden="true"></div>
   <div class="hero-grid" aria-hidden="true"></div>
   <div class="hero-content">
-    <span class="hero-eyebrow">Certified Botanical Practitioners</span>
-    <h1>Ancient herbs.<br/><em>Modern wisdom.</em><br/><span>Global healing.</span></h1>
-    <p class="hero-desc">Shop premium botanicals, book expert consultations across four world traditions, and discover your perfect herb with our intelligent Herb Finder.</p>
+    <span class="hero-eyebrow">Expert Herbal Consultation</span>
+    <h1>Personalised herbal<br/><em>medicine,</em><br/><span>delivered to you.</span></h1>
+    <p class="hero-desc">Work one-on-one with certified botanical practitioners across four world healing traditions. Submit your health assessment, receive a personalised protocol, and track your wellness journey — all from one secure portal.</p>
     <div class="hero-btns">
-      <button class="btn-saffron" data-action="openFinder">🌿 Open Herb Finder</button>
-      <a href="#shop" class="btn-outline-light">Shop Botanicals</a>
+      <button class="btn-saffron" onclick="document.querySelector('.nav-login').click()">🌿 Book a Consultation</button>
+      <button class="btn-outline-light" data-action="openFinder">Try Herb Finder</button>
     </div>
     <div class="hero-traditions">
       <span class="tpill">🕉️ Ayurveda</span><span class="tpill">☯️ TCM</span><span class="tpill">🌿 Western</span><span class="tpill">🌍 African</span>
@@ -1327,26 +1324,106 @@ async function dbDelete(table, filters) {
   </div>
   <div class="hero-right" aria-hidden="true">
     <div class="hero-stat"><span class="stat-num">12K+</span><span class="stat-lbl">Consultations</span></div>
-    <div class="hero-stat"><span class="stat-num">48</span><span class="stat-lbl">Countries</span></div>
+    <div class="hero-stat"><span class="stat-num">5</span><span class="stat-lbl">Expert Herbalists</span></div>
     <div class="hero-stat"><span class="stat-num">97%</span><span class="stat-lbl">Satisfaction</span></div>
   </div>
   <div class="hero-scroll" aria-hidden="true"><div class="scroll-line"></div><span>Scroll</span></div>
 </section>
 
-<!-- ═══ TRUST STRIP ═══ -->
+<!-- ═══ TRUST ═══ -->
 <div id="trust" role="complementary" aria-label="Trust badges">
   <div class="trust-strip">
-    <div class="trust-item"><span class="trust-icon">✓</span>Certified Organic</div>
-    <div class="trust-item"><span class="trust-icon">🔬</span>Third-Party Tested</div>
-    <div class="trust-item"><span class="trust-icon">🌍</span>Ships to 60+ Countries</div>
-    <div class="trust-item"><span class="trust-icon">↩️</span>60-Day Guarantee</div>
+    <div class="trust-item"><span class="trust-icon">✓</span>Certified Practitioners</div>
     <div class="trust-item"><span class="trust-icon">🔒</span>HIPAA Aligned</div>
+    <div class="trust-item"><span class="trust-icon">🌍</span>48+ Countries Served</div>
+    <div class="trust-item"><span class="trust-icon">📋</span>Personalised Protocols</div>
+    <div class="trust-item"><span class="trust-icon">🌿</span>4 Healing Traditions</div>
     <div class="trust-item"><span class="trust-icon">⭐</span>4.9 / 5 — 1,200+ Reviews</div>
   </div>
 </div>
 
+<!-- ═══ HOW IT WORKS ═══ -->
+<section id="how" aria-labelledby="how-title" style="background:var(--surface)">
+  <div style="text-align:center;max-width:520px;margin:0 auto 2.8rem">
+    <span class="tag" style="justify-content:center">Simple Process</span>
+    <h2 id="how-title" style="text-align:center">How it <em>works</em></h2>
+    <p class="section-lead">From registration to your first protocol in three simple steps.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;max-width:900px;margin:0 auto">
+    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem">📋</div>
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 1</div>
+      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Submit Your Assessment</h3>
+      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">Register for a free account, then complete your detailed health assessment. Tell us about your symptoms, lifestyle, and health history.</p>
+    </div>
+    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:font-size:1.5rem;margin:0 auto 1rem;font-size:1.5rem">👩‍⚕️</div>
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 2</div>
+      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Meet Your Herbalist</h3>
+      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">One of our five certified practitioners reviews your assessment and schedules a one-to-one video or phone consultation with you.</p>
+    </div>
+    <div style="text-align:center;padding:2rem 1.5rem;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:var(--r-lg)">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem">🌿</div>
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.5rem">Step 3</div>
+      <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.7rem">Receive Your Protocol</h3>
+      <p style="font-size:.84rem;color:var(--text-mid);line-height:1.65">Get a personalised herbal protocol with dosages, dietary advice, and lifestyle guidance. Track your progress in your private wellness diary.</p>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2.5rem">
+    <button class="btn-saffron" onclick="document.querySelector('.nav-login').click()">Get Started — It's Free →</button>
+  </div>
+</section>
+
+<!-- ═══ BOOKING ═══ -->
+<section id="booking" aria-labelledby="booking-title">
+  <div style="text-align:center;max-width:520px;margin:0 auto 2.8rem">
+    <span class="tag" style="justify-content:center">Book a Session</span>
+    <h2 id="booking-title" style="text-align:center">Book your <em>consultation</em></h2>
+    <p class="section-lead">Choose your preferred tradition and schedule a session with one of our certified practitioners.</p>
+  </div>
+  <div class="booking-layout">
+    <div class="booking-form">
+      <h3>Request a Consultation</h3>
+      <div class="frow">
+        <div class="fgrp"><label>First Name</label><input type="text" id="bf-fn" placeholder="Jane" autocomplete="given-name"/></div>
+        <div class="fgrp"><label>Last Name</label><input type="text" id="bf-ln" placeholder="Smith" autocomplete="family-name"/></div>
+      </div>
+      <div class="fgrp"><label>Email</label><input type="email" id="bf-email" placeholder="your@email.com" autocomplete="email"/></div>
+      <div class="fgrp"><label>Phone</label><input type="tel" id="bf-phone" placeholder="+1 555 000 0000"/></div>
+      <div class="fgrp"><label>Preferred Tradition</label>
+        <select id="bf-trad">
+          <option value="">Select tradition…</option>
+          <option>Ayurveda</option>
+          <option>Traditional Chinese Medicine</option>
+          <option>Western Phytotherapy</option>
+          <option>African Botanicals</option>
+          <option>No preference</option>
+        </select>
+      </div>
+      <div class="fgrp"><label>Type of Session</label>
+        <select id="bf-type">
+          <option>Video Consultation</option>
+          <option>Phone Consultation</option>
+          <option>In-Person (London)</option>
+        </select>
+      </div>
+      <div class="fgrp"><label>Brief Health Concern</label>
+        <textarea id="bf-concern" rows="3" placeholder="Tell us briefly what you'd like help with…"></textarea>
+      </div>
+      <button class="btn-saffron" style="width:100%;justify-content:center;padding:14px" onclick="submitBookingRequest()">Request Consultation →</button>
+      <p class="booking-note">We'll confirm your appointment within 24 hours. First consultation from £65.</p>
+    </div>
+    <div class="booking-info">
+      <div class="bi-card"><div class="bi-icon">📋</div><div><h4>Complete Assessment First</h4><p>For the best experience, complete your health assessment before your consultation. This helps your herbalist prepare a truly personalised protocol.</p></div></div>
+      <div class="bi-card"><div class="bi-icon">🕐</div><div><h4>Session Duration</h4><p>Initial consultations: 60–90 minutes. Follow-up sessions: 30–45 minutes. All conducted via secure encrypted video.</p></div></div>
+      <div class="bi-card"><div class="bi-icon">🌍</div><div><h4>Available Worldwide</h4><p>We serve clients in 48+ countries. Flexible timezone scheduling with sessions available 7 days a week.</p></div></div>
+      <div class="bi-card"><div class="bi-icon">💷</div><div><h4>Transparent Pricing</h4><p>Initial consultation from £65. Follow-ups from £40. Protocol review from £30. No hidden fees.</p></div></div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ TRADITIONS ═══ -->
-<section id="traditions" aria-labelledby="trad-title">
+<section id="traditions" aria-labelledby="trad-title" style="background:var(--surface)">
   <div style="text-align:center;max-width:520px;margin:0 auto 2.4rem"><span class="tag" style="justify-content:center">Four World Traditions</span><h2 id="trad-title" style="text-align:center">Wisdom from <em>every corner</em> of the earth</h2></div>
   <div class="trad-grid">
     <div class="trad-card"><span class="trad-icon">🕉️</span><h3>Ayurvedic</h3><p>5,000-year Indian system. Tridosha theory, rasayanas, and classic adaptogens like Ashwagandha & Brahmi.</p><span class="trad-tag">India · 5,000 years</span></div>
@@ -1356,139 +1433,13 @@ async function dbDelete(table, filters) {
   </div>
 </section>
 
-<!-- ═══ FEATURED HERB OF THE MONTH ═══ -->
-<section id="featured-herb" aria-labelledby="fh-title">
-  <div class="fh-layout">
-    <div class="fh-left">
-      <div class="fh-badge">Herb of the Month — March 2025</div>
-      <h2 id="fh-title">Turmeric — <em>The Golden Root</em></h2>
-      <p class="fh-subtitle">Curcuma longa · Ayurvedic & Integrative Medicine</p>
-      <p>Revered for over 4,000 years in Ayurvedic medicine, turmeric is now one of the world's most studied medicinal plants. Its active compound, curcumin, has demonstrated powerful anti-inflammatory, antioxidant, and neuroprotective properties in hundreds of peer-reviewed studies.</p>
-      <div class="fh-facts">
-        <div class="fh-fact"><span class="fh-fact-label">Origin</span><span class="fh-fact-val">South & Southeast Asia</span></div>
-        <div class="fh-fact"><span class="fh-fact-label">Key Compound</span><span class="fh-fact-val">Curcumin (3–5%)</span></div>
-        <div class="fh-fact"><span class="fh-fact-label">Primary Use</span><span class="fh-fact-val">Inflammation, Joints, Liver</span></div>
-        <div class="fh-fact"><span class="fh-fact-label">Best Taken With</span><span class="fh-fact-val">Black pepper + fat</span></div>
-      </div>
-      <div style="display:flex;gap:.9rem;flex-wrap:wrap">
-        <button class="btn-saffron" data-action="openFinder">Find My Turmeric Dose</button>
-        <a href="#shop" class="btn-outline-light" style="color:#fff;border-color:rgba(255,255,255,.35)">Shop Turmeric →</a>
-      </div>
-    </div>
-    <div class="fh-right">
-      <div class="fh-visual">🟡<div class="fh-orb"></div></div>
-      <div class="fh-origin">🌏 Sourced · Kerala, India</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SHOP ═══ -->
-<section id="shop" aria-labelledby="shop-title">
-  <div class="shop-hdr"><div><span class="tag">Herb Shop</span><h2 id="shop-title">Premium <em>botanicals</em></h2></div><a href="#booking" class="btn-outline" style="padding:9px 20px;font-size:.76rem">Need guidance? Book a consult →</a></div>
-  <div class="shop-filters" role="group">
-    <button class="sf-btn active" data-cat="all">All Products</button>
-    <button class="sf-btn" data-cat="ayurveda">Ayurveda</button>
-    <button class="sf-btn" data-cat="tcm">TCM</button>
-    <button class="sf-btn" data-cat="western">Western</button>
-    <button class="sf-btn" data-cat="african">African</button>
-    <button class="sf-btn" data-cat="tincture">Tinctures</button>
-    <button class="sf-btn" data-cat="tea">Teas & Blends</button>
-  </div>
-  <div class="products-grid" id="productsGrid"></div>
-</section>
-
-<!-- ═══ BOOKING ═══ -->
-<section id="booking" aria-labelledby="booking-title">
-  <span class="tag">Schedule a Session</span>
-  <h2 id="booking-title">Book your <em>consultation</em></h2>
-  <div class="urgency-badge"><span class="urgency-dot"></span>Only 4 slots left this week — book now to secure your time</div>
-  <div class="mode-grid">
-    <div class="mode-card active" onclick="selectMode(this)"><span class="mode-icon">📹</span><h4>Video Call</h4><p>Zoom / Telehealth. Encrypted.</p></div>
-    <div class="mode-card" onclick="selectMode(this)"><span class="mode-icon">🏥</span><h4>In-Person</h4><p>Visit our clinic locations.</p></div>
-    <div class="mode-card" onclick="selectMode(this)"><span class="mode-icon">✉️</span><h4>Async / Text</h4><p>Email or chat. 24h response.</p></div>
-    <div class="mode-card" onclick="selectMode(this)"><span class="mode-icon">📞</span><h4>Phone Call</h4><p>Direct call with herbalist.</p></div>
-  </div>
-  <div class="booking-layout">
-    <div class="booking-form">
-      <h3>Your Details</h3>
-      <form id="bookForm" novalidate>
-        <div class="frow"><div class="fgrp"><label for="bf-fn">First Name *</label><input id="bf-fn" type="text" placeholder="Jane" autocomplete="given-name" required/></div><div class="fgrp"><label for="bf-ln">Last Name *</label><input id="bf-ln" type="text" placeholder="Smith" autocomplete="family-name" required/></div></div>
-        <div class="fgrp"><label for="bf-em">Email *</label><input id="bf-em" type="email" placeholder="your@email.com" autocomplete="email" required/></div>
-        <div class="fgrp"><label for="bf-ph">Phone</label><input id="bf-ph" type="tel" placeholder="+1 555 000 0000" autocomplete="tel"/></div>
-        <div class="frow"><div class="fgrp"><label for="bf-sv">Service *</label><select id="bf-sv" required><option value="">Select…</option><option>Initial Consultation ($85)</option><option>Follow-Up Session ($48)</option><option>Custom Formulation ($65)</option><option>Wellness Immersion ($220)</option><option>Family Care ($110)</option></select></div><div class="fgrp"><label for="bf-hb">Herbalist</label><select id="bf-hb"><option>No preference</option><option>Dr. Amara Osei — African</option><option>Liang Wei PhD — TCM</option><option>Sofia Navarro — Western</option><option>Dr. Priya Sharma — Ayurveda</option></select></div></div>
-        <div class="frow"><div class="fgrp"><label for="bf-tz">Time Zone *</label><select id="bf-tz" required><option value="">Select…</option><option>UTC-8 Pacific US</option><option>UTC-5 Eastern US</option><option>UTC+0 London GMT</option><option>UTC+1 Central Europe</option><option>UTC+3 East Africa</option><option>UTC+5:30 India</option><option>UTC+8 China/HK/SG</option><option>UTC+9 Japan</option><option>UTC+10 Australia East</option></select></div><div class="fgrp"><label>Language</label><select><option>English</option><option>Español</option><option>Français</option><option>中文</option><option>हिन्दी</option></select></div></div>
-        <div class="fgrp"><label for="bf-cc">Primary Concern *</label><textarea id="bf-cc" placeholder="Describe your main health concern…" required></textarea></div>
-        <label class="ccheck"><input type="checkbox" id="bf-c1" required/><span>I consent to my health information being collected and stored securely for consultation purposes. *</span></label>
-        <label class="ccheck"><input type="checkbox" id="bf-c2" required/><span>I understand herbal consultation is complementary care and does not replace medical treatment. *</span></label>
-        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" id="bookSubmit">Request Appointment →</button>
-        <p class="booking-note">🔒 Encrypted · Confirmed within 2 business hours</p>
-      </form>
-    </div>
-    <div>
-      <div class="cal-widget">
-        <div class="cal-header"><h4 id="calLabel"></h4><div><button class="cal-nav" onclick="prevMonth()">‹</button><button class="cal-nav" onclick="nextMonth()">›</button></div></div>
-        <div class="cal-grid" id="calGrid"></div>
-        <p style="font-size:.7rem;color:var(--text-light);font-weight:700;margin-bottom:.6rem">Available time slots:</p>
-        <div class="time-grid" id="timeGrid"></div>
-        <p class="booking-note">🌍 Times shown in your local timezone</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ HERBALISTS ═══ -->
-<section id="herbalists" aria-labelledby="hteam-title">
-  <span class="tag">Our Team</span><h2 id="hteam-title">Expert <em>practitioners</em></h2>
-  <div class="herb-team-grid">
-    <article class="hcard"><div class="hcard-img">🌸<span class="hcard-trad">African Botanicals</span><div class="avail-badge avail-yes"><span class="avail-dot green"></span>Available today</div></div><div class="hcard-body"><h3>Dr. Amara Osei</h3><div class="hcard-spec">Clinical Herbalist · 14 yrs</div><p>Fellow of NIMH. Specialist in African and Ayurvedic traditions, digestive microbiome and immunity.</p><div class="htags"><span class="htag">Gut Health</span><span class="htag">Immunity</span><span class="htag">Hormones</span></div><div class="hrating"><span class="stars">★★★★★</span> 4.97 (312 reviews)</div></div></article>
-    <article class="hcard"><div class="hcard-img">☯️<span class="hcard-trad">TCM</span><div class="avail-badge avail-few"><span class="avail-dot yellow"></span>2 slots left</div></div><div class="hcard-body"><h3>Liang Wei, PhD</h3><div class="hcard-spec">TCM Herbalist · 18 yrs</div><p>Expert in Traditional Chinese Medicine and integrative oncology. Published phytochemistry researcher.</p><div class="htags"><span class="htag">Oncology</span><span class="htag">Stress</span><span class="htag">TCM Formulas</span></div><div class="hrating"><span class="stars">★★★★★</span> 4.99 (407 reviews)</div></div></article>
-    <article class="hcard"><div class="hcard-img">🌿<span class="hcard-trad">Western Phytotherapy</span><div class="avail-badge avail-yes"><span class="avail-dot green"></span>Available today</div></div><div class="hcard-body"><h3>Sofia Navarro</h3><div class="hcard-spec">Medical Herbalist · 9 yrs</div><p>European phytotherapy with Latin American curandera traditions. Specialist in women's hormonal health.</p><div class="htags"><span class="htag">Women's Health</span><span class="htag">Skin</span><span class="htag">Sleep</span></div><div class="hrating"><span class="stars">★★★★★</span> 4.95 (189 reviews)</div></div></article>
-    <article class="hcard"><div class="hcard-img">🕉️<span class="hcard-trad">Ayurveda</span><div class="avail-badge avail-few"><span class="avail-dot yellow"></span>1 slot left</div></div><div class="hcard-body"><h3>Dr. Priya Sharma</h3><div class="hcard-spec">Ayurvedic Practitioner · 16 yrs</div><p>BAMS certified from Pune. Expert in Panchakarma, Rasayana longevity, and Dosha balancing.</p><div class="htags"><span class="htag">Dosha Balance</span><span class="htag">Detox</span><span class="htag">Longevity</span></div><div class="hrating"><span class="stars">★★★★★</span> 5.0 (263 reviews)</div></div></article>
-  </div>
-</section>
-
-<!-- ═══ TESTIMONIALS ═══ -->
-<section id="testimonials" aria-labelledby="testi-title">
-  <div style="text-align:center;margin-bottom:0"><span class="tag" style="justify-content:center">Client Stories</span><h2 id="testi-title" style="text-align:center;color:#fff">Voices of <em>transformation</em></h2></div>
-  <div class="testi-grid">
-    <blockquote class="testi"><div class="testi-stars">★★★★★</div><p class="testi-quote">"After years of conventional medicine failing for my chronic fatigue, three sessions gave me a protocol that genuinely changed my life. I have energy I hadn't felt in a decade."</p><footer class="testi-author"><div class="testi-av">👩</div><div><div class="testi-name">Rachel M.</div><div class="testi-loc">Toronto, Canada</div></div></footer></blockquote>
-    <blockquote class="testi"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Dr. Priya's Ayurvedic consultation was extraordinary. The Dosha assessment was spot-on and the Ashwagandha + Shatavari protocol balanced my hormones in just 6 weeks."</p><footer class="testi-author"><div class="testi-av">👩‍🦱</div><div><div class="testi-name">Meera K.</div><div class="testi-loc">Mumbai, India</div></div></footer></blockquote>
-    <blockquote class="testi"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Liang Wei's TCM formula for my IBS was nothing short of miraculous. Clear instructions, beautifully sourced herbs — I'm a client for life."</p><footer class="testi-author"><div class="testi-av">👨🏻</div><div><div class="testi-name">Daniel T.</div><div class="testi-loc">Sydney, Australia</div></div></footer></blockquote>
-  </div>
-</section>
-
 <!-- ═══ BLOG ═══ -->
 <section id="blog" aria-labelledby="blog-title">
-  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem"><div><span class="tag">Knowledge Hub</span><h2 id="blog-title">From the <em>apothecary</em></h2></div><a href="#" class="btn-outline" style="padding:9px 20px;font-size:.76rem">All Articles →</a></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem"><div><span class="tag">Knowledge Hub</span><h2 id="blog-title">From the <em>apothecary</em></h2></div></div>
   <div class="blog-grid">
-    <article class="bcard"><div class="bthumb">🫁</div><div class="bmeta"><div class="bcat">Ayurveda · 8 min</div><h4>Ashwagandha vs Rhodiola: Which Adaptogen Is Right For You?</h4><p>Breaking down the differences between these two powerful stress-busting herbs based on constitution and lifestyle.</p><div class="bfoot"><span>Dr. Priya Sharma · Mar 2025</span><a class="read-more" href="#">Read →</a></div></div></article>
-    <article class="bcard"><div class="bthumb">🍵</div><div class="bmeta"><div class="bcat">TCM · 6 min</div><h4>The Five Flavours: How TCM Uses Taste to Diagnose & Heal</h4><p>Sour, bitter, sweet, pungent, salty — TCM uses flavour as a profound diagnostic and therapeutic tool.</p><div class="bfoot"><span>Liang Wei · Feb 2025</span><a class="read-more" href="#">Read →</a></div></div></article>
-    <article class="bcard"><div class="bthumb">🌍</div><div class="bmeta"><div class="bcat">African Botanicals · 7 min</div><h4>Moringa: The African Superfood Science Is Finally Catching Up To</h4><p>Used in African medicine for millennia, Moringa oleifera is now one of the most-studied plants on earth.</p><div class="bfoot"><span>Dr. Amara Osei · Jan 2025</span><a class="read-more" href="#">Read →</a></div></div></article>
-  </div>
-</section>
-
-<!-- ═══ NEWSLETTER ═══ -->
-<section id="newsletter" aria-labelledby="nl-title">
-  <div class="nl-inner">
-    <span class="nl-tag">Free Herb Wisdom</span>
-    <h2 id="nl-title" style="color:#fff">Join the <em>apothecary circle</em></h2>
-    <p>Get our free <strong style="color:var(--saffron-bright)">Herb Traditions Guide (48 pages)</strong> + weekly botanical wisdom, product launches & practitioner insights. No spam, ever.</p>
-    <div class="nl-form"><input class="nl-input" type="email" id="nlEmail" placeholder="your@email.com" autocomplete="email" aria-label="Email"/><button class="btn-saffron" data-action="subscribeNL">Get Free Guide</button></div>
-    <div class="nl-perks"><span>Free 48-page guide</span><span>Weekly herb tips</span><span>Exclusive discounts</span><span>Unsubscribe anytime</span></div>
-  </div>
-</section>
-
-<!-- ═══ SECURITY ═══ -->
-<section id="security" aria-labelledby="sec-title">
-  <span class="tag">Trust & Privacy</span><h2 id="sec-title">Built on <em>security</em></h2>
-  <p class="section-lead">Every layer of our platform is designed with privacy-first architecture and industry-leading standards.</p>
-  <div class="sec-grid">
-    <div class="sec-item"><div class="sec-ico">🔐</div><div><h4>AES-256 Encryption</h4><p>Health data encrypted at rest and in transit. Zero-knowledge architecture.</p></div></div>
-    <div class="sec-item"><div class="sec-ico">🛡️</div><div><h4>HIPAA Aligned</h4><p>Infrastructure aligned with HIPAA. Regular third-party security audits.</p></div></div>
-    <div class="sec-item"><div class="sec-ico">🌍</div><div><h4>GDPR Compliant</h4><p>Full EU GDPR compliance. Data portability & right to erasure.</p></div></div>
-    <div class="sec-item"><div class="sec-ico">🔒</div><div><h4>E2E Video</h4><p>Encrypted consultations. No recordings without explicit consent.</p></div></div>
-    <div class="sec-item"><div class="sec-ico">💳</div><div><h4>PCI-DSS Payments</h4><p>Stripe Level 1 PCI-DSS. We never store card details.</p></div></div>
-    <div class="sec-item"><div class="sec-ico">🔑</div><div><h4>Two-Factor Auth</h4><p>MFA for all portal accounts. Session timeout controls.</p></div></div>
+    <article class="bcard"><div class="bthumb">🫁</div><div class="bmeta"><div class="bcat">Ayurveda · 8 min</div><h4>Ashwagandha vs Rhodiola: Which Adaptogen Is Right For You?</h4><p>Breaking down the differences between these two powerful stress-busting herbs based on constitution and lifestyle.</p><div class="bfoot"><span>Dr. Priya Sharma · Mar 2025</span><span class="read-more">Read →</span></div></div></article>
+    <article class="bcard"><div class="bthumb">🍵</div><div class="bmeta"><div class="bcat">TCM · 6 min</div><h4>The Five Flavours: How TCM Uses Taste to Diagnose & Heal</h4><p>Sour, bitter, sweet, pungent, salty — TCM uses flavour as a profound diagnostic and therapeutic tool.</p><div class="bfoot"><span>Liang Wei · Feb 2025</span><span class="read-more">Read →</span></div></div></article>
+    <article class="bcard"><div class="bthumb">🌍</div><div class="bmeta"><div class="bcat">African Botanicals · 7 min</div><h4>Moringa: The African Superfood Science Is Finally Catching Up To</h4><p>Used in African medicine for millennia, Moringa oleifera is now one of the most-studied plants on earth.</p><div class="bfoot"><span>Dr. Amara Osei · Jan 2025</span><span class="read-more">Read →</span></div></div></article>
   </div>
 </section>
 
@@ -1497,27 +1448,15 @@ async function dbDelete(table, filters) {
   <div style="text-align:center;max-width:520px;margin:0 auto"><span class="tag" style="justify-content:center">Questions</span><h2 id="faq-title" style="text-align:center">Frequently <em>asked</em></h2></div>
   <div class="faq-wrap">
     <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Is herbal consultation safe alongside conventional medicine?<span class="faq-chev">▾</span></div><div class="faq-a">Yes — all our herbalists are trained to screen for herb-drug interactions and will always review your current medications. They complement, never replace, your medical team.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How is my personal health data protected?<span class="faq-chev">▾</span></div><div class="faq-a">All data is AES-256 encrypted at rest and in transit. We operate HIPAA-aligned infrastructure with role-based access controls. We never sell your data and you may request full deletion at any time.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div><div class="faq-a">Absolutely. We serve clients in 48+ countries. Video sessions work on any device with flexible timezone scheduling and multilingual sessions in 5 languages.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you ship herbs internationally?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We ship to 60+ countries. All herbs are organically sourced, third-party tested and certified. Shipping takes 3–10 business days. We comply with all phytosanitary import regulations.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">What payment methods do you accept?<span class="faq-chev">▾</span></div><div class="faq-a">Visa, Mastercard, Amex, PayPal, Apple Pay, Google Pay. All processed via Stripe PCI-DSS Level 1. We never store card details on our servers.</div></div>
-    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you offer sliding scale or reduced pricing?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We believe botanical wellness should be accessible. Contact us to discuss sliding scale fees. We also offer a free 15-minute introductory call for all new clients.</div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How does the consultation process work?<span class="faq-chev">▾</span></div><div class="faq-a">You start by registering a free account and submitting your health assessment. Your assigned herbalist reviews it, schedules a video or phone consultation, then sends your personalised herbal protocol. You can message your herbalist anytime through the portal.</div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How is my personal health data protected?<span class="faq-chev">▾</span></div><div class="faq-a">All data is encrypted at rest and in transit via Supabase. We operate HIPAA-aligned infrastructure with role-based access controls. We never sell your data and you may request full deletion at any time.</div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div><div class="faq-a">Absolutely. We serve clients in 48+ countries. Video sessions work on any device with flexible timezone scheduling.</div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">What is included in the client portal?<span class="faq-chev">▾</span></div><div class="faq-a">Your portal includes your health assessment, personalised herbal protocol, a daily symptom diary to track your progress, direct messaging with your practitioner, and appointment scheduling — all in one secure place.</div></div>
+    <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you offer a free initial consultation?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We offer a free 15-minute introductory call for all new clients. Register through the portal and our team will be in touch to schedule your complimentary call.</div></div>
   </div>
 </section>
 
-<!-- ═══ HOSTING ═══ -->
-<section id="hosting" aria-labelledby="hosting-title">
-  <span class="tag">Deploy Your Site</span><h2 id="hosting-title">Free global <em>hosting</em></h2>
-  <p class="section-lead">Deploy this website worldwide for free. All platforms include HTTPS, CDN, and custom domain support.</p>
-  <div class="host-grid">
-    <div class="host-card"><div class="host-logo">▲</div><h4>Vercel</h4><p>Global CDN, instant GitHub deploys.</p><span class="host-free">Free Tier</span></div>
-    <div class="host-card"><div class="host-logo">⚡</div><h4>Netlify</h4><p>Drag-and-drop deploy, forms built-in.</p><span class="host-free">Free Tier</span></div>
-    <div class="host-card"><div class="host-logo">🐙</div><h4>GitHub Pages</h4><p>Free static hosting from any repo.</p><span class="host-free">Always Free</span></div>
-    <div class="host-card"><div class="host-logo">🌊</div><h4>Cloudflare Pages</h4><p>Unlimited bandwidth, 200+ edge nodes.</p><span class="host-free">Free Tier</span></div>
-    <div class="host-card"><div class="host-logo">🔥</div><h4>Firebase</h4><p>Google CDN, SSL, 10GB storage.</p><span class="host-free">Free Tier</span></div>
-    <div class="host-card"><div class="host-logo">🚀</div><h4>Render</h4><p>Auto HTTPS, DDoS protection, CDN.</p><span class="host-free">Free Static</span></div>
-  </div>
-</section>
+<!-- ═══ FOOTER ═══ -->
 </main>
 
 <!-- ═══ FOOTER ═══ -->
@@ -2988,6 +2927,36 @@ if(typeof sb !== 'undefined'){
       window.location.href = 'admin.html' + window.location.hash;
     }
   })();
+}
+
+function submitBookingRequest(){
+  const fn      = document.getElementById('bf-fn')?.value.trim();
+  const ln      = document.getElementById('bf-ln')?.value.trim();
+  const email   = document.getElementById('bf-email')?.value.trim();
+  const phone   = document.getElementById('bf-phone')?.value.trim();
+  const trad    = document.getElementById('bf-trad')?.value;
+  const type    = document.getElementById('bf-type')?.value;
+  const concern = document.getElementById('bf-concern')?.value.trim();
+  if(!fn||!email){ showToast('⚠️ Please enter your name and email.'); return; }
+  // Save booking request to Supabase appointments table
+  const row = {
+    client_name:    fn+' '+ln,
+    herbalist_name: trad||'To be assigned',
+    appt_type:      type||'Video Consultation',
+    notes:          concern||'',
+    status:         'upcoming',
+    created_at:     new Date().toISOString()
+  };
+  if(typeof sb !== 'undefined'){
+    sb.from('appointments').insert(row).then(({error})=>{
+      if(error) console.error('Booking error:', error);
+    });
+  }
+  showToast('✅ Consultation request received! We'll contact '+email+' within 24 hours.');
+  // Clear form
+  ['bf-fn','bf-ln','bf-email','bf-phone','bf-concern'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
 }
 
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),4200);}
