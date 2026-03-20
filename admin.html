@@ -407,14 +407,26 @@ async function dbDelete(table, filters) {
     <div class="tb-left"><button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button></div>
   </div>
   <div class="login-gate">
-    <div class="login-box">
+    <!-- Login form -->
+    <div id="adminLoginBox" class="login-box">
       <span class="login-icon">⚙️</span>
       <div class="login-title">System Admin</div>
-      <div class="login-sub">This area is restricted to authorised system administrators only. All access is logged.</div>
+      <div class="login-sub">This area is restricted to authorised system administrators only.</div>
       <div class="login-error" id="adminLoginError" style="display:none"></div>
       <div class="lfgrp"><label>Email Address</label><input type="email" id="adminUser" placeholder="trueformbotanical@gmail.com" autocomplete="username"/></div>
       <div class="lfgrp"><label>Password</label><input type="password" id="adminPw" placeholder="••••••••" autocomplete="current-password"/></div>
       <button class="btn btn-primary" id="adminLoginBtn" style="width:100%;justify-content:center;padding:11px;margin-top:.2rem" onclick="doAdminLogin()">Sign In to Admin</button>
+    </div>
+
+    <!-- Password reset panel — shown when reset link is clicked -->
+    <div id="adminResetBox" class="login-box" style="display:none">
+      <span class="login-icon">🔐</span>
+      <div class="login-title">Set New Password</div>
+      <div class="login-sub">Enter your new admin password below.</div>
+      <div class="login-error" id="adminResetError" style="display:none"></div>
+      <div class="lfgrp"><label>New Password</label><input type="password" id="adminNewPw" placeholder="Min. 8 characters" autocomplete="new-password"/></div>
+      <div class="lfgrp"><label>Confirm Password</label><input type="password" id="adminConfirmPw" placeholder="Repeat password" autocomplete="new-password"/></div>
+      <button class="btn btn-primary" id="adminResetBtn" style="width:100%;justify-content:center;padding:11px;margin-top:.2rem" onclick="doAdminPasswordReset()">Set New Password →</button>
     </div>
   </div>
 </div>
@@ -945,7 +957,7 @@ async function doAdminLogin(){
       role:  'admin'
     };
 
-    document.getElementById('adminLoginGate').style.display='none';
+    document.getElementById('loginGate').style.display='none';
     document.getElementById('adminApp').style.display='flex';
     await loadAll();
     await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
@@ -960,7 +972,7 @@ async function doLogout(){
   await sbSignOut();
   currentAdmin = null;
   document.getElementById('adminApp').style.display='none';
-  document.getElementById('adminLoginGate').style.display='flex';
+  document.getElementById('loginGate').style.display='flex';
   showToast('👋 Signed out.');
 }
 document.getElementById('adminPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
@@ -3027,6 +3039,62 @@ async function cleanupOrphanedAccounts(){
       }
     }
   );
+}
+
+// ── AUTH STATE — handles password reset token in URL ──
+sb.auth.onAuthStateChange(async (event, session) => {
+  if(event === 'PASSWORD_RECOVERY'){
+    // Hide login form, show reset form
+    document.getElementById('adminLoginBox').style.display = 'none';
+    document.getElementById('adminResetBox').style.display = 'block';
+  }
+});
+
+// Check URL hash for recovery token on page load
+(async function checkRecoveryToken(){
+  const hash = window.location.hash;
+  if(hash.includes('type=recovery') || hash.includes('access_token')){
+    // Supabase handles the token automatically via onAuthStateChange
+    // Just make sure the reset box shows
+    setTimeout(()=>{
+      const resetBox = document.getElementById('adminResetBox');
+      const loginBox = document.getElementById('adminLoginBox');
+      if(resetBox && loginBox){
+        loginBox.style.display='none';
+        resetBox.style.display='block';
+      }
+    }, 800);
+  }
+})();
+
+async function doAdminPasswordReset(){
+  const pw    = document.getElementById('adminNewPw')?.value||'';
+  const conf  = document.getElementById('adminConfirmPw')?.value||'';
+  const btn   = document.getElementById('adminResetBtn');
+  const err   = document.getElementById('adminResetError');
+  const showErr = msg => { if(err){ err.textContent='⚠️ '+msg; err.style.cssText='display:block;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.6rem .9rem;font-size:.82rem;color:#dc2626;font-weight:600;margin-bottom:.8rem'; }};
+
+  if(err) err.style.display='none';
+  if(pw.length < 8){ showErr('Password must be at least 8 characters.'); return; }
+  if(pw !== conf)  { showErr('Passwords do not match.'); return; }
+  if(btn){ btn.textContent='Saving…'; btn.disabled=true; }
+
+  const { error } = await sb.auth.updateUser({ password: pw });
+
+  if(btn){ btn.textContent='Set New Password →'; btn.disabled=false; }
+
+  if(error){
+    showErr(error.message || 'Could not update password. Please try again.');
+    return;
+  }
+
+  // Password set — show login form
+  document.getElementById('adminResetBox').style.display='none';
+  document.getElementById('adminLoginBox').style.display='block';
+  // Pre-fill email
+  const emailEl = document.getElementById('adminUser');
+  if(emailEl) emailEl.value = 'trueformbotanical@gmail.com';
+  showToast('✅ Password updated! Please sign in with your new password.');
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
