@@ -602,6 +602,73 @@ input[type=range].sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width
 @media(max-width:768px){#hero{padding-top:0;min-height:90vh}.hero-right{display:none}h1{font-size:2.8rem}.nav-center{display:none;flex-direction:column;position:absolute;top:56px;left:0;right:0;background:var(--teal-deepest);padding:1rem 5%;gap:.3rem;border-bottom:1px solid rgba(255,255,255,.1)}.nav-center.open{display:flex}.hamburger{display:flex}.nav-login{display:none}.mode-grid{grid-template-columns:1fr 1fr}.frow{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr 1fr}.nl-form{flex-direction:column}.cart-drawer{width:100%;right:-100%}.finder-step-pills{display:none}.safety-row{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){section{padding:65px 5%}.trad-grid{grid-template-columns:1fr}.mode-grid{grid-template-columns:1fr 1fr}.footer-top{grid-template-columns:1fr}.trust-strip{gap:1.2rem}.hero-btns{flex-direction:column}}
 </style>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── AUTH HELPERS ──
+async function sbSignUp(email, password, meta={}) {
+  return await sb.auth.signUp({ email, password, options: { data: meta } });
+}
+async function sbSignIn(email, password) {
+  return await sb.auth.signInWithPassword({ email, password });
+}
+async function sbSignOut() {
+  return await sb.auth.signOut();
+}
+async function sbUser() {
+  const { data: { user } } = await sb.auth.getUser();
+  return user;
+}
+async function sbSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  return session;
+}
+
+// ── DATA HELPERS ──
+async function dbGet(table, filters={}) {
+  let q = sb.from(table).select('*');
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q;
+  if (error) console.error('dbGet', table, error);
+  return data || [];
+}
+async function dbGetOne(table, filters={}) {
+  const rows = await dbGet(table, filters);
+  return rows[0] || null;
+}
+async function dbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if (error) console.error('dbInsert', table, error);
+  return data;
+}
+async function dbUpsert(table, row, onConflict) {
+  const q = onConflict
+    ? sb.from(table).upsert(row, { onConflict }).select().single()
+    : sb.from(table).upsert(row).select().single();
+  const { data, error } = await q;
+  if (error) console.error('dbUpsert', table, error);
+  return data;
+}
+async function dbUpdate(table, filters, updates) {
+  let q = sb.from(table).update(updates);
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q.select();
+  if (error) console.error('dbUpdate', table, error);
+  return data;
+}
+async function dbDelete(table, filters) {
+  let q = sb.from(table).delete();
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { error } = await q;
+  if (error) console.error('dbDelete', table, error);
+  return !error;
+}
+</script>
 </head>
 <body>
 <a href="#main" class="skip">Skip to main content</a>
@@ -701,17 +768,21 @@ input[type=range].sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width
           <h3 style="font-family:var(--serif);font-size:1.3rem;font-weight:700;margin-bottom:.4rem">Verify Your Account</h3>
           <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:1rem">Registering as <strong id="verifyEmailDisplay"></strong></p>
 
-          <!-- Code display — always visible, no email required -->
-          <div style="background:var(--surface-teal);border:2px solid var(--teal-bright);border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:1.1rem;text-align:center">
-            <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);font-weight:700;margin-bottom:.5rem">Your verification code</div>
-            <div id="verifyCodeDisplay" style="font-family:monospace;font-size:2rem;font-weight:700;letter-spacing:.35em;color:var(--teal-deep);padding:.3rem 0"></div>
-            <div style="font-size:.72rem;color:var(--text-soft);margin-top:.4rem">Copy this code and enter it below</div>
+          <!-- Supabase sends a real verification email -->
+          <div style="background:var(--surface-teal);border:2px solid var(--teal-bright);border-radius:10px;padding:1.2rem 1.3rem;margin-bottom:1.1rem">
+            <div style="display:flex;gap:.75rem;align-items:flex-start">
+              <div style="font-size:1.8rem;flex-shrink:0">📧</div>
+              <div>
+                <div style="font-size:.88rem;font-weight:700;color:var(--teal-deep);margin-bottom:.35rem">Check your inbox</div>
+                <div style="font-size:.8rem;color:var(--text-mid);line-height:1.6">A verification link has been sent to <strong id="verifyEmailDisplay2"></strong>. Click the link in the email to activate your account, then come back and sign in.</div>
+              </div>
+            </div>
           </div>
-
-          <div class="fgrp"><label>Enter 6-Digit Code</label><input type="text" id="verifyCodeInput" placeholder="000000" maxlength="6" class="code-input" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')portalVerify()"/></div>
+          <div id="verifyCodeDisplay" style="display:none"></div>
+          <input type="hidden" id="verifyCodeInput"/>
           <div id="verifyError" class="portal-error-plain"></div>
-          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:.7rem" onclick="portalVerify()">Verify &amp; Activate Account →</button>
-          <div style="text-align:center"><button onclick="resendVerifyCode()" id="resendVerifyBtn" class="text-link">Generate new code</button><span id="resendVerifyTimer" style="display:none;font-size:.72rem;color:var(--text-light)"></span></div>
+          <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:.7rem" onclick="portalView('signin')">← Back to Sign In</button>
+          <div style="text-align:center"><button onclick="resendVerifyEmail()" id="resendVerifyBtn" class="text-link">Resend verification email</button><span id="resendVerifyTimer" style="display:none;font-size:.72rem;color:var(--text-light)"></span></div>
         </div>
 
         <!-- Forgot Password -->
@@ -1556,6 +1627,29 @@ function showArea(id){
 // ── OPEN / CLOSE ──
 function openLogin(){
   document.getElementById('loginModal').classList.add('open');
+  // Check if already signed in
+  sbSession().then(session => {
+    if(session && session.user && !portalCurrentUser){
+      const u = session.user;
+      dbGetOne('profiles', { id: u.id }).then(profile => {
+        portalCurrentUser = {
+          id:        u.id,
+          email:     u.email,
+          firstName: profile?.first_name || u.user_metadata?.first_name || u.email.split('@')[0],
+          lastName:  profile?.last_name  || u.user_metadata?.last_name  || '',
+          name:      profile?.full_name  || u.user_metadata?.full_name  || u.email.split('@')[0],
+          role:      profile?.role       || 'client',
+          status:    profile?.status     || 'active',
+          verified:  true,
+        };
+        dbGetOne('assessments', { client_email: u.email }).then(asm => {
+          if(asm) portalCurrentUser.assessmentRef = asm.ref_code;
+          showArea('portalClientArea');
+          loadPortalDashboard();
+        });
+      });
+    }
+  });
   document.body.style.overflow='hidden';
   clearPortalErrors();
   if(portalCurrentUser){ showArea('portalClientArea'); portalView('dashboard'); return; }
@@ -1655,83 +1749,120 @@ function checkClientPwStrength3(pw){_pwStrength(pw,'cpPwBar','cpPwLabel');}
 // CLIENT SIGN IN
 // ══════════════════════
 async function portalSignIn(){
-  const emailEl=document.getElementById('si-email'),pwEl=document.getElementById('si-pw'),btn=document.getElementById('siBtn');
-  const email=(emailEl?.value||'').trim().toLowerCase(),pw=pwEl?.value||'';
-  clearPortalErrors();
-  if(!email){showPortalError('portalSignInError','Please enter your email address.');emailEl?.focus();return;}
-  if(!pw){showPortalError('portalSignInError','Please enter your password.');pwEl?.focus();return;}
-  if(btn){btn.textContent='Signing in…';btn.disabled=true;}
-  try{
-    const user=await pGet(emailKey(email));
-    if(btn){btn.textContent='Sign In →';btn.disabled=false;}
-    if(!user){showPortalError('portalSignInError','No account found with that email. Please register first.');return;}
-    if(user.status==='suspended'){showPortalError('portalSignInError','This account has been suspended. Please contact your practitioner.');return;}
-    if(!user.verified){
-      portalPendingUser = user;
-      portalVerifyCode  = String(Math.floor(100000 + Math.random() * 900000));
-      try { sessionStorage.setItem('tfb_verify_code', portalVerifyCode); } catch(e) {}
-      setElText('verifyEmailDisplay',  email);
-      setElText('verifyCodeDisplay',   portalVerifyCode);
-      setElVal('verifyCodeInput', '');
-      if(btn){ btn.textContent = 'Sign In →'; btn.disabled = false; }
-      portalView('verify');
-      startVerifyTimer(60);
-      return;
+  const email = (document.getElementById('si-email')?.value||'').trim().toLowerCase();
+  const pw    = document.getElementById('si-pw')?.value||'';
+  const btn   = document.getElementById('siBtn');
+
+  if(!email){ showPortalError('portalSignInError','Please enter your email address.'); return; }
+  if(!pw)   { showPortalError('portalSignInError','Please enter your password.'); return; }
+
+  if(btn){ btn.textContent='Signing in…'; btn.disabled=true; }
+
+  const { data, error } = await sbSignIn(email, pw);
+
+  if(btn){ btn.textContent='Sign In →'; btn.disabled=false; }
+
+  if(error){
+    if(error.message.includes('Invalid login') || error.message.includes('invalid_credentials')){
+      showPortalError('portalSignInError','Incorrect email or password. Please try again.');
+    } else if(error.message.includes('Email not confirmed')){
+      showPortalError('portalSignInError','Please verify your email first. Check your inbox for the verification link.');
+    } else {
+      showPortalError('portalSignInError', error.message || 'Sign in failed. Please try again.');
     }
-    if(user.pwHash!==hashPw(pw)){showPortalError('portalSignInError','Incorrect password. Please try again or reset your password.');if(pwEl)pwEl.value='';pwEl?.focus();return;}
-    user.lastLogin=new Date().toISOString();
-    await pSet(emailKey(email),user);
-    portalCurrentUser=user;
-    loadPortalDashboard();
-  }catch(err){
-    if(btn){btn.textContent='Sign In →';btn.disabled=false;}
-    showPortalError('portalSignInError','Sign-in failed. Please try again.');
+    return;
   }
+
+  const user = data.user;
+  if(!user){ showPortalError('portalSignInError','Sign in failed. Please try again.'); return; }
+
+  // Load profile from Supabase
+  const profile = await dbGetOne('profiles', { id: user.id });
+
+  portalCurrentUser = {
+    id:        user.id,
+    email:     user.email,
+    firstName: profile?.first_name || user.user_metadata?.first_name || user.email.split('@')[0],
+    lastName:  profile?.last_name  || user.user_metadata?.last_name  || '',
+    name:      profile?.full_name  || user.user_metadata?.full_name  || user.email.split('@')[0],
+    role:      profile?.role       || 'client',
+    status:    profile?.status     || 'active',
+    verified:  true,
+  };
+
+  // Look up assessment ref
+  const assessment = await dbGetOne('assessments', { client_email: user.email });
+  if(assessment) portalCurrentUser.assessmentRef = assessment.ref_code;
+
+  showToast('✅ Welcome back, ' + portalCurrentUser.firstName + '!');
+  loadPortalDashboard();
 }
 
 // ══════════════════════
 // CLIENT REGISTER
 // ══════════════════════
 async function portalRegister(){
-  const fn=(document.getElementById('reg-fn')?.value||'').trim();
-  const ln=(document.getElementById('reg-ln')?.value||'').trim();
-  const email=(document.getElementById('reg-em')?.value||'').trim().toLowerCase();
-  const pw=document.getElementById('reg-pw')?.value||'';
-  const cpw=document.getElementById('reg-cpw')?.value||'';
-  const terms=document.getElementById('reg-terms')?.checked||false;
-  const btn=document.getElementById('regBtn');
-  clearPortalErrors();
-  if(!fn||!ln){showPortalError('portalRegError','Please enter your first and last name.');return;}
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showPortalError('portalRegError','Please enter a valid email address.');return;}
-  if(pw.length<8){showPortalError('portalRegError','Password must be at least 8 characters.');return;}
-  if(pw!==cpw){showPortalError('portalRegError','Passwords do not match.');return;}
-  if(!terms){showPortalError('portalRegError','Please agree to the Privacy Policy and Terms.');return;}
-  if(btn){btn.textContent='Creating…';btn.disabled=true;}
-  try{
-    // Always delete any existing portal account for this email before registering.
-    // This handles: deleted accounts, orphaned records, admin-purged clients.
-    // A user who already has an active account will simply re-verify and get a fresh account.
-    const k = emailKey(email);
-    try{ await window.storage.delete(k, true); }catch(e){}
-    try{ localStorage.removeItem(k); }catch(e){}
+  const fn    = (document.getElementById('reg-fn')?.value||'').trim();
+  const ln    = (document.getElementById('reg-ln')?.value||'').trim();
+  const email = (document.getElementById('reg-em')?.value||'').trim().toLowerCase();
+  const pw    = document.getElementById('reg-pw')?.value||'';
+  const cpw   = document.getElementById('reg-cpw')?.value||'';
+  const terms = document.getElementById('reg-terms')?.checked;
+  const btn   = document.getElementById('regBtn');
 
-    const newUser={id:'c_'+Date.now(),firstName:fn,lastName:ln,name:fn+' '+ln,email,pwHash:hashPw(pw),status:'active',verified:false,role:'client',createdAt:new Date().toISOString(),lastLogin:null,assessmentRef:null};
-    const saved=await pSet(emailKey(email),newUser);
-    if(btn){btn.textContent='Create Account →';btn.disabled=false;}
-    if(!saved){showPortalError('portalRegError','Could not save account. Please try again.');return;}
-    try{const list=(await pGet('tfb_client_users'))||[];if(!list.find(c=>c.email===email)){list.push({id:newUser.id,name:newUser.name,email,role:'client',status:'active',hasAssessment:false,createdAt:newUser.createdAt});await pSet('tfb_client_users',list);}}catch(e){}
-    portalPendingUser = newUser;
-    portalVerifyCode  = String(Math.floor(100000 + Math.random() * 900000));
-    try { sessionStorage.setItem('tfb_verify_code', portalVerifyCode); } catch(e) {}
+  if(!fn)   { showPortalError('portalRegError','First name is required.'); return; }
+  if(!ln)   { showPortalError('portalRegError','Last name is required.'); return; }
+  if(!email||!/^[^@]+@[^@]+\.[^@]+$/.test(email)){ showPortalError('portalRegError','Please enter a valid email address.'); return; }
+  if(pw.length<8){ showPortalError('portalRegError','Password must be at least 8 characters.'); return; }
+  if(pw!==cpw){ showPortalError('portalRegError','Passwords do not match.'); return; }
+  if(!terms){ showPortalError('portalRegError','Please agree to the Privacy Policy and Terms.'); return; }
+
+  if(btn){ btn.textContent='Creating…'; btn.disabled=true; }
+
+  try {
+    // Register with Supabase Auth
+    const { data, error } = await sbSignUp(email, pw, {
+      first_name: fn,
+      last_name:  ln,
+      full_name:  fn+' '+ln,
+      role:       'client'
+    });
+
+    if(btn){ btn.textContent='Create Account →'; btn.disabled=false; }
+
+    if(error){
+      if(error.message.includes('already registered') || error.message.includes('already been registered')){
+        showPortalError('portalRegError','An account with this email already exists. Please sign in instead.');
+      } else {
+        showPortalError('portalRegError', error.message || 'Registration failed. Please try again.');
+      }
+      return;
+    }
+
+    // Store pending user details for verification step
+    portalPendingUser = {
+      id:         data.user?.id,
+      email,
+      firstName:  fn,
+      lastName:   ln,
+      name:       fn+' '+ln,
+      role:       'client',
+      status:     'active',
+      verified:   false,
+      createdAt:  new Date().toISOString(),
+    };
+
+    // Show verification — Supabase sends a real email with a link
+    // For now show the verify screen with instructions
     setElText('verifyEmailDisplay', email);
-    setElText('verifyCodeDisplay',  portalVerifyCode);
-    setElVal('verifyCodeInput', '');
-    setElStyle('verifyError', 'display', 'none');
+    setElVal('verifyCodeInput','');
+    setElStyle('verifyError','display','none');
     portalView('verify');
     startVerifyTimer(60);
-    setTimeout(() => document.getElementById('verifyCodeInput')?.focus(), 200);
-  }catch(err){
-    if(btn){btn.textContent='Create Account →';btn.disabled=false;}
+    showToast('📧 Check your email — a verification link has been sent to ' + email);
+
+  } catch(err) {
+    if(btn){ btn.textContent='Create Account →'; btn.disabled=false; }
     showPortalError('portalRegError','Registration failed. Please try again.');
   }
 }
@@ -1747,13 +1878,14 @@ function startVerifyTimer(secs){
   clearInterval(verifyResendTimer);
   verifyResendTimer=setInterval(()=>{rem--;timer.textContent='Resend in '+rem+'s';if(rem<=0){clearInterval(verifyResendTimer);timer.style.display='none';btn.style.display='inline';}},1000);
 }
-function resendVerifyCode(){
-  portalVerifyCode = String(Math.floor(100000 + Math.random() * 900000));
-  try { sessionStorage.setItem('tfb_verify_code', portalVerifyCode); } catch(e) {}
-  setElText('verifyCodeDisplay', portalVerifyCode);
-  setElVal('verifyCodeInput', '');
+function resendVerifyCode(){ resendVerifyEmail(); }
+async function resendVerifyEmail(){
+  const email = portalPendingUser?.email || document.getElementById('verifyEmailDisplay')?.textContent;
+  if(!email){ showToast('⚠️ No email address found.'); return; }
+  const { error } = await sb.auth.resend({ type: 'signup', email });
+  if(error){ showToast('⚠️ Could not resend: ' + error.message); return; }
   startVerifyTimer(60);
-  showToast('🔄 New verification code generated.');
+  showToast('📧 Verification email resent to ' + email);
 }
 async function portalVerify(){
   const entered=(document.getElementById('verifyCodeInput')?.value||'').trim();
@@ -1816,22 +1948,22 @@ function openPortalForgot(){
   setTimeout(()=>document.getElementById('pf-email')?.focus(),200);
 }
 async function sendClientReset(){
-  const email=(document.getElementById('pf-email')?.value||'').trim().toLowerCase();
-  const errEl=document.getElementById('pfEmailError'),btn=document.getElementById('pfSendBtn');
-  if(errEl)errEl.style.display='none';
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showPlainError('pfEmailError','Please enter a valid email address.');document.getElementById('pf-email')?.focus();return;}
-  if(btn){btn.textContent='Searching…';btn.disabled=true;}
-  const user=await pGet(emailKey(email));
-  if(btn){btn.textContent='Send Code →';btn.disabled=false;}
-  if(!user){showPlainError('pfEmailError','No account found with that email address.');return;}
-  pfResetUser = user;
-  pfResetCode = String(Math.floor(100000 + Math.random() * 900000));
-  try { sessionStorage.setItem('tfb_reset_code', pfResetCode); } catch(e) {}
-  setElText('pfCodeDisplay', pfResetCode);
-  setElVal('pf-code', '');
-  setElStyle('pfStep1', 'display', 'none');
-  setElStyle('pfStep2', 'display', 'block');
-  setTimeout(() => document.getElementById('pf-code')?.focus(), 200);
+  const email = (document.getElementById('pf-email')?.value||'').trim().toLowerCase();
+  const btn   = document.getElementById('pfSendBtn');
+  if(!email){ showPlainError('pfEmailError','Please enter your email address.'); return; }
+  if(btn){ btn.textContent='Sending…'; btn.disabled=true; }
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname + '?reset=true'
+  });
+
+  if(btn){ btn.textContent='Send Code →'; btn.disabled=false; }
+
+  if(error){ showPlainError('pfEmailError', error.message || 'Could not send reset email.'); return; }
+
+  setElStyle('pfStep1','display','none');
+  setElStyle('pfStep2','display','block');
+  showToast('📧 Password reset email sent to ' + email);
 }
 function verifyClientReset(){
   const entered=(document.getElementById('pf-code')?.value||'').trim();
@@ -1884,24 +2016,33 @@ async function loadPortalDashboard(){
   }
   updateDiaryBtnSub();
 }
-function portalLogout(){
-  const u=portalCurrentUser;portalCurrentUser=null;
-  const navBtn=document.querySelector('.nav-login');
-  if(navBtn){navBtn.textContent='Portal';navBtn.style.borderColor='';navBtn.style.color='';}
-  showArea('portalRoleSelect');showToast('👋 Signed out successfully.');
+async function portalLogout(){
+  await sbSignOut();
+  portalCurrentUser = null;
+  const navBtn = document.querySelector('.nav-login');
+  if(navBtn){ navBtn.textContent='Portal'; navBtn.style.borderColor=''; navBtn.style.color=''; }
+  showArea('portalRoleSelect');
+  showToast('👋 Signed out successfully.');
 }
 function pdOpenChangePassword(){portalView('changePw');}
 async function doChangePassword(){
-  const cur=document.getElementById('cp-current')?.value||'',nw=document.getElementById('cp-new')?.value||'',conf=document.getElementById('cp-confirm')?.value||'';
-  if(!cur){showPlainError('cpError','Please enter your current password.');return;}
-  if(nw.length<8){showPlainError('cpError','New password must be at least 8 characters.');return;}
-  if(nw!==conf){showPlainError('cpError','New passwords do not match.');return;}
-  if(!portalCurrentUser){showPlainError('cpError','Session expired. Please sign in again.');return;}
-  if(portalCurrentUser.pwHash!==hashPw(cur)){showPlainError('cpError','Current password is incorrect.');return;}
-  portalCurrentUser.pwHash=hashPw(nw);portalCurrentUser.lastPasswordReset=new Date().toISOString();
-  await pSet(emailKey(portalCurrentUser.email),portalCurrentUser);
-  setElVal('cp-current','');setElVal('cp-new','');setElVal('cp-confirm','');
-  showToast('✅ Password changed successfully!');portalView('dashboard');
+  const cur  = document.getElementById('cp-current')?.value||'';
+  const nw   = document.getElementById('cp-new')?.value||'';
+  const conf = document.getElementById('cp-confirm')?.value||'';
+  if(!cur)       { showPlainError('cpError','Please enter your current password.'); return; }
+  if(nw.length<8){ showPlainError('cpError','New password must be at least 8 characters.'); return; }
+  if(nw!==conf)  { showPlainError('cpError','New passwords do not match.'); return; }
+
+  // Re-authenticate first then update
+  const { error: signInError } = await sbSignIn(portalCurrentUser.email, cur);
+  if(signInError){ showPlainError('cpError','Current password is incorrect.'); return; }
+
+  const { error } = await sb.auth.updateUser({ password: nw });
+  if(error){ showPlainError('cpError', error.message || 'Could not update password.'); return; }
+
+  setElVal('cp-current',''); setElVal('cp-new',''); setElVal('cp-confirm','');
+  showToast('✅ Password changed successfully!');
+  portalView('dashboard');
 }
 
 // ══════════════════════

@@ -234,6 +234,73 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 
 @media(max-width:900px){.assessment-grid,.tools-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}.sidebar{display:none}.constitution-display{grid-template-columns:1fr}}
 </style>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── AUTH HELPERS ──
+async function sbSignUp(email, password, meta={}) {
+  return await sb.auth.signUp({ email, password, options: { data: meta } });
+}
+async function sbSignIn(email, password) {
+  return await sb.auth.signInWithPassword({ email, password });
+}
+async function sbSignOut() {
+  return await sb.auth.signOut();
+}
+async function sbUser() {
+  const { data: { user } } = await sb.auth.getUser();
+  return user;
+}
+async function sbSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  return session;
+}
+
+// ── DATA HELPERS ──
+async function dbGet(table, filters={}) {
+  let q = sb.from(table).select('*');
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q;
+  if (error) console.error('dbGet', table, error);
+  return data || [];
+}
+async function dbGetOne(table, filters={}) {
+  const rows = await dbGet(table, filters);
+  return rows[0] || null;
+}
+async function dbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if (error) console.error('dbInsert', table, error);
+  return data;
+}
+async function dbUpsert(table, row, onConflict) {
+  const q = onConflict
+    ? sb.from(table).upsert(row, { onConflict }).select().single()
+    : sb.from(table).upsert(row).select().single();
+  const { data, error } = await q;
+  if (error) console.error('dbUpsert', table, error);
+  return data;
+}
+async function dbUpdate(table, filters, updates) {
+  let q = sb.from(table).update(updates);
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q.select();
+  if (error) console.error('dbUpdate', table, error);
+  return data;
+}
+async function dbDelete(table, filters) {
+  let q = sb.from(table).delete();
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { error } = await q;
+  if (error) console.error('dbDelete', table, error);
+  return !error;
+}
+</script>
 </head>
 <body>
 
@@ -762,7 +829,7 @@ let currentHerbalist=null;
 let currentClientRef=null;
 let protocolLines={};
 
-function logout(){
+async function logout(){
   document.getElementById('dashboard').style.display='none';
   document.getElementById('loginGate').style.display='flex';
   // Clear sensitive fields
@@ -1300,85 +1367,92 @@ document.getElementById('loginUsername').addEventListener('keydown', e => { if (
 
 async function doLogin() {
   const usernameRaw = document.getElementById('loginUsername').value.trim();
-  const pw = document.getElementById('loginPw').value;
+  const pw          = document.getElementById('loginPw').value;
+  const btn         = document.getElementById('loginBtn');
 
-  if (!usernameRaw) { showLoginError('Please enter your username.'); document.getElementById('loginUsername').focus(); return; }
-  if (!pw)          { showLoginError('Please enter your password.'); document.getElementById('loginPw').focus(); return; }
+  if(!usernameRaw){ showLoginError('Please enter your username.'); document.getElementById('loginUsername').focus(); return; }
+  if(!pw)          { showLoginError('Please enter your password.'); document.getElementById('loginPw').focus(); return; }
 
-  const btn = document.getElementById('loginBtn');
-  btn.textContent = 'Signing in…';
-  btn.disabled = true;
+  btn.textContent = 'Signing in…'; btn.disabled = true;
 
-  // Always reload fresh merged list (built-ins + storage) so all accounts work
+  // Resolve username to email
   const freshList = await loadHerbalistList();
   loginHerbalistList = freshList;
-
   const q = usernameRaw.toLowerCase();
-  // Match by username, id, email, or full name — then check password
-  let found = freshList.find(h =>
-    (h.username?.toLowerCase() === q ||
-     h.id?.toLowerCase()       === q ||
-     h.email?.toLowerCase()    === q ||
-     h.name?.toLowerCase()     === q) && h.pw === pw
+  const found = freshList.find(h =>
+    h.username?.toLowerCase()===q || h.id?.toLowerCase()===q || h.email?.toLowerCase()===q
   );
-  // Also check built-ins directly (in case storage list is empty or outdated)
-  if (!found) {
-    found = BUILT_IN_HERBALISTS.find(h =>
-      (h.username === q || h.id === q || h.name?.toLowerCase() === q) && h.pw === pw
-    );
+
+  if(!found){
+    btn.textContent='Sign In to Dashboard →'; btn.disabled=false;
+    // Also try Supabase directly if not in local list (email login)
+    const emailInput = usernameRaw.includes('@') ? usernameRaw : null;
+    if(!emailInput){ showLoginError('No practitioner account found with that username.'); return; }
   }
 
-  btn.textContent = 'Sign In to Dashboard →';
-  btn.disabled = false;
+  const email = found?.email || usernameRaw;
 
-  if (!found) { showLoginError('Incorrect username or password. Contact your administrator.'); return; }
-  if (found.status === 'suspended') { showLoginError('This account has been suspended. Contact your system administrator.'); return; }
-  if (found.status === 'inactive')  { showLoginError('This account is inactive. Contact your system administrator.'); return; }
+  // Sign in via Supabase
+  const { data, error } = await sbSignIn(email, pw);
 
-  // Update last login in both storages
-  try {
-    const updated = freshList.map(h => h.id === found.id ? {...h, lastLogin: new Date().toISOString()} : h);
-    try { await window.storage.set('tfb_herbalists', JSON.stringify(updated), true); } catch(e) {}
-    try { localStorage.setItem('tfb_herbalists', JSON.stringify(updated)); } catch(e) {}
-  } catch(e) {}
+  btn.textContent='Sign In to Dashboard →'; btn.disabled=false;
 
-  // Build herbalistData from found record + fallback defaults
+  if(error){
+    if(error.message.includes('Invalid login') || error.message.includes('invalid_credentials')){
+      showLoginError('Incorrect username or password.');
+    } else {
+      showLoginError(error.message || 'Sign in failed.');
+    }
+    document.getElementById('loginPw').value='';
+    return;
+  }
+
+  const user = data.user;
+  if(!user){ showLoginError('Sign in failed. Please try again.'); return; }
+
+  // Verify this is a herbalist account
+  const profile = await dbGetOne('profiles', { id: user.id });
+  const herbData = found || await dbGetOne('herbalists', { email: user.email });
+
+  if(profile && profile.role === 'client'){
+    showLoginError('This account is registered as a client, not a practitioner.');
+    await sbSignOut(); return;
+  }
+
+  const firstName = (found?.name||user.email).split(' ').find(p=>p.length>1&&!p.endsWith('.')) || (found?.name||user.email).split(' ')[0];
   const herbalistData = {
-    name:      found.name,
-    initial:   found.name.charAt(0),
-    specialty: found.specialty || found.tradition || 'Herbalist',
-    greet:     found.name.split(' ').find(p => p.length > 2 && !p.includes('.')) || found.name.split(' ')[0],
-    pw:        found.pw,
-    id:        found.id,
-    tradition: found.tradition || '',
-    permissions: found,
+    name:      found?.full_name || found?.name || user.email,
+    initial:   (found?.full_name || found?.name || user.email).charAt(0),
+    specialty: found?.specialty || herbData?.specialty || 'Herbalist',
+    greet:     firstName,
+    id:        found?.id || user.id,
+    tradition: found?.tradition || herbData?.tradition || '',
+    permissions: found || {},
   };
 
   currentHerbalist = herbalistData;
-  document.getElementById('loginGate').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'flex';
-  document.getElementById('tbName').textContent = herbalistData.name;
-  document.getElementById('tbAvatar').textContent = herbalistData.initial;
-  document.getElementById('tbRole').textContent = (herbalistData.specialty || 'Herbalist').split(' ')[0] + ' Herbalist';
-  document.getElementById('greetName').textContent = herbalistData.greet;
-  document.getElementById('sbName').textContent = herbalistData.name;
-  document.getElementById('sbSpecialty').textContent = herbalistData.specialty;
-  document.getElementById('settName').value = herbalistData.name;
-  document.getElementById('settSpec').value = herbalistData.specialty;
-  document.getElementById('greetDate').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('loginGate').style.display  = 'none';
+  document.getElementById('dashboard').style.display  = 'flex';
+  document.getElementById('tbName').textContent        = herbalistData.name;
+  document.getElementById('tbAvatar').textContent      = herbalistData.initial;
+  document.getElementById('tbRole').textContent        = herbalistData.specialty.split(' ')[0] + ' Herbalist';
+  document.getElementById('greetName').textContent     = herbalistData.greet;
+  document.getElementById('sbName').textContent        = herbalistData.name;
+  document.getElementById('sbSpecialty').textContent   = herbalistData.specialty;
+  document.getElementById('settName').value            = herbalistData.name;
+  document.getElementById('settSpec').value            = herbalistData.specialty;
+  document.getElementById('greetDate').textContent     = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   showToast('🌿 Loading client assessments…');
   ALL_CLIENTS = await loadAllClients();
-  document.getElementById('statNew').textContent = ALL_CLIENTS.filter(c => !c._reviewed).length;
-  document.getElementById('statTotal').textContent = ALL_CLIENTS.length;
-  document.getElementById('nbNew').textContent = ALL_CLIENTS.filter(c => !c._reviewed).length;
-  document.getElementById('nbClients').textContent = ALL_CLIENTS.length;
-  renderRecentTable();
-  renderClientsTable(ALL_CLIENTS);
-  renderHerbDb();
-  renderProtocolLibrary(); loadProtocols();
-  await renderCalendar();
-  populateIntHerbs();
+  document.getElementById('statNew').textContent    = ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  document.getElementById('statTotal').textContent  = ALL_CLIENTS.length;
+  document.getElementById('nbNew').textContent      = ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  document.getElementById('nbClients').textContent  = ALL_CLIENTS.length;
+  renderRecentTable(); renderClientsTable(ALL_CLIENTS);
+  renderHerbDb(); renderProtocolLibrary(); loadProtocols();
+  await loadAllThreads(); await refreshMessages();
+  await renderCalendar(); populateIntHerbs();
   showToast('✅ Welcome back, ' + herbalistData.greet + '!');
 }
 
@@ -2353,4 +2427,35 @@ async function refreshDashboard(){
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
 </script>
 </body>
-</html>
+</html>async function loadAllClients(){
+  try {
+    // Load assessments from Supabase
+    const { data: assessments, error } = await sb.from('assessments').select('*').order('submitted_at', { ascending: false });
+    if(error){ console.error('loadAllClients:', error); return []; }
+
+    // Merge with protocol/state data
+    const clients = await Promise.all((assessments||[]).map(async a => {
+      const protocol = await dbGetOne('protocols', { assessment_ref: a.ref_code });
+      return {
+        ...a,
+        meta: { refCode: a.ref_code, submittedAt: a.submitted_at },
+        personal: a.personal || {},
+        symptoms:  a.symptoms || {},
+        bodyAreas: a.body_areas || {},
+        history:   a.history || {},
+        lifestyle: a.lifestyle || {},
+        _notes:          protocol?.instructions || '',
+        _protocolLines:  protocol?.protocol_lines || [],
+        _protocolSent:   protocol?.sent || false,
+        _reviewed:       a.reviewed || false,
+        _followupDate:   protocol?.followup_date || null,
+        _followupTime:   protocol?.followup_time || null,
+        _instructions:   protocol?.instructions || '',
+      };
+    }));
+    return clients;
+  } catch(e) {
+    console.error('loadAllClients error:', e);
+    return [];
+  }
+}

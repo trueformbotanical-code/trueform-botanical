@@ -149,6 +149,73 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 @media(max-width:600px){.frow,.frow-3{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.body-map-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── AUTH HELPERS ──
+async function sbSignUp(email, password, meta={}) {
+  return await sb.auth.signUp({ email, password, options: { data: meta } });
+}
+async function sbSignIn(email, password) {
+  return await sb.auth.signInWithPassword({ email, password });
+}
+async function sbSignOut() {
+  return await sb.auth.signOut();
+}
+async function sbUser() {
+  const { data: { user } } = await sb.auth.getUser();
+  return user;
+}
+async function sbSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  return session;
+}
+
+// ── DATA HELPERS ──
+async function dbGet(table, filters={}) {
+  let q = sb.from(table).select('*');
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q;
+  if (error) console.error('dbGet', table, error);
+  return data || [];
+}
+async function dbGetOne(table, filters={}) {
+  const rows = await dbGet(table, filters);
+  return rows[0] || null;
+}
+async function dbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if (error) console.error('dbInsert', table, error);
+  return data;
+}
+async function dbUpsert(table, row, onConflict) {
+  const q = onConflict
+    ? sb.from(table).upsert(row, { onConflict }).select().single()
+    : sb.from(table).upsert(row).select().single();
+  const { data, error } = await q;
+  if (error) console.error('dbUpsert', table, error);
+  return data;
+}
+async function dbUpdate(table, filters, updates) {
+  let q = sb.from(table).update(updates);
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q.select();
+  if (error) console.error('dbUpdate', table, error);
+  return data;
+}
+async function dbDelete(table, filters) {
+  let q = sb.from(table).delete();
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { error } = await q;
+  if (error) console.error('dbDelete', table, error);
+  return !error;
+}
+</script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -556,36 +623,67 @@ function buildReview(){
 
 // ── SUBMIT ──
 async function submitAssessment(){
-  if(!document.getElementById('consent1').classList.contains('sel')||!document.getElementById('consent2').classList.contains('sel')||!document.getElementById('consent3').classList.contains('sel')){showToast('⚠️ Please agree to all consent statements.');return;}
-  const data=collectData();
-  if(!data.personal.firstName||!data.personal.email){showToast('⚠️ First name and email are required.');return;}
-  // Show saving state
-  const submitBtn=document.querySelector('.btn-saffron[onclick="submitAssessment()"]');
-  if(submitBtn){submitBtn.textContent='Saving…';submitBtn.disabled=true;}
-  try{
-    // Load existing assessments list
-    let allRefs=[];
-    try{const r=await window.storage.get('tfb_refs',true);if(r&&r.value)allRefs=JSON.parse(r.value);}catch(e){}
-    // Save this assessment by ref
-    await window.storage.set('tfb_assessment_'+data.meta.refCode,JSON.stringify(data),true);
-    // Add ref to list if not already there
-    if(!allRefs.includes(data.meta.refCode)){
-      allRefs.unshift(data.meta.refCode);
-      await window.storage.set('tfb_refs',JSON.stringify(allRefs),true);
-    }
-    // Clear draft
-    try{await window.storage.delete('tfb_draft_'+data.personal.email,false);}catch(e){}
-  }catch(e){
-    // Fallback to localStorage if storage unavailable
-    localStorage.setItem('tfb_assessment_'+data.meta.refCode,JSON.stringify(data));
-    localStorage.setItem('tfb_latest_assessment',JSON.stringify(data));
+  const data = collectData();
+  if(!data.personal.firstName || !data.personal.email){
+    showToast('⚠️ First name and email are required.');
+    return;
   }
-  // Hide form, show confirm
-  document.querySelectorAll('[id^="step"]').forEach(s=>s.classList.add('hidden'));
-  const confirm=document.getElementById('submitConfirm');
-  confirm.style.display='block';
-  document.getElementById('refNum').textContent=data.meta.refCode;
-  window.scrollTo({top:0,behavior:'smooth'});
+
+  const refCode = 'TFB-' + Date.now().toString(36).toUpperCase();
+  data.meta = { refCode, submittedAt: new Date().toISOString() };
+
+  // Get current Supabase user if signed in
+  const user = await sbUser();
+
+  const row = {
+    ref_code:          refCode,
+    client_id:         user?.id || null,
+    client_email:      data.personal.email,
+    client_name:       data.personal.firstName + ' ' + data.personal.lastName,
+    personal:          data.personal,
+    symptoms:          data.symptoms,
+    body_areas:        data.bodyAreas,
+    history:           data.history,
+    lifestyle:         data.lifestyle,
+    assigned_herbalist: data.personal.herbalist || null,
+    submitted_at:      new Date().toISOString(),
+  };
+
+  // Save to Supabase
+  let saved = false;
+  try {
+    const { error } = await sb.from('assessments').insert(row);
+    if(!error) saved = true;
+    else console.error('Supabase assessment insert:', error);
+  } catch(e) { console.error(e); }
+
+  // Also save to localStorage as backup
+  try {
+    const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
+    refs.push(refCode);
+    localStorage.setItem('tfb_refs', JSON.stringify(refs));
+    localStorage.setItem('tfb_assessment_'+refCode, JSON.stringify({...data, meta:{...data.meta}}));
+  } catch(e){}
+
+  if(saved){
+    showToast('✅ Assessment submitted! Your reference: ' + refCode);
+  } else {
+    showToast('✅ Assessment saved locally. Ref: ' + refCode);
+  }
+
+  // Show confirmation
+  document.querySelectorAll('.step-content').forEach(s=>s.style.display='none');
+  const conf = document.getElementById('step7') || document.createElement('div');
+  conf.innerHTML = `
+    <div style="text-align:center;padding:2rem 1rem">
+      <div style="font-size:3rem;margin-bottom:1rem">🌿</div>
+      <h2 style="font-family:var(--serif);color:var(--teal-deep);margin-bottom:.7rem">Assessment Submitted!</h2>
+      <p style="color:var(--text-mid);margin-bottom:1rem">Your reference number is <strong style="color:var(--teal-mid)">${refCode}</strong></p>
+      <p style="font-size:.88rem;color:var(--text-soft);margin-bottom:1.5rem">Your herbalist will review your assessment and prepare a personalised protocol. You'll hear from them soon.</p>
+      <button onclick="window.location.href='index.html'" class="btn-primary" style="justify-content:center;padding:12px 28px">← Back to TrueForm Botanical</button>
+    </div>`;
+  conf.style.display='block';
+  if(!conf.parentNode) document.querySelector('.form-body, .step-wrapper, main')?.appendChild(conf);
 }
 
 // ── AUTO-SAVE ──
