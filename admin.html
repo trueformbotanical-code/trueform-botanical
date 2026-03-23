@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>TrueForm Botanical — System Administration</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
@@ -304,9 +307,6 @@ async function dbDelete(table, filters) {
   return !error;
 }
 </script>
-<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -3334,8 +3334,8 @@ function renderAssessments(list){
       '<td style="font-size:.76rem;color:var(--text-soft)">' + (date ? formatDt(date) : '—') + '</td>' +
       '<td>' + statusBadgeHtml + '</td>' +
       '<td onclick="event.stopPropagation()"><div class="action-row">' +
-        '<button class="btn btn-ghost btn-sm" onclick="markAssessmentReviewed('' + sanitize(ref) + '')" aria-label="Mark as reviewed">✓ Review</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="deleteAssessment('' + sanitize(ref) + '')" aria-label="Delete assessment">Delete</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="markAssessmentReviewed(\'' + sanitize(ref) + '\')" aria-label="Mark as reviewed">✓ Review</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteAssessment(\'' + sanitize(ref) + '\')" aria-label="Delete assessment">Delete</button>' +
       '</div></td>' +
     '</tr>';
   }).join('');
@@ -3398,8 +3398,7 @@ function exportAssessments(){
       a.status||(a.reviewed?'reviewed':'pending')
     ]);
   });
-  const csv = rows.map(r=>r.map(f=>'"'+String(f).replace(/"/g,'""')+'"').join(',')).join('
-');
+  const csv = rows.map(function(r){return r.map(function(f){return '"'+String(f).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
   const a2 = document.createElement('a');
   a2.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
   a2.download = 'assessments-' + new Date().toISOString().split('T')[0] + '.csv';
