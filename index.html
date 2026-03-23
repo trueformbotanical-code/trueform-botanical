@@ -3299,7 +3299,30 @@ document.getElementById('nav').addEventListener('click', function(e){
 function openCart(){}
 function closeCart(){}
 function checkout(){}
+// ── Cart / shop stubs (feature removed) ──
+function updateCartUI(){}
+function addToCart(id){ showToast('Shop coming soon.'); }
+function removeFromCart(id){}
+// ── MOBILE NAV ──
+function closeNavMenu(){
+  const nc = document.getElementById('navCenter');
+  const hb = document.getElementById('hamburger');
+  if(nc){ nc.classList.remove('open'); }
+  if(hb){ hb.setAttribute('aria-expanded','false'); hb.textContent='☰'; }
+  document.body.style.overflow='';
+}
+// Close nav on any nav-link click on mobile
+document.querySelectorAll('.nav-center a, .nav-center button').forEach(function(el){
+  el.addEventListener('click', function(){ if(window.innerWidth<=768) closeNavMenu(); });
+});
+// Close nav when clicking outside
+document.addEventListener('click', function(e){
+  const nc = document.getElementById('navCenter');
+  const hb = document.getElementById('hamburger');
+  if(nc && nc.classList.contains('open') && !nc.contains(e.target) && !hb?.contains(e.target)){
+    closeNavMenu();
+  }
+});
 </script>
 </body>
-</html>function updateCartUI(){ /* cart removed */ }
-
+</html>

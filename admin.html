@@ -559,6 +559,7 @@ async function dbDelete(table, filters) {
         <div class="sb-item active" onclick="nav('overview')"><span class="sb-icon">📊</span>Overview</div>
         <div class="sb-item" onclick="nav('herbalists')"><span class="sb-icon">🌿</span>Herbalists<span class="sb-badge teal" id="nbHerbalists">0</span></div>
         <div class="sb-item" onclick="nav('clients')"><span class="sb-icon">👥</span>Clients<span class="sb-badge teal" id="nbClients">0</span></div>
+        <div class="sb-item" onclick="nav('suspended')"><span class="sb-icon">🚫</span>Suspended<span class="sb-badge red" id="nbSuspended">0</span></div>
         <div class="sb-item" onclick="nav('admins')"><span class="sb-icon">🛡️</span>Admins<span class="sb-badge red" id="nbAdmins">1</span></div>
         <div class="sb-item" onclick="nav('assessments')"><span class="sb-icon">📋</span>Assessments<span class="sb-badge teal" id="nbAssessments">0</span></div>
       </div>
@@ -701,6 +702,28 @@ async function dbDelete(table, filters) {
           </div>
           <table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Assigned Herbalist</th><th>Assessment</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="clientsTbody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ══ SUSPENDED ACCOUNTS ══ -->
+      <div class="panel" id="panel-suspended">
+        <div class="ph">
+          <div><div class="ph-title">Suspended <em>Accounts</em></div><div class="ph-sub">All herbalists and clients currently on hold</div></div>
+          <div class="ph-actions">
+            <button class="btn btn-ghost" onclick="loadAll()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="padding-top:1rem">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:.8rem">Herbalists</div>
+          <table class="data-table" style="margin-bottom:1.5rem">
+            <thead><tr><th>Name</th><th>Email</th><th>Specialty</th><th>Suspended Since</th><th>Actions</th></tr></thead>
+            <tbody id="suspendedHerbalistsTbody"></tbody>
+          </table>
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:.8rem">Clients</div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Assigned Herbalist</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="suspendedClientsTbody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -1315,6 +1338,7 @@ async function loadAll(){
   renderHerbalists();
   renderClients();
   renderAssessments();
+  renderSuspended();
   renderAdmins();
   if(!ALL_CLIENTS_USR.length){
     console.info('No clients loaded. Checking Supabase profiles...');
@@ -1370,6 +1394,8 @@ function updateStats(){
   setText('ovClients',ALL_CLIENTS_USR.length);
   setText('ovAssessments',ALL_ASSESSMENTS.length);
   setText('ovSuspended',sus);
+  setText('nbSuspended',sus);
+  renderSuspended();
   setText('nbHerbalists',ALL_HERBALISTS.length);
   setText('nbClients',ALL_CLIENTS_USR.length);
   setText('nbAssessments',(ALL_ASSESSMENTS||[]).length);
@@ -2016,10 +2042,23 @@ document.addEventListener('DOMContentLoaded', updateMobileMenuVisibility);
 function nav(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+id)?.classList.add('active');
-  document.querySelector(`.sb-item[onclick="nav('${id}')"]`)?.classList.add('active');
+  const panel = document.getElementById('panel-'+id);
+  if(panel) panel.classList.add('active');
+  const item = document.querySelector('[data-nav="'+id+'"]') ||
+               document.querySelector('.sb-item[onclick*="''+id+''"]');
+  if(item) item.classList.add('active');
   if(id==='analytics') renderAnalytics();
   if(id==='schedule')  renderSchedule();
+  // Close mobile sidebar
+  if(window.innerWidth<=768){
+    const sb=document.querySelector('.sidebar');
+    const ov=document.getElementById('sidebarOverlay');
+    const btn=document.getElementById('adminMenuBtn');
+    if(sb) sb.classList.remove('mobile-open');
+    if(ov) ov.classList.remove('active');
+    if(btn){ btn.textContent='☰'; btn.setAttribute('aria-expanded','false'); }
+    document.body.style.overflow='';
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -3532,11 +3571,70 @@ function exportAssessments(){
 
 // Show suspended accounts across all roles
 function showSuspended(){
+  // Gather all suspended accounts across herbalists and clients
+  const suspendedHerbalists = ALL_HERBALISTS.filter(h=>h.status==='suspended');
+  const suspendedClients    = ALL_CLIENTS_USR.filter(c=>c.status==='suspended');
+  const total = suspendedHerbalists.length + suspendedClients.length;
+
+  if(total === 0){
+    showToast('✅ No suspended accounts found.');
+    return;
+  }
+
+  // Navigate to clients panel and show a merged suspended view
   nav('clients');
-  setTimeout(function(){
-    const sel = document.querySelector('#panel-clients .f-select');
-    if(sel){ sel.value='suspended'; filterStatus('clients','suspended'); }
-  }, 150);
+
+  // Build HTML for suspended accounts from both lists
+  const tbody = document.getElementById('clientsTbody');
+  if(!tbody) return;
+
+  const rows = [
+    ...suspendedHerbalists.map(h=>`
+      <tr>
+        <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">${sanitize((h.name||'?').charAt(0))}</div>${sanitize(h.name||'—')}</div></td>
+        <td style="font-size:.78rem">${sanitize(h.email||'—')}</td>
+        <td style="font-size:.78rem;color:var(--spice);font-weight:700">🌿 Herbalist</td>
+        <td>—</td>
+        <td style="font-size:.76rem;color:var(--text-soft)">${h.createdAt?formatDt(h.createdAt):'—'}</td>
+        <td><span style="font-size:.68rem;padding:2px 9px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;font-weight:700">● Suspended</span></td>
+        <td onclick="event.stopPropagation()"><div class="action-row">
+          <button class="btn btn-primary btn-sm" onclick="toggleSuspend('${sanitize(h.id)}','herbalist')">Reinstate</button>
+        </div></td>
+      </tr>`),
+    ...suspendedClients.map(cl=>`
+      <tr>
+        <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">${sanitize((cl.name||'?').charAt(0))}</div>${sanitize(cl.name||'—')}</div></td>
+        <td style="font-size:.78rem">${sanitize(cl.email||'—')}</td>
+        <td style="font-size:.78rem;color:var(--teal-mid);font-weight:700">👤 Client</td>
+        <td>—</td>
+        <td style="font-size:.76rem;color:var(--text-soft)">${cl.createdAt?formatDt(cl.createdAt):'—'}</td>
+        <td><span style="font-size:.68rem;padding:2px 9px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;font-weight:700">● Suspended</span></td>
+        <td onclick="event.stopPropagation()"><div class="action-row">
+          <button class="btn btn-primary btn-sm" onclick="toggleSuspend('${sanitize(cl.id)}','client')">Reinstate</button>
+        </div></td>
+      </tr>`)
+  ];
+
+  tbody.innerHTML = rows.join('');
+
+  // Update the panel header to show this is a filtered view
+  const phTitle = document.querySelector('#panel-clients .ph-title');
+  if(phTitle) phTitle.innerHTML = 'Suspended <em>Accounts</em> <span style="font-size:.7rem;padding:2px 8px;background:#fee2e2;color:#dc2626;border-radius:20px;margin-left:.5rem">' + total + ' suspended</span>';
+
+  // Add a "show all" button
+  const phActions = document.querySelector('#panel-clients .ph-actions');
+  if(phActions && !document.getElementById('showAllBtn')){
+    const btn = document.createElement('button');
+    btn.id = 'showAllBtn';
+    btn.className = 'btn btn-ghost';
+    btn.textContent = '← Show All Clients';
+    btn.onclick = function(){
+      if(phTitle) phTitle.innerHTML = 'Client <em>Accounts</em>';
+      btn.remove();
+      renderClients();
+    };
+    phActions.insertBefore(btn, phActions.firstChild);
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -3579,6 +3677,54 @@ function checkLoginRateLimit(){
     return false;
   }
   return true;
+}
+
+// ══════════════════════════════════════════════════
+// SUSPENDED PANEL
+// ══════════════════════════════════════════════════
+function renderSuspended(){
+  const suspH = (ALL_HERBALISTS||[]).filter(h=>h.status==='suspended');
+  const suspC = (ALL_CLIENTS_USR||[]).filter(c=>c.status==='suspended');
+  const total  = suspH.length + suspC.length;
+  setText('nbSuspended', total);
+  setText('ovSuspended', total);
+
+  // Herbalists table
+  const hTbody = document.getElementById('suspendedHerbalistsTbody');
+  if(hTbody){
+    if(!suspH.length){
+      hTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';
+    } else {
+      hTbody.innerHTML = suspH.map(h=>'<tr>'+
+        '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">'+sanitize(h.name.charAt(0))+'</div>'+sanitize(h.name)+'</div></td>'+
+        '<td style="font-size:.78rem">'+sanitize(h.email||'—')+'</td>'+
+        '<td style="font-size:.78rem">'+sanitize(h.specialty||'—')+'</td>'+
+        '<td style="font-size:.76rem;color:var(--text-soft)">—</td>'+
+        '<td onclick="event.stopPropagation()"><div class="action-row">'+
+          '<button class="btn btn-primary btn-sm" onclick="toggleSuspend(''+sanitize(h.id)+'','herbalist')">Reinstate</button>'+
+        '</div></td>'+
+      '</tr>').join('');
+    }
+  }
+
+  // Clients table
+  const cTbody = document.getElementById('suspendedClientsTbody');
+  if(cTbody){
+    if(!suspC.length){
+      cTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';
+    } else {
+      cTbody.innerHTML = suspC.map(cl=>'<tr>'+
+        '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">'+sanitize((cl.name||'?').charAt(0))+'</div>'+sanitize(cl.name||'—')+'</div></td>'+
+        '<td style="font-size:.78rem">'+sanitize(cl.email||'—')+'</td>'+
+        '<td style="font-size:.78rem">'+sanitize(cl.assignedHerbalist||'Unassigned')+'</td>'+
+        '<td>'+statusBadge('suspended')+'</td>'+
+        '<td onclick="event.stopPropagation()"><div class="action-row">'+
+          '<button class="btn btn-primary btn-sm" onclick="toggleSuspend(''+sanitize(cl.id)+'','client')">Reinstate</button>'+
+          '<button class="btn btn-danger btn-sm" onclick="deleteUser(''+sanitize(cl.id)+'','client')">Delete</button>'+
+        '</div></td>'+
+      '</tr>').join('');
+    }
+  }
 }
 
 function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
