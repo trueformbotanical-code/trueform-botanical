@@ -602,7 +602,7 @@ input[type=range].sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:1100px){.trad-grid{grid-template-columns:1fr 1fr}.mode-grid{grid-template-columns:repeat(2,1fr)}.booking-layout{grid-template-columns:1fr;gap:2rem}.fh-layout{grid-template-columns:1fr;gap:2.5rem}.fh-right{max-width:320px;margin:0 auto}.footer-top{grid-template-columns:1fr 1fr 1fr}.s2-cols{grid-template-columns:1fr}.dosage-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){#hero{padding-top:0;min-height:90vh}.hero-right{display:none}h1{font-size:2.8rem}.nav-center{display:none;flex-direction:column;position:absolute;top:56px;left:0;right:0;background:var(--teal-deepest);padding:1rem 5%;gap:.3rem;border-bottom:1px solid rgba(255,255,255,.1)}.nav-center.open{display:flex}.hamburger{display:flex}.nav-login{display:none}.mode-grid{grid-template-columns:1fr 1fr}.frow{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr 1fr}.nl-form{flex-direction:column}.cart-drawer{width:100%;right:-100%}.finder-step-pills{display:none}.safety-row{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){#hero{padding-top:0;min-height:90vh}.hero-right{display:none}h1{font-size:2.8rem}.nav-center{display:none;flex-direction:column;position:absolute;top:56px;left:0;right:0;background:var(--teal-deepest);padding:1rem 5%;gap:.3rem;border-bottom:1px solid rgba(255,255,255,.1)}.nav-center.open{display:flex}.hamburger{display:flex}.nav-login{font-size:.7rem!important;padding:6px 12px!important}.mode-grid{grid-template-columns:1fr 1fr}.frow{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr 1fr}.nl-form{flex-direction:column}.cart-drawer{width:100%;right:-100%}.finder-step-pills{display:none}.safety-row{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){section{padding:65px 5%}.trad-grid{grid-template-columns:1fr}.mode-grid{grid-template-columns:1fr 1fr}.footer-top{grid-template-columns:1fr}.trust-strip{gap:1.2rem}.hero-btns{flex-direction:column}}
 /* ══════════════════════════════════════════════════
    RESPONSIVE — TABLET (≤1024px)
@@ -701,17 +701,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
-// Sign out any lingering Supabase session on page load (belt-and-suspenders)
-(function clearOldSession(){
-  try {
-    // Remove any Supabase auth keys from localStorage
-    Object.keys(localStorage).forEach(function(k){
-      if(k.startsWith('sb-') || k.includes('supabase')) {
-        localStorage.removeItem(k);
-      }
-    });
-  } catch(e){}
-})();
+// Session is not persisted (persistSession:false) so no cleanup needed on load
 
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {
@@ -3382,6 +3372,38 @@ hbg.addEventListener("click",()=>{const o=nc.classList.toggle("open");hbg.setAtt
 nc.querySelectorAll("a.nav-link").forEach(a=>a.addEventListener("click",()=>{nc.classList.remove("open");hbg.setAttribute("aria-expanded","false");}));
 
 // ══ TOAST ══
+// ── RETURN FROM ASSESSMENT — auto-open portal dashboard ──
+(function checkReturnFromAssessment(){
+  try {
+    // Check for #portal hash (redirect from client.html after submission)
+    if(window.location.hash !== '#portal') return;
+    const raw = sessionStorage.getItem('tfb_return_to_portal');
+    if(!raw) return;
+    const ret = JSON.parse(raw);
+    if(!ret.email || Date.now() - ret.ts > 60000) return;  // only valid for 60s
+    sessionStorage.removeItem('tfb_return_to_portal');
+    // Clean up hash without reload
+    history.replaceState(null, '', window.location.pathname);
+    // Also check if we have a portal session active
+    const portalRaw = sessionStorage.getItem('tfb_client_session');
+    if(portalRaw){
+      const sess = JSON.parse(portalRaw);
+      if(sess.email && Date.now() - sess.ts < 1800000){
+        // Restore portalCurrentUser from session and open dashboard
+        window.addEventListener('DOMContentLoaded', function(){
+          setTimeout(function(){
+            // Try to sign back in silently and open portal
+            openLogin();
+            showArea('portalRoleSelect');
+            // Show a welcome back message
+            showToast('✅ Assessment submitted! Welcome back to your portal.');
+          }, 600);
+        });
+      }
+    }
+  } catch(e){}
+})();
+
 // ── SIGN OUT ON BROWSER CLOSE / TAB CLOSE ──
 window.addEventListener('beforeunload', function(){
   try {

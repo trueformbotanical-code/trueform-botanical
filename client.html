@@ -965,19 +965,65 @@ async function submitAssessment(){
     showToast('✅ Assessment ' + action + ' locally. Ref: ' + refCode);
   }
 
-  // Show confirmation
+  // Redirect back to portal dashboard after brief confirmation
   document.querySelectorAll('.step-content').forEach(s=>s.style.display='none');
   const conf = document.getElementById('step7') || document.createElement('div');
+
+  // Check if client came from the portal (has a session)
+  let cameFromPortal = false;
+  try {
+    const raw = sessionStorage.getItem('tfb_client_session');
+    if(raw){
+      const sess = JSON.parse(raw);
+      if(sess.email && Date.now() - sess.ts < 1800000) cameFromPortal = true;
+    }
+  } catch(e){}
+
   conf.innerHTML = `
     <div style="text-align:center;padding:2rem 1rem">
-      <div style="font-size:3rem;margin-bottom:1rem">🌿</div>
-      <h2 style="font-family:var(--serif);color:var(--teal-deep);margin-bottom:.7rem">Assessment Submitted!</h2>
-      <p style="color:var(--text-mid);margin-bottom:1rem">Your reference number is <strong style="color:var(--teal-mid)">${refCode}</strong></p>
-      <p style="font-size:.88rem;color:var(--text-soft);margin-bottom:1.5rem">Your herbalist will review your assessment and prepare a personalised protocol. You'll hear from them soon.</p>
-      <button onclick="window.location.href='index.html'" class="btn-primary" style="justify-content:center;padding:12px 28px">← Back to TrueForm Botanical</button>
+      <div style="font-size:3.5rem;margin-bottom:1rem">🌿</div>
+      <h2 style="font-family:var(--serif);color:var(--teal-deep);margin-bottom:.6rem">${isEdit ? 'Assessment Updated!' : 'Assessment Submitted!'}</h2>
+      <p style="color:var(--text-mid);margin-bottom:.5rem;font-size:.9rem">Your reference number is</p>
+      <div style="font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--teal-mid);background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.6rem 1rem;display:inline-block;margin-bottom:1rem">${refCode}</div>
+      <p style="font-size:.86rem;color:var(--text-soft);margin-bottom:1.8rem;line-height:1.65">Your herbalist will review your assessment and prepare a personalised protocol.<br/>You can track the status in your Client Portal.</p>
+      <button onclick="returnToPortal()" class="btn-primary" style="justify-content:center;padding:13px 32px;font-size:.95rem">
+        ${cameFromPortal ? '← Return to My Portal Dashboard' : '← Back to TrueForm Botanical'}
+      </button>
     </div>`;
   conf.style.display='block';
-  if(!conf.parentNode) document.querySelector('.form-body, .step-wrapper, main')?.appendChild(conf);
+  if(!conf.parentNode) document.querySelector('.form-body, .step-wrapper, main, .form-container')?.appendChild(conf);
+
+  // Auto-redirect after 8 seconds
+  let countdown = 8;
+  const countEl = document.createElement('p');
+  countEl.style.cssText = 'font-size:.75rem;color:var(--text-light);margin-top:.8rem';
+  countEl.textContent = 'Redirecting in ' + countdown + 's…';
+  conf.querySelector('div').appendChild(countEl);
+  const tick = setInterval(function(){
+    countdown--;
+    countEl.textContent = 'Redirecting in ' + countdown + 's…';
+    if(countdown <= 0){ clearInterval(tick); returnToPortal(); }
+  }, 1000);
+}
+
+function returnToPortal(){
+  // Check if came from portal — go back to portal with dashboard open
+  try {
+    const raw = sessionStorage.getItem('tfb_client_session');
+    if(raw){
+      const sess = JSON.parse(raw);
+      if(sess.email && Date.now() - sess.ts < 1800000){
+        // Pass a flag so index.html auto-opens the portal dashboard
+        sessionStorage.setItem('tfb_return_to_portal', JSON.stringify({
+          email: sess.email,
+          ts: Date.now()
+        }));
+        window.location.href = 'index.html#portal';
+        return;
+      }
+    }
+  } catch(e){}
+  window.location.href = 'index.html';
 }
 
 // ── AUTO-SAVE ──
