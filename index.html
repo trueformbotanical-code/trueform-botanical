@@ -2349,28 +2349,12 @@ function selectPractSuggest(id) {
   const inp = document.getElementById('pract-user');
   if (inp) inp.value = user.username || user.id;
   closePractSuggestions();
-  showPractUserCard(user);
   setTimeout(() => document.getElementById('pract-pw')?.focus(), 100);
 }
 
-function showPractUserCard(u) {
-  setElText('practCardAvatar', u.name.charAt(0));
-  setElText('practCardName',   u.name);
-  setElText('practCardSpec',   u.specialty || u.tradition || 'Practitioner');
-  const sEl = document.getElementById('practCardStatus');
-  if (sEl) {
-    if (u.status === 'active') {
-      sEl.innerHTML = '<span style="font-size:.64rem;padding:2px 8px;border-radius:20px;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);font-weight:700">● Active</span>';
-    } else {
-      sEl.innerHTML = `<span style="font-size:.64rem;padding:2px 8px;border-radius:20px;background:var(--red-pale);color:var(--red);border:1px solid var(--red-border);font-weight:700">● ${u.status}</span>`;
-    }
-  }
-  setElStyle('practUserCard', 'display', 'flex');
-}
 
-function hidePractUserCard() {
-  setElStyle('practUserCard', 'display', 'none');
-}
+
+
 
 
 
