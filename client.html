@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <title>TrueForm Botanical — Client Self-Assessment</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -147,7 +147,44 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
 .autosave.show{opacity:1}
 .autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright)}
 
-@media(max-width:600px){.frow,.frow-3{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.body-map-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ══ TABLET ══ */
+@media(max-width:768px){
+  .step-pills{display:none}
+  .form-card{padding:1.5rem}
+  .frow{grid-template-columns:1fr!important}
+  h2{font-size:1.6rem}
+  .step-nav{flex-direction:column;gap:.6rem}
+  .step-nav button{width:100%;justify-content:center}
+}
+
+/* ══ MOBILE ══ */
+@media(max-width:600px){
+  body{font-size:15px}
+  .form-header{padding:1rem}
+  .form-header h1{font-size:1.3rem}
+  .form-card{padding:1rem;border-radius:8px}
+  .frow{grid-template-columns:1fr!important}
+  .checkbox-grid,.radio-grid{grid-template-columns:1fr 1fr!important}
+  .step-indicator{gap:.3rem}
+  .step-dot{width:28px;height:28px;font-size:.7rem}
+  .body-map-grid{grid-template-columns:1fr 1fr!important}
+  select,input,textarea{font-size:16px}
+}
+
+/* ══ SMALL MOBILE ══ */
+@media(max-width:380px){
+  .form-card{padding:.8rem}
+  .checkbox-grid,.radio-grid{grid-template-columns:1fr!important}
+  .body-map-grid{grid-template-columns:1fr!important}
+}
+
+
+/* ── TOUCH / MOBILE BASE ── */
+*{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,a,[role="button"]{min-height:44px}
+input,select,textarea{font-size:max(16px,1em)}
+@media(hover:none){button:hover{opacity:1}}
 </style>
 
 <!-- Supabase SDK -->
@@ -537,7 +574,7 @@ async function renderSymptomChips(){
     }
   }catch(e){}
   const unique=[...new Map(SYMPTOMS_CLIENT.map(s=>[s.value,s])).values()];
-  document.getElementById('symptomChips').innerHTML=unique.map(s=>`<span class="chip" data-g="symptom" data-v="${s.value}" onclick="toggleChip(this)">${s.label}</span>`).join('');
+  (document.getElementById('symptomChips')||{}).innerHTML=unique.map(s=>`<span class="chip" data-g="symptom" data-v="${s.value}" onclick="toggleChip(this)">${s.label}</span>`).join('');
 }
 renderSymptomChips();
 
@@ -563,7 +600,7 @@ function goStep(n){
 }
 function updateProgress(){
   const pct=((currentStep-1)/(TOTAL_STEPS-1))*100;
-  document.getElementById('progFill').style.width=pct+'%';
+  (document.getElementById('progFill')||{style:{}}).style.width=pct+'%';
   document.querySelectorAll('.pstep').forEach(s=>{
     const sn=parseInt(s.dataset.step);
     s.classList.remove('active','done');
@@ -601,7 +638,7 @@ function buildReview(){
   const p=d.personal;
   const pill=txt=>`<span class="summary-pill">${txt}</span>`;
   const sevBadge=(n)=>{const cls=n<=2?'sev-1':n<=3?'sev-2':'sev-3';const labels=['','Mild','Mild','Moderate','Severe','Debilitating'];return`<span class="severity-badge ${cls}">${labels[n]||n}/5</span>`};
-  document.getElementById('reviewBody').innerHTML=`
+  (document.getElementById('reviewBody')||{}).innerHTML=`
     <div class="summary-grid">
       <div class="summary-card"><h4>👤 Personal</h4><p style="font-size:.88rem;color:var(--text-dark);font-weight:700">${p.firstName} ${p.lastName}</p><p style="font-size:.8rem;color:var(--text-mid)">${p.email}</p><p style="font-size:.8rem;color:var(--text-mid)">${p.dob||'–'} · ${p.bioSex||'–'}</p><p style="font-size:.78rem;color:var(--text-soft);margin-top:.4rem">${p.herbalist}</p></div>
       <div class="summary-card"><h4>🩺 Severity</h4>${sevBadge(parseInt(d.symptoms.severity))}<p style="font-size:.78rem;color:var(--text-mid);margin-top:.4rem">${d.symptoms.duration||'Duration not specified'}</p><p style="font-size:.78rem;color:var(--text-soft);margin-top:.2rem">Pain: ${d.bodyAreas.painLevel}/10</p></div>
@@ -696,7 +733,7 @@ async function autoSave(){
     await window.storage.set('tfb_draft_'+email,JSON.stringify(d),false);
     const s=document.getElementById('autosave');
     s.classList.add('show');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('show'),2200);
-    document.getElementById('saveStatus').textContent='Saved '+new Date().toLocaleTimeString();
+    (document.getElementById('saveStatus')||{}).textContent='Saved '+new Date().toLocaleTimeString();
   }catch(e){
     try{localStorage.setItem('tfb_draft',JSON.stringify(collectData()));}catch(e2){}
   }

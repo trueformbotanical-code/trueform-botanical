@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <title>TrueForm Botanical — Herbalist Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -232,7 +235,86 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 .modal-close{background:none;border:none;font-size:1.1rem;color:var(--text-light);cursor:pointer;padding:4px;border-radius:4px}.modal-close:hover{color:var(--text-dark);background:var(--border)}
 .modal-body{padding:1.4rem}
 
-@media(max-width:900px){.assessment-grid,.tools-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}.sidebar{display:none}.constitution-display{grid-template-columns:1fr}}
+
+/* ══ TABLET ══ */
+@media(max-width:1024px){
+  :root{--sidebar:230px}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  :root{--sidebar:280px;--topbar-h:56px}
+
+  /* Sidebar slides in */
+  .sidebar{
+    position:fixed;left:-290px;top:var(--topbar-h);bottom:0;
+    width:var(--sidebar);z-index:500;
+    transition:left .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.3)
+  }
+  .sidebar.mobile-open{left:0}
+  #herbSidebarOverlay{
+    display:none;position:fixed;inset:0;top:var(--topbar-h);
+    background:rgba(0,0,0,.5);z-index:499
+  }
+  #herbSidebarOverlay.active{display:block}
+
+  /* Topbar */
+  .topbar{padding:0 .8rem}
+  #herbMenuBtn{display:flex!important}
+  .tb-label{display:none}
+
+  /* Content */
+  .content{width:100%}
+  .content-panel{padding:1rem}
+  .panel-header{flex-direction:column;gap:.7rem;align-items:flex-start}
+  .panel-actions{display:flex;flex-wrap:wrap;gap:.5rem;width:100%}
+  .panel-actions .btn{flex:1;min-width:80px;font-size:.72rem;padding:7px 10px;justify-content:center}
+
+  /* Stats */
+  .stats-row{grid-template-columns:1fr 1fr;gap:.5rem}
+  .stat-card{padding:.8rem}
+
+  /* Tables */
+  .table-wrapper,.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:500px}
+
+  /* Grids */
+  .assessment-grid,.tools-grid,.herb-grid{grid-template-columns:1fr}
+  .constitution-display{grid-template-columns:1fr}
+  .hrc-grid{grid-template-columns:1fr}
+
+  /* Client detail */
+  .detail-grid{grid-template-columns:1fr!important}
+  .client-header-card{flex-direction:column;gap:.8rem}
+
+  /* Messages */
+  #panel-messages>div[style*="260px"]{grid-template-columns:1fr!important}
+  #messageThreadList{max-height:220px}
+
+  /* Calendar */
+  .cal-grid{font-size:.7rem}
+
+  /* Protocol table */
+  .protocol-table{min-width:480px}
+  .protocol-table-wrap{overflow-x:auto}
+}
+
+/* ══ SMALL MOBILE ══ */
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .sc-val{font-size:1.4rem}
+  .panel-header .panel-title{font-size:1.3rem}
+  .nav-badge{display:none}
+}
+
+
+/* ── TOUCH / MOBILE BASE ── */
+*{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,a,[role="button"]{min-height:44px}
+input,select,textarea{font-size:max(16px,1em)}
+@media(hover:none){button:hover{opacity:1}}
 </style>
 
 <!-- Supabase SDK -->
@@ -311,9 +393,6 @@ async function dbDelete(table, filters) {
   return !error;
 }
 </script>
-<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 </head>
 <body><a href="#main" class="skip-link" style="position:fixed;top:-50px;left:1rem;background:#1a7a74;color:#fff;padding:10px 20px;border-radius:0 0 6px 6px;z-index:9999;font-weight:700;transition:top .2s;text-decoration:none" onfocus="this.style.top='0'" onblur="this.style.top='-50px'">Skip to main content</a>
 
@@ -351,7 +430,7 @@ async function dbDelete(table, filters) {
 <!-- ══ LOGIN GATE ══ -->
 <div id="loginGate" style="display:flex;flex-direction:column;height:100%">
   <div class="topbar" style="flex-shrink:0">
-    <div class="tb-left"><button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button></div>
+    <div class="tb-left"><button id="herbMenuBtn" onclick="toggleHerbSidebar()" style="display:none;width:36px;height:36px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;cursor:pointer;color:#fff;font-size:1rem;align-items:center;justify-content:center;flex-shrink:0;margin-right:.5rem" aria-label="Toggle menu" aria-expanded="false">☰</button><button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button></div>
     <div class="tb-right" style="gap:.8rem">
       <button onclick="window.location.href='admin.html'" style="font-size:.72rem;color:rgba(255,255,255,.45);font-weight:600;text-decoration:none;transition:color .2s;background:none;border:none;cursor:pointer;font-family:var(--sans)" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">⚙️ System Admin</button>
     </div>
@@ -530,6 +609,7 @@ async function dbDelete(table, filters) {
 <div id="dashboard" style="display:none;flex-direction:column;height:100%">
 
   <!-- TOPBAR -->
+  <div id="herbSidebarOverlay" onclick="toggleHerbSidebar()" style="display:none;position:fixed;inset:0;top:var(--topbar-h);background:rgba(0,0,0,.5);z-index:499"></div>
   <div class="topbar">
     <div class="tb-left">
       <button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button>
@@ -843,12 +923,12 @@ let currentClientRef=null;
 let protocolLines={};
 
 async function logout(){
-  document.getElementById('dashboard').style.display='none';
-  document.getElementById('loginGate').style.display='flex';
+  (document.getElementById('dashboard')||{style:{}}).style.display='none';
+  (document.getElementById('loginGate')||{style:{}}).style.display='flex';
   // Clear sensitive fields
-  document.getElementById('loginUsername').value='';
-  document.getElementById('loginPw').value='';
-  document.getElementById('userPreviewCard').style.display='none';
+  (document.getElementById('loginUsername')||{}).value='';
+  (document.getElementById('loginPw')||{}).value='';
+  (document.getElementById('userPreviewCard')||{style:{}}).style.display='none';
   selectedLoginUser=null;
   currentHerbalist=null;
 }
@@ -950,7 +1030,7 @@ function showSuggestions(list) {
 }
 
 function closeSuggestions() {
-  document.getElementById('loginSuggestions').style.display = 'none';
+  (document.getElementById('loginSuggestions')||{style:{}}).style.display = 'none';
 }
 
 function highlightSuggest(idx) {
@@ -964,7 +1044,7 @@ function selectSuggest(id) {
   const user = loginHerbalistList.find(h => h.id === id);
   if (!user) return;
   selectedLoginUser = user;
-  document.getElementById('loginUsername').value = user.username || user.email || user.name;
+  (document.getElementById('loginUsername')||{}).value = user.username || user.email || user.name;
   closeSuggestions();
   showPreviewCard(user);
   document.getElementById('loginPw').focus();
@@ -972,9 +1052,9 @@ function selectSuggest(id) {
 
 function showPreviewCard(user) {
   const card = document.getElementById('userPreviewCard');
-  document.getElementById('previewAvatar').textContent = user.name.charAt(0);
-  document.getElementById('previewName').textContent = user.name;
-  document.getElementById('previewSpecialty').textContent = user.specialty || user.tradition || 'Herbalist';
+  (document.getElementById('previewAvatar')||{}).textContent== user.name.charAt(0);
+  (document.getElementById('previewName')||{}).textContent== user.name;
+  (document.getElementById('previewSpecialty')||{}).textContent== user.specialty || user.tradition || 'Herbalist';
   const statusEl = document.getElementById('previewStatus');
   if (user.status === 'active') {
     statusEl.textContent = '● Active';
@@ -990,7 +1070,7 @@ function showPreviewCard(user) {
 }
 
 function hidePreviewCard() {
-  document.getElementById('userPreviewCard').style.display = 'none';
+  (document.getElementById('userPreviewCard')||{style:{}}).style.display = 'none';
 }
 
 // Keyboard nav on suggestions
@@ -1014,14 +1094,14 @@ function togglePwVis() {
 
 function showLoginError(msg) {
   const el = document.getElementById('loginError');
-  document.getElementById('loginErrorMsg').textContent = msg;
+  (document.getElementById('loginErrorMsg')||{}).textContent== msg;
   el.style.display = 'flex';
-  document.getElementById('loginUsername').style.borderColor = 'var(--spice)';
-  document.getElementById('loginPw').style.borderColor = 'var(--spice)';
+  (document.getElementById('loginUsername')||{style:{}}).style.borderColor = 'var(--spice)';
+  (document.getElementById('loginPw')||{style:{}}).style.borderColor = 'var(--spice)';
   setTimeout(() => {
     el.style.display = 'none';
-    document.getElementById('loginUsername').style.borderColor = '';
-    document.getElementById('loginPw').style.borderColor = '';
+    (document.getElementById('loginUsername')||{style:{}}).style.borderColor = '';
+    (document.getElementById('loginPw')||{style:{}}).style.borderColor = '';
   }, 4000);
 }
 
@@ -1040,23 +1120,23 @@ function openForgotPassword() {
     const el = document.getElementById(id);
     if (el) el.style.display = id === 'fpStep1' ? 'block' : 'none';
   });
-  document.getElementById('fpEmail').value = '';
-  document.getElementById('fpCode').value = '';
-  document.getElementById('fpNewPw').value = '';
-  document.getElementById('fpConfirmPw').value = '';
-  document.getElementById('fpUserFound').style.display = 'none';
-  document.getElementById('fpEmailError').style.display = 'none';
-  document.getElementById('fpCodeError').style.display = 'none';
-  document.getElementById('fpPwError').style.display = 'none';
-  document.getElementById('fpStrengthBar').style.width = '0%';
-  document.getElementById('fpStrengthLabel').textContent = '';
+  (document.getElementById('fpEmail')||{}).value = '';
+  (document.getElementById('fpCode')||{}).value = '';
+  (document.getElementById('fpNewPw')||{}).value = '';
+  (document.getElementById('fpConfirmPw')||{}).value = '';
+  (document.getElementById('fpUserFound')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpEmailError')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpCodeError')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpPwError')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpStrengthBar')||{style:{}}).style.width = '0%';
+  (document.getElementById('fpStrengthLabel')||{}).textContent== '';
   fpSetStep(1);
-  document.getElementById('forgotModal').style.display = 'flex';
+  (document.getElementById('forgotModal')||{style:{}}).style.display = 'flex';
   setTimeout(() => document.getElementById('fpEmail').focus(), 300);
 }
 
 function closeForgotPassword() {
-  document.getElementById('forgotModal').style.display = 'none';
+  (document.getElementById('forgotModal')||{style:{}}).style.display = 'none';
   clearInterval(fpResendTimerInterval);
 }
 
@@ -1067,8 +1147,8 @@ function fpSetStep(n) {
     el.style.borderBottomColor = sn === n ? 'var(--teal-mid)' : 'transparent';
     el.style.fontWeight = sn === n ? '700' : '600';
   });
-  document.getElementById('fpModalTitle').textContent = ['','Reset Your Password','Enter Verification Code','Set New Password',''][n] || 'Reset Password';
-  document.getElementById('fpModalSub').textContent = ['','Enter your registered email address','Check your email for the reset code','Choose a strong new password',''][n] || '';
+  (document.getElementById('fpModalTitle')||{}).textContent== ['','Reset Your Password','Enter Verification Code','Set New Password',''][n] || 'Reset Password';
+  (document.getElementById('fpModalSub')||{}).textContent== ['','Enter your registered email address','Check your email for the reset code','Choose a strong new password',''][n] || '';
 }
 
 function fpBack(toStep) {
@@ -1109,7 +1189,7 @@ async function sendResetCode() {
   if (!match) {
     errEl.textContent = 'No practitioner account found with that email address. Check the spelling or contact your administrator.';
     errEl.style.display = 'block';
-    document.getElementById('fpUserFound').style.display = 'none';
+    (document.getElementById('fpUserFound')||{style:{}}).style.display = 'none';
     return;
   }
 
@@ -1121,10 +1201,10 @@ async function sendResetCode() {
 
   // Show found user
   fpUser = match;
-  document.getElementById('fpFoundAvatar').textContent = match.name.charAt(0);
-  document.getElementById('fpFoundName').textContent = match.name;
-  document.getElementById('fpFoundSpec').textContent = match.specialty || match.tradition || 'Practitioner';
-  document.getElementById('fpUserFound').style.display = 'flex';
+  (document.getElementById('fpFoundAvatar')||{}).textContent== match.name.charAt(0);
+  (document.getElementById('fpFoundName')||{}).textContent== match.name;
+  (document.getElementById('fpFoundSpec')||{}).textContent== match.specialty || match.tradition || 'Practitioner';
+  (document.getElementById('fpUserFound')||{style:{}}).style.display = 'flex';
   errEl.style.display = 'none';
 
   // Generate 6-digit code
@@ -1143,17 +1223,17 @@ async function sendResetCode() {
   } catch(e) {}
 
   // Move to step 2
-  document.getElementById('fpStep1').style.display = 'none';
-  document.getElementById('fpStep2').style.display = 'block';
+  (document.getElementById('fpStep1')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpStep2')||{style:{}}).style.display = 'block';
   fpSetStep(2);
 
   // Show code (in production this would be emailed — demo shows it on screen)
-  document.getElementById('fpCodeDisplay').textContent = fpResetCode;
+  (document.getElementById('fpCodeDisplay')||{}).textContent== fpResetCode;
 
   // Populate step 3 user card
-  document.getElementById('fpResetAvatar').textContent = match.name.charAt(0);
-  document.getElementById('fpResetName').textContent = match.name;
-  document.getElementById('fpResetEmail').textContent = email;
+  (document.getElementById('fpResetAvatar')||{}).textContent== match.name.charAt(0);
+  (document.getElementById('fpResetName')||{}).textContent== match.name;
+  (document.getElementById('fpResetEmail')||{}).textContent== email;
 
   // Start resend cooldown timer (60s)
   startResendTimer(60);
@@ -1193,14 +1273,14 @@ function verifyCode() {
   if (entered !== fpResetCode) {
     errEl.textContent = 'Incorrect code. Please check and try again, or request a new code.';
     errEl.style.display = 'block';
-    document.getElementById('fpCode').value = '';
+    (document.getElementById('fpCode')||{}).value = '';
     document.getElementById('fpCode').focus();
     return;
   }
 
   // Move to step 3
-  document.getElementById('fpStep2').style.display = 'none';
-  document.getElementById('fpStep3').style.display = 'block';
+  (document.getElementById('fpStep2')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpStep3')||{style:{}}).style.display = 'block';
   fpSetStep(3);
   setTimeout(() => document.getElementById('fpNewPw').focus(), 200);
 }
@@ -1252,7 +1332,7 @@ async function setNewPassword() {
   if (newPw !== confirm) {
     errEl.textContent = 'Passwords do not match. Please try again.';
     errEl.style.display = 'block';
-    document.getElementById('fpConfirmPw').value = '';
+    (document.getElementById('fpConfirmPw')||{}).value = '';
     document.getElementById('fpConfirmPw').focus();
     return;
   }
@@ -1284,17 +1364,17 @@ async function setNewPassword() {
   }
 
   // Show success
-  document.getElementById('fpStep3').style.display = 'none';
-  document.getElementById('fpSuccess').style.display = 'block';
-  document.getElementById('fpModalTitle').textContent = 'Password Updated!';
-  document.getElementById('fpModalSub').textContent = 'Your new password is now active';
+  (document.getElementById('fpStep3')||{style:{}}).style.display = 'none';
+  (document.getElementById('fpSuccess')||{style:{}}).style.display = 'block';
+  (document.getElementById('fpModalTitle')||{}).textContent== 'Password Updated!';
+  (document.getElementById('fpModalSub')||{}).textContent== 'Your new password is now active';
   clearInterval(fpResendTimerInterval);
 }
 
 function showLoginAfterReset() {
   // Pre-fill the username so they just need to type password
   if (fpUser) {
-    document.getElementById('loginUsername').value = fpUser.username || fpUser.email || '';
+    (document.getElementById('loginUsername')||{}).value = fpUser.username || fpUser.email || '';
     onUsernameInput(fpUser.username || fpUser.email || '');
     setTimeout(() => document.getElementById('loginPw').focus(), 100);
   }
@@ -1344,24 +1424,24 @@ document.getElementById('loginUsername').addEventListener('keydown', e => { if (
     };
 
     currentHerbalist = herbalistData;
-    document.getElementById('loginGate').style.display  = 'none';
-    document.getElementById('dashboard').style.display  = 'flex';
-    document.getElementById('tbName').textContent        = herbalistData.name;
-    document.getElementById('tbAvatar').textContent      = herbalistData.initial;
-    document.getElementById('tbRole').textContent        = herbalistData.specialty.split(' ')[0] + ' Herbalist';
-    document.getElementById('greetName').textContent     = herbalistData.greet;
-    document.getElementById('sbName').textContent        = herbalistData.name;
-    document.getElementById('sbSpecialty').textContent   = herbalistData.specialty;
-    document.getElementById('settName').value            = herbalistData.name;
-    document.getElementById('settSpec').value            = herbalistData.specialty;
-    document.getElementById('greetDate').textContent     = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
+    (document.getElementById('dashboard')||{style:{}}).style.display  = 'flex';
+    (document.getElementById('tbName')||{}).textContent== herbalistData.name;
+    (document.getElementById('tbAvatar')||{}).textContent== herbalistData.initial;
+    (document.getElementById('tbRole')||{}).textContent== herbalistData.specialty.split(' ')[0] + ' Herbalist';
+    (document.getElementById('greetName')||{}).textContent== herbalistData.greet;
+    (document.getElementById('sbName')||{}).textContent== herbalistData.name;
+    (document.getElementById('sbSpecialty')||{}).textContent== herbalistData.specialty;
+    (document.getElementById('settName')||{}).value            = herbalistData.name;
+    (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
+    (document.getElementById('greetDate')||{}).textContent== new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
     showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
     ALL_CLIENTS = await loadAllClients();
-    document.getElementById('statNew').textContent    = ALL_CLIENTS.filter(c => !c._reviewed).length;
-    document.getElementById('statTotal').textContent  = ALL_CLIENTS.length;
-    document.getElementById('nbNew').textContent      = ALL_CLIENTS.filter(c => !c._reviewed).length;
-    document.getElementById('nbClients').textContent  = ALL_CLIENTS.length;
+    (document.getElementById('statNew')||{}).textContent== ALL_CLIENTS.filter(c => !c._reviewed).length;
+    (document.getElementById('statTotal')||{}).textContent== ALL_CLIENTS.length;
+    (document.getElementById('nbNew')||{}).textContent== ALL_CLIENTS.filter(c => !c._reviewed).length;
+    (document.getElementById('nbClients')||{}).textContent== ALL_CLIENTS.length;
     renderRecentTable();
     renderClientsTable(ALL_CLIENTS);
     renderHerbDb();
@@ -1429,7 +1509,7 @@ async function doLogin() {
 
   if(!authenticated){
     showLoginError('Incorrect password. Please try again or use "Forgot password?" below.');
-    document.getElementById('loginPw').value='';
+    (document.getElementById('loginPw')||{}).value='';
     document.getElementById('loginPw')?.focus();
     return;
   }
@@ -1447,24 +1527,24 @@ async function doLogin() {
   };
 
   currentHerbalist = herbalistData;
-  document.getElementById('loginGate').style.display  = 'none';
-  document.getElementById('dashboard').style.display  = 'flex';
-  document.getElementById('tbName').textContent        = herbalistData.name;
-  document.getElementById('tbAvatar').textContent      = herbalistData.initial;
-  document.getElementById('tbRole').textContent        = herbalistData.specialty.split(' ')[0] + ' Herbalist';
-  document.getElementById('greetName').textContent     = herbalistData.greet;
-  document.getElementById('sbName').textContent        = herbalistData.name;
-  document.getElementById('sbSpecialty').textContent   = herbalistData.specialty;
-  document.getElementById('settName').value            = herbalistData.name;
-  document.getElementById('settSpec').value            = herbalistData.specialty;
-  document.getElementById('greetDate').textContent     = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
+  (document.getElementById('dashboard')||{style:{}}).style.display  = 'flex';
+  (document.getElementById('tbName')||{}).textContent== herbalistData.name;
+  (document.getElementById('tbAvatar')||{}).textContent== herbalistData.initial;
+  (document.getElementById('tbRole')||{}).textContent== herbalistData.specialty.split(' ')[0] + ' Herbalist';
+  (document.getElementById('greetName')||{}).textContent== herbalistData.greet;
+  (document.getElementById('sbName')||{}).textContent== herbalistData.name;
+  (document.getElementById('sbSpecialty')||{}).textContent== herbalistData.specialty;
+  (document.getElementById('settName')||{}).value            = herbalistData.name;
+  (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
+  (document.getElementById('greetDate')||{}).textContent== new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   showToast('🌿 Loading client assessments…');
   ALL_CLIENTS = await loadAllClients();
-  document.getElementById('statNew').textContent    = ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  document.getElementById('statTotal').textContent  = ALL_CLIENTS.length;
-  document.getElementById('nbNew').textContent      = ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  document.getElementById('nbClients').textContent  = ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent== ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent== ALL_CLIENTS.length;
+  (document.getElementById('nbNew')||{}).textContent== ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('nbClients')||{}).textContent== ALL_CLIENTS.length;
   renderRecentTable(); renderClientsTable(ALL_CLIENTS);
   renderHerbDb(); renderProtocolLibrary(); loadProtocols();
   await loadAllThreads(); await refreshMessages();
@@ -1473,7 +1553,41 @@ async function doLogin() {
 }
 
 // ══ NAVIGATION ══
+function toggleHerbSidebar(){
+  const sb = document.querySelector('.sidebar');
+  const overlay = document.getElementById('herbSidebarOverlay');
+  const btn = document.getElementById('herbMenuBtn');
+  const isOpen = sb.classList.toggle('mobile-open');
+  overlay.style.display = isOpen ? 'block' : 'none';
+  if(btn){ btn.textContent=isOpen?'✕':'☰'; btn.setAttribute('aria-expanded',isOpen); }
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+window.addEventListener('resize',function(){
+  const btn=document.getElementById('herbMenuBtn');
+  if(btn) btn.style.display=window.innerWidth<=768?'flex':'none';
+  if(window.innerWidth>768){
+    const sb=document.querySelector('.sidebar');
+    if(sb) sb.classList.remove('mobile-open');
+    const ov=document.getElementById('herbSidebarOverlay');
+    if(ov) ov.style.display='none';
+    document.body.style.overflow='';
+  }
+});
+document.addEventListener('DOMContentLoaded',function(){
+  const btn=document.getElementById('herbMenuBtn');
+  if(btn) btn.style.display=window.innerWidth<=768?'flex':'none';
+});
 function showPanel(id){
+  // Close sidebar on mobile when navigating
+  if(window.innerWidth<=768){
+    const sb=document.querySelector('.sidebar');
+    if(sb) sb.classList.remove('mobile-open');
+    const ov=document.getElementById('herbSidebarOverlay');
+    if(ov) ov.style.display='none';
+    document.body.style.overflow='';
+    const btn=document.getElementById('herbMenuBtn');
+    if(btn){ btn.textContent='☰'; btn.setAttribute('aria-expanded','false'); }
+  }
   document.querySelectorAll('.content-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('panel-'+id)?.classList.add('active');
@@ -1483,8 +1597,8 @@ function showPanel(id){
 // ══ OVERVIEW TABLE ══
 function renderRecentTable(){
   const pending=ALL_CLIENTS.filter(c=>!c._reviewed).slice(0,5);
-  if(!pending.length){document.getElementById('recentTable').innerHTML='<p style="color:var(--text-light);font-size:.88rem;padding:1rem 0">✅ All assessments reviewed. No new submissions.</p>';return;}
-  document.getElementById('recentTable').innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Submitted</th><th>Severity</th><th>Top Symptoms</th><th>Actions</th></tr></thead><tbody>${pending.map(c=>{
+  if(!pending.length){(document.getElementById('recentTable')||{}).innerHTML='<p style="color:var(--text-light);font-size:.88rem;padding:1rem 0">✅ All assessments reviewed. No new submissions.</p>';return;}
+  (document.getElementById('recentTable')||{}).innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Submitted</th><th>Severity</th><th>Top Symptoms</th><th>Actions</th></tr></thead><tbody>${pending.map(c=>{
     const sev=parseInt(c.symptoms.severity)||3;
     const syms=c.symptoms.selected.slice(0,3).join(', ');
     return`<tr><td><span class="client-name">${c.personal.firstName} ${c.personal.lastName}</span><br/><small style="color:var(--text-light)">${c.personal.email}</small></td><td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td><td>${sevBadge(sev)}</td><td style="font-size:.78rem;color:var(--text-mid);max-width:180px">${syms||'—'}</td><td><button class="btn btn-primary" style="padding:6px 12px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Review →</button></td></tr>`;
@@ -1546,7 +1660,7 @@ function openClient(ref){
   // Protocol lines
   if(!protocolLines[ref])protocolLines[ref]=[{herb:'',dose:'',frequency:'',duration:'',notes:''}];
   // Build HTML
-  document.getElementById('clientDetailBody').innerHTML=`
+  (document.getElementById('clientDetailBody')||{}).innerHTML=`
     <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
       <button class="back-btn" onclick="showPanel('clients')">← All Clients</button>
       <button class="btn btn-ghost" style="font-size:.75rem;padding:6px 13px" onclick="openMessageThreadForClient('${ref}')">💬 Message Client</button>
@@ -1754,7 +1868,7 @@ function renderProtocolLines(ref){
 // ══ HERB DB ══
 function renderHerbDb(q=''){
   const list=q?herbDB.filter(h=>h.name.toLowerCase().includes(q)||h.trad.toLowerCase().includes(q)||h.syms.join().includes(q)):herbDB;
-  document.getElementById('herbDbGrid').innerHTML=list.map(h=>`
+  (document.getElementById('herbDbGrid')||{}).innerHTML=list.map(h=>`
     <div class="detail-card">
       <div class="dc-head"><span class="dc-title">${h.emoji} ${h.name}</span><span style="font-size:.68rem;color:var(--text-light)">${h.trad}</span></div>
       <div class="dc-body">
@@ -1850,14 +1964,14 @@ function filterProtocols(q){
 // ── PROTOCOL BUILDER ──
 function openNewProtocol(){
   editingProtocolId = null;
-  document.getElementById('pbTitle').textContent = 'New Protocol';
-  document.getElementById('pb-name').value = '';
-  document.getElementById('pb-cat').value = 'Anxiety & Stress';
-  document.getElementById('pb-duration').value = '';
-  document.getElementById('pb-diet').value = '';
-  document.getElementById('pb-lifestyle').value = '';
-  document.getElementById('pb-caution').value = '';
-  document.getElementById('pbHerbRows').innerHTML = '';
+  (document.getElementById('pbTitle')||{}).textContent== 'New Protocol';
+  (document.getElementById('pb-name')||{}).value = '';
+  (document.getElementById('pb-cat')||{}).value = 'Anxiety & Stress';
+  (document.getElementById('pb-duration')||{}).value = '';
+  (document.getElementById('pb-diet')||{}).value = '';
+  (document.getElementById('pb-lifestyle')||{}).value = '';
+  (document.getElementById('pb-caution')||{}).value = '';
+  (document.getElementById('pbHerbRows')||{}).innerHTML = '';
   addProtocolHerbRow(); addProtocolHerbRow(); addProtocolHerbRow();
   openProtocolBuilder();
 }
@@ -1866,14 +1980,14 @@ function editProtocol(id){
   const p = ALL_PROTOCOLS.find(x=>x.id===id);
   if(!p) return;
   editingProtocolId = id;
-  document.getElementById('pbTitle').textContent = 'Edit Protocol';
-  document.getElementById('pb-name').value = p.name||'';
-  document.getElementById('pb-cat').value = p.category||'Custom';
-  document.getElementById('pb-duration').value = p.duration||'';
-  document.getElementById('pb-diet').value = p.diet||'';
-  document.getElementById('pb-lifestyle').value = p.lifestyle||'';
-  document.getElementById('pb-caution').value = p.caution||'';
-  document.getElementById('pbHerbRows').innerHTML = '';
+  (document.getElementById('pbTitle')||{}).textContent== 'Edit Protocol';
+  (document.getElementById('pb-name')||{}).value = p.name||'';
+  (document.getElementById('pb-cat')||{}).value = p.category||'Custom';
+  (document.getElementById('pb-duration')||{}).value = p.duration||'';
+  (document.getElementById('pb-diet')||{}).value = p.diet||'';
+  (document.getElementById('pb-lifestyle')||{}).value = p.lifestyle||'';
+  (document.getElementById('pb-caution')||{}).value = p.caution||'';
+  (document.getElementById('pbHerbRows')||{}).innerHTML = '';
   (p.herbs||[]).forEach(h=>addProtocolHerbRow(h));
   if(!p.herbs?.length) addProtocolHerbRow();
   openProtocolBuilder();
@@ -2064,12 +2178,12 @@ async function openMessageThread(ref){
   }
 
   // Update header
-  document.getElementById('msgClientAvatar').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('msgClientName').textContent   = name;
-  document.getElementById('msgClientMeta').textContent   = email + (client.personal?.herbalist?' · '+client.personal.herbalist:'');
-  document.getElementById('msgEmptyState').style.display = 'none';
-  document.getElementById('msgThreadView').style.display = 'flex';
-  document.getElementById('msgThreadView').style.flexDirection = 'column';
+  (document.getElementById('msgClientAvatar')||{}).textContent== name.charAt(0).toUpperCase();
+  (document.getElementById('msgClientName')||{}).textContent== name;
+  (document.getElementById('msgClientMeta')||{}).textContent== email + (client.personal?.herbalist?' · '+client.personal.herbalist:'');
+  (document.getElementById('msgEmptyState')||{style:{}}).style.display = 'none';
+  (document.getElementById('msgThreadView')||{style:{}}).style.display = 'flex';
+  (document.getElementById('msgThreadView')||{style:{}}).style.flexDirection = 'column';
 
   renderMessages(ref_);
   renderThreadList();
@@ -2387,9 +2501,9 @@ function saveSettings(){
   const name=document.getElementById('settName').value;
   const spec=document.getElementById('settSpec').value;
   if(currentHerbalist){currentHerbalist.name=name;currentHerbalist.specialty=spec;}
-  document.getElementById('tbName').textContent=name;
-  document.getElementById('sbName').textContent=name;
-  document.getElementById('sbSpecialty').textContent=spec;
+  (document.getElementById('tbName')||{}).textContent==name;
+  (document.getElementById('sbName')||{}).textContent==name;
+  (document.getElementById('sbSpecialty')||{}).textContent==spec;
   showToast('✅ Settings saved.');
 }
 async function deleteClient(ref){
@@ -2406,8 +2520,8 @@ async function deleteClient(ref){
   }catch(e){}
   ALL_CLIENTS=ALL_CLIENTS.filter(c=>c.meta.refCode!==ref);
   renderClientsTable(ALL_CLIENTS);
-  document.getElementById('statNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  document.getElementById('statTotal').textContent=ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent==ALL_CLIENTS.length;
   showPanel('clients');
   showToast('🗑️ Client record deleted.');
 }
@@ -2430,10 +2544,10 @@ function sevBadge(n){const cls=n<=2?'status-reviewed':n<=3?'status-pending':'sta
 async function refreshDashboard(){
   showToast('🔄 Refreshing client data…');
   ALL_CLIENTS=await loadAllClients();
-  document.getElementById('statNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  document.getElementById('statTotal').textContent=ALL_CLIENTS.length;
-  document.getElementById('nbNew').textContent=ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  document.getElementById('nbClients').textContent=ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent==ALL_CLIENTS.length;
+  (document.getElementById('nbNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('nbClients')||{}).textContent==ALL_CLIENTS.length;
   renderRecentTable();
   renderClientsTable(ALL_CLIENTS);
   await renderCalendar();

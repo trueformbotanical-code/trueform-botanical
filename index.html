@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <meta name="description" content="TrueForm Botanical — Premium herb shop & botanical consultation. Ayurvedic, TCM, Western & African traditions."/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://images.unsplash.com https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://*.supabase.co;"/>
@@ -604,6 +604,88 @@ input[type=range].sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width
 @media(max-width:1100px){.trad-grid{grid-template-columns:1fr 1fr}.mode-grid{grid-template-columns:repeat(2,1fr)}.booking-layout{grid-template-columns:1fr;gap:2rem}.fh-layout{grid-template-columns:1fr;gap:2.5rem}.fh-right{max-width:320px;margin:0 auto}.footer-top{grid-template-columns:1fr 1fr 1fr}.s2-cols{grid-template-columns:1fr}.dosage-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){#hero{padding-top:0;min-height:90vh}.hero-right{display:none}h1{font-size:2.8rem}.nav-center{display:none;flex-direction:column;position:absolute;top:56px;left:0;right:0;background:var(--teal-deepest);padding:1rem 5%;gap:.3rem;border-bottom:1px solid rgba(255,255,255,.1)}.nav-center.open{display:flex}.hamburger{display:flex}.nav-login{display:none}.mode-grid{grid-template-columns:1fr 1fr}.frow{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr 1fr}.nl-form{flex-direction:column}.cart-drawer{width:100%;right:-100%}.finder-step-pills{display:none}.safety-row{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){section{padding:65px 5%}.trad-grid{grid-template-columns:1fr}.mode-grid{grid-template-columns:1fr 1fr}.footer-top{grid-template-columns:1fr}.trust-strip{gap:1.2rem}.hero-btns{flex-direction:column}}
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — TABLET (≤1024px)
+══════════════════════════════════════════════════ */
+@media(max-width:1024px){
+  #hero>div>div[style*="grid"]{grid-template-columns:1fr!important;gap:2rem!important}
+  #hero>div>div:last-child{display:none!important}
+  #how>div>div[style*="repeat(3"]{grid-template-columns:1fr 1fr!important}
+  #booking>div>div[style*="1fr 1fr"]{grid-template-columns:1fr!important}
+  #traditions>div>div[style*="repeat(4"]{grid-template-columns:1fr 1fr!important}
+  #blog>div>div[style*="repeat(3"]{grid-template-columns:1fr 1fr!important}
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (≤768px)
+══════════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Nav */
+  .nav-center{display:none;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(7,30,28,.97);padding:5rem 2rem 2rem;gap:.5rem;z-index:999;overflow-y:auto}
+  .nav-center.open{display:flex}
+  .nav-center a,.nav-center button{font-size:1.1rem!important;padding:1rem 0!important;border-bottom:1px solid rgba(255,255,255,.08)!important;width:100%;text-align:left}
+  .hamburger{display:flex;z-index:1000;position:relative}
+  .nav-login{font-size:.75rem!important;padding:7px 14px!important}
+
+  /* Hero */
+  #hero{min-height:100svh;padding:4rem 5% 3rem!important}
+  #hero h1{font-size:clamp(2rem,8vw,3rem)!important}
+  #hero p{font-size:.95rem!important}
+  #hero>div>div[style*="grid"]{grid-template-columns:1fr!important}
+  #hero>div>div:last-child{display:none!important}
+  #hero>div>div:first-child>div[style*="display:flex;gap:2.5rem"]{gap:1.5rem!important}
+
+  /* Trust strip */
+  #trust>div{flex-wrap:wrap;gap:.5rem;justify-content:center}
+  #trust>div>div[style*="width:1px"]{display:none}
+
+  /* How it works */
+  #how>div>div[style*="repeat(3"]{grid-template-columns:1fr!important}
+
+  /* Booking */
+  #booking>div>div[style*="1fr 1fr"]{grid-template-columns:1fr!important}
+
+  /* Traditions */
+  #traditions>div>div[style*="repeat(4"]{grid-template-columns:1fr 1fr!important}
+
+  /* Blog */
+  #blog>div>div[style*="repeat(3"]{grid-template-columns:1fr!important}
+
+  /* Portal modal */
+  .modal{max-width:100%!important;max-height:100svh!important;border-radius:0!important;height:100svh}
+  .modal-bg{padding:0!important;align-items:flex-end}
+
+  /* Forms */
+  .frow{grid-template-columns:1fr!important}
+
+  /* Finder */
+  .finder-step-pills{display:none}
+  .finder-modal{padding:0}
+  .finder-topbar{padding:.7rem 1rem;flex-wrap:wrap;gap:.5rem}
+
+  /* Footer */
+  .footer-top{grid-template-columns:1fr 1fr!important}
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — SMALL MOBILE (≤480px)
+══════════════════════════════════════════════════ */
+@media(max-width:480px){
+  #how>div>div[style*="repeat(3"]{grid-template-columns:1fr!important}
+  #traditions>div>div[style*="repeat(4"]{grid-template-columns:1fr!important}
+  #blog>div>div[style*="repeat(3"]{grid-template-columns:1fr!important}
+  #booking>div>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  .footer-top{grid-template-columns:1fr!important}
+  .modal{border-radius:0!important}
+  h1{font-size:clamp(1.9rem,7vw,2.5rem)!important}
+}
+
+
+/* ── TOUCH / MOBILE BASE ── */
+*{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,a,[role="button"]{min-height:44px}
+input,select,textarea{font-size:max(16px,1em)}
+@media(hover:none){button:hover{opacity:1}}
 </style>
 
 <!-- Supabase SDK -->
@@ -2335,7 +2417,7 @@ async function practSignIn() {
 
   if(!authenticated){
     showPlainError('practError','Incorrect password. Please try again.');
-    document.getElementById('pract-pw').value='';
+    (document.getElementById('pract-pw')||{}).value='';
     return;
   }
 
@@ -2790,12 +2872,12 @@ function initSymSearch(){
 }
 function openSymDropdown(){
   symDropOpen=true;
-  document.getElementById('symDropdown').style.display='block';
+  (document.getElementById('symDropdown')||{style:{}}).style.display='block';
   filterSymDropdown(document.getElementById('symSearchInput').value);
 }
 function closeSymDropdown(){
   symDropOpen=false;
-  document.getElementById('symDropdown').style.display='none';
+  (document.getElementById('symDropdown')||{style:{}}).style.display='none';
 }
 document.addEventListener('click',function(e){
   const wrap=document.getElementById('symSearchWrap');
@@ -2803,7 +2885,7 @@ document.addEventListener('click',function(e){
 });
 function filterSymDropdown(q){
   const query=q.trim().toLowerCase();
-  document.getElementById('symSearchClear').style.display=q?'flex':'none';
+  (document.getElementById('symSearchClear')||{style:{}}).style.display=q?'flex':'none';
   const filtered=query?SYMPTOMS.filter(s=>s.label.toLowerCase().includes(query)||s.value.toLowerCase().includes(query)):SYMPTOMS;
   renderSymDropdown(filtered);
   const noRes=document.getElementById('symDropNoResult');
@@ -2811,7 +2893,7 @@ function filterSymDropdown(q){
   if(filtered.length===0&&query){
     inner.style.display='none';
     noRes.style.display='block';
-    document.getElementById('symAddCustomLabel').textContent=q.trim();
+    (document.getElementById('symAddCustomLabel')||{}).textContent==q.trim();
     document.getElementById('symAddCustomBtn').dataset.label=q.trim();
     document.getElementById('symAddCustomBtn').dataset.value=q.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
   }else{
@@ -2847,7 +2929,7 @@ function renderSymChips(){
   const lbl=document.getElementById('symSelectedLabel');
   if(!FS.syms.length){container.innerHTML='';lbl.style.display='none';return;}
   lbl.style.display='flex';
-  document.getElementById('symSelectedCount').textContent=FS.syms.length;
+  (document.getElementById('symSelectedCount')||{}).textContent==FS.syms.length;
   container.innerHTML=FS.syms.map(v=>{
     const sym=SYMPTOMS.find(s=>s.value===v)||{label:v,value:v};
     return`<span class="fchip sel-teal" style="display:inline-flex;align-items:center;gap:5px">${sym.label}<span class="chip-x" onclick="removeSymChip('${v}')" title="Remove">✕</span></span>`;
@@ -2861,15 +2943,15 @@ function removeSymChip(val){
   updateSymCount();
 }
 function clearSymSearch(){
-  document.getElementById('symSearchInput').value='';
-  document.getElementById('symSearchClear').style.display='none';
+  (document.getElementById('symSearchInput')||{}).value='';
+  (document.getElementById('symSearchClear')||{style:{}}).style.display='none';
   renderSymDropdown(SYMPTOMS);
-  document.getElementById('symDropNoResult').style.display='none';
-  document.getElementById('symDropInner').style.display='block';
+  (document.getElementById('symDropNoResult')||{style:{}}).style.display='none';
+  (document.getElementById('symDropInner')||{style:{}}).style.display='block';
   closeSymDropdown();
 }
 function updateSymCount(){
-  document.getElementById('finderCount').textContent=FS.syms.length+' symptom'+(FS.syms.length!==1?'s':'')+' selected';
+  (document.getElementById('finderCount')||{}).textContent==FS.syms.length+' symptom'+(FS.syms.length!==1?'s':'')+' selected';
 }
 function toggleSymBrowse(){
   symBrowseOpen=!symBrowseOpen;
@@ -2929,14 +3011,14 @@ function updateFinderFooter(n){
 
 // QUIZ
 let quizA={};
-function selectQuiz(el){const q=el.dataset.q;document.querySelectorAll(`.quiz-opt[data-q="${q}"]`).forEach(b=>b.classList.remove("sel"));el.classList.add("sel");quizA[q]=el.dataset.v;FS.quiz=quizA;document.getElementById("finderCount").textContent=Object.keys(quizA).length+" / 3 answered";const vals=Object.values(quizA);const vata=vals.filter(v=>["vata","irregular","anxiety","varies"].includes(v)).length;const pitta=vals.filter(v=>["pitta","strong","irritability"].includes(v)).length;const kapha=vals.filter(v=>["kapha","slow","lethargy"].includes(v)).length;FS.constitution=vata>=pitta&&vata>=kapha?"vata":pitta>=kapha?"pitta":"kapha";}
+function selectQuiz(el){const q=el.dataset.q;document.querySelectorAll(`.quiz-opt[data-q="${q}"]`).forEach(b=>b.classList.remove("sel"));el.classList.add("sel");quizA[q]=el.dataset.v;FS.quiz=quizA;(document.getElementById('finderCount')||{}).textContent==Object.keys(quizA).length+" / 3 answered";const vals=Object.values(quizA);const vata=vals.filter(v=>["vata","irregular","anxiety","varies"].includes(v)).length;const pitta=vals.filter(v=>["pitta","strong","irritability"].includes(v)).length;const kapha=vals.filter(v=>["kapha","slow","lethargy"].includes(v)).length;FS.constitution=vata>=pitta&&vata>=kapha?"vata":pitta>=kapha?"pitta":"kapha";}
 
 // CHIPS & FILTERS
-function toggleFChip(el,cls){const was=el.classList.contains(cls);el.classList.toggle(cls);const t=el.dataset.t,v=el.dataset.v;const arr=t==="sym"?FS.syms:t==="trad"?FS.trads:FS.sys;if(was)arr.splice(arr.indexOf(v),1);else arr.push(v);if(FS.step===2)document.getElementById("finderCount").textContent=FS.syms.length+" symptoms selected";}
+function toggleFChip(el,cls){const was=el.classList.contains(cls);el.classList.toggle(cls);const t=el.dataset.t,v=el.dataset.v;const arr=t==="sym"?FS.syms:t==="trad"?FS.trads:FS.sys;if(was)arr.splice(arr.indexOf(v),1);else arr.push(v);if(FS.step===2)(document.getElementById('finderCount')||{}).textContent==FS.syms.length+" symptoms selected";}
 function toggleDose(el){el.classList.toggle("sel");const f=el.dataset.form;if(el.classList.contains("sel"))FS.forms.push(f);else FS.forms=FS.forms.filter(x=>x!==f);}
 function toggleSafety(el){el.classList.toggle("sel");const s=el.dataset.sf;if(el.classList.contains("sel"))FS.safetyF.push(s);else FS.safetyF=FS.safetyF.filter(x=>x!==s);}
 const sevLbls=["","Mild — gentle, food-safe herbs","Moderate — standard-strength herbs","Chronic/Severe — high-potency formulas"];
-function updateSev(el){FS.severity=parseInt(el.value);document.getElementById("sevVal").textContent=sevLbls[el.value];}
+function updateSev(el){FS.severity=parseInt(el.value);(document.getElementById('sevVal')||{}).textContent==sevLbls[el.value];}
 
 // RUN FINDER
 function runFinder(){
@@ -2969,7 +3051,7 @@ function renderResults(herbs){
   chips.push(sevLbls[FS.severity].split(" — ")[0]);
   if(FS.constitution!=="mixed")chips.push("Constitution: "+FS.constitution);
   af.innerHTML=chips.map(c=>`<span class="af-chip">${c}</span>`).join("");
-  document.getElementById("resTitle").textContent=herbs.length?herbs.length+" herb"+(herbs.length>1?"s":"")+" matched your profile":"No herbs matched";
+  (document.getElementById('resTitle')||{}).textContent==herbs.length?herbs.length+" herb"+(herbs.length>1?"s":"")+" matched your profile":"No herbs matched";
   const grid=document.getElementById("herbResultsGrid");
   if(!herbs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-soft)"><div style="font-size:3rem;margin-bottom:.8rem">🌿</div><h4 style="font-family:var(--serif);color:var(--text-dark);margin-bottom:.4rem">No herbs matched</h4><p style="font-size:.86rem">Try removing safety filters or selecting fewer traditions.</p></div>`;return;}
   grid.innerHTML=herbs.map(h=>{
@@ -3011,9 +3093,9 @@ let calDate=new Date();
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS=["Su","Mo","Tu","We","Th","Fr","Sa"];
 const TIMES=["9:00 AM","10:00 AM","11:00 AM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM"];
-function renderCal(){const y=calDate.getFullYear(),m=calDate.getMonth();document.getElementById("calLabel").textContent=MONTHS[m]+" "+y;const g=document.getElementById("calGrid");g.innerHTML=DAYS.map(d=>`<div class="cal-lbl">${d}</div>`).join("");const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=new Date();for(let i=0;i<first;i++)g.innerHTML+=`<div class="cal-day empty"></div>`;for(let d=1;d<=dim;d++){const dt=new Date(y,m,d);const isTod=dt.toDateString()===today.toDateString();const isPast=dt<today&&!isTod;const isWkd=dt.getDay()===0||dt.getDay()===6;g.innerHTML+=`<div class="cal-day${isPast?' past':''}${isTod?' today':''}${!isPast&&!isWkd?' avail':''}" onclick="selDay(this)">${d}</div>`;}renderTimes();}
+function renderCal(){const y=calDate.getFullYear(),m=calDate.getMonth();(document.getElementById('calLabel')||{}).textContent==MONTHS[m]+" "+y;const g=document.getElementById("calGrid");g.innerHTML=DAYS.map(d=>`<div class="cal-lbl">${d}</div>`).join("");const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=new Date();for(let i=0;i<first;i++)g.innerHTML+=`<div class="cal-day empty"></div>`;for(let d=1;d<=dim;d++){const dt=new Date(y,m,d);const isTod=dt.toDateString()===today.toDateString();const isPast=dt<today&&!isTod;const isWkd=dt.getDay()===0||dt.getDay()===6;g.innerHTML+=`<div class="cal-day${isPast?' past':''}${isTod?' today':''}${!isPast&&!isWkd?' avail':''}" onclick="selDay(this)">${d}</div>`;}renderTimes();}
 function selDay(el){if(el.classList.contains("past"))return;document.querySelectorAll(".cal-day").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
-function renderTimes(){document.getElementById("timeGrid").innerHTML=TIMES.map(t=>`<div class="t-slot" onclick="selSlot(this)">${t}</div>`).join("");}
+function renderTimes(){(document.getElementById("timeGrid")||{}).innerHTML=TIMES.map(t=>`<div class="t-slot" onclick="selSlot(this)">${t}</div>`).join("");}
 function selSlot(el){document.querySelectorAll(".t-slot").forEach(s=>s.classList.remove("sel"));el.classList.add("sel");}
 function prevMonth(){calDate.setMonth(calDate.getMonth()-1);renderCal();}
 function nextMonth(){calDate.setMonth(calDate.getMonth()+1);renderCal();}
@@ -3024,7 +3106,7 @@ function selectMode(el){document.querySelectorAll(".mode-card").forEach(c=>c.cla
 document.getElementById("bookForm").addEventListener("submit",e=>{e.preventDefault();const rs=["bf-fn","bf-ln","bf-em","bf-sv","bf-tz","bf-cc"];let ok=true;rs.forEach(id=>{const el=document.getElementById(id);if(!el.value.trim()){el.style.borderColor="var(--spice)";ok=false;}else el.style.borderColor="";});["bf-c1","bf-c2"].forEach(id=>{const el=document.getElementById(id);if(!el.checked){el.style.outline="2px solid var(--spice)";ok=false;}else el.style.outline="";});if(!ok){showToast("⚠️ Please fill all required fields.");return;}const btn=document.getElementById("bookSubmit");btn.textContent="Requesting…";btn.disabled=true;setTimeout(()=>{btn.textContent="Request Appointment →";btn.disabled=false;e.target.reset();showToast("✅ Appointment requested! We'll confirm within 2 hours.");},1800);});
 
 // ══ NEWSLETTER ══
-function subscribeNL(){const e=document.getElementById("nlEmail").value;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast("⚠️ Enter a valid email.");return;}showToast("🌿 Welcome! Check your inbox for your free Herb Guide.");document.getElementById("nlEmail").value="";}
+function subscribeNL(){const e=document.getElementById("nlEmail").value;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast("⚠️ Enter a valid email.");return;}showToast("🌿 Welcome! Check your inbox for your free Herb Guide.");(document.getElementById("nlEmail")||{}).value="";}
 
 // ══ CHATBOT ══
 const bR={anxiety:"For anxiety: **Ashwagandha** (Ayurveda), **Chamomile** (Western), or **Reishi** (TCM) are all excellent. Or open the Herb Finder for a personalised match! 🌿",insomnia:"For sleep: **Valerian**, **Passionflower**, and **Reishi** are well-studied options. Use the Herb Finder to get a matched recommendation.",stress:"Top adaptogens: **Ashwagandha** (Ayurveda), **Rhodiola** (Western), **Holy Basil** (Ayurveda). Browse our shop for these herbs!",book:"Book in the Booking section — video, in-person, phone and async options available! Our booking form is pre-filled if you come from the Herb Finder 📅",ship:"Yes! We ship to 60+ countries 🌍. Dispatched in 1–2 business days. International delivery 5–10 days. All herbs certified organic.",finder:"Our Herb Finder is in the nav bar! It's a 3-step tool with symptoms, tradition filters, safety options, and personalised results. Click 🌿 Herb Finder to open it!",default:"I'm Vera, your botanical assistant 🌿 I can help with herb advice, booking, shipping, or open the Herb Finder for you. Just ask!"};
@@ -3112,28 +3194,28 @@ aos.forEach(el=>{el.style.opacity="0";el.style.transform="translateY(14px)";el.s
 // ══ ADMIN PANEL ══
 let adminUnlocked=false;
 const ADMIN_PW='admin123';
-function openAdmin(){document.getElementById('adminPanel').style.display='flex';}
-function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
+function openAdmin(){(document.getElementById('adminPanel')||{style:{}}).style.display='flex';}
+function closeAdmin(){(document.getElementById('adminPanel')||{style:{}}).style.display='none';}
 function verifyAdmin(){
   const pw=document.getElementById('adminPwInput').value;
   if(pw===ADMIN_PW){
     adminUnlocked=true;
-    document.getElementById('adminGate').style.display='none';
-    document.getElementById('adminContent').style.display='flex';
-    document.getElementById('adminContent').style.flexDirection='column';
+    (document.getElementById('adminGate')||{style:{}}).style.display='none';
+    (document.getElementById('adminContent')||{style:{}}).style.display='flex';
+    (document.getElementById('adminContent')||{style:{}}).style.flexDirection='column';
     renderAdminList();
   }else{
-    document.getElementById('adminPwInput').style.borderColor='var(--spice)';
+    (document.getElementById('adminPwInput')||{style:{}}).style.borderColor='var(--spice)';
     showToast('⚠️ Incorrect password.');
-    setTimeout(()=>document.getElementById('adminPwInput').style.borderColor='',1500);
+    setTimeout(()=>(document.getElementById('adminPwInput')||{style:{}}).style.borderColor='',1500);
   }
 }
 document.getElementById('adminPwInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyAdmin();});
 function renderAdminList(){
   const q=(document.getElementById('adminFilter')?.value||'').toLowerCase();
   const filtered=q?SYMPTOMS.filter(s=>s.label.toLowerCase().includes(q)||s.value.toLowerCase().includes(q)):SYMPTOMS;
-  document.getElementById('adminSymCount').textContent=SYMPTOMS.length;
-  document.getElementById('adminList').innerHTML=filtered.length?filtered.map((s,i)=>`
+  (document.getElementById('adminSymCount')||{}).textContent==SYMPTOMS.length;
+  (document.getElementById('adminList')||{}).innerHTML=filtered.length?filtered.map((s,i)=>`
     <div class="admin-list-item">
       <span class="ali-label">${s.label}</span>
       <span class="ali-value">${s.value}</span>
@@ -3152,8 +3234,8 @@ function adminAddSymptom(){
   saveSymptoms();
   renderAdminList();
   renderSymBrowse();
-  document.getElementById('adminNewLabel').value='';
-  document.getElementById('adminNewValue').value='';
+  (document.getElementById('adminNewLabel')||{}).value='';
+  (document.getElementById('adminNewValue')||{}).value='';
   showToast('✅ "'+label+'" added!');
 }
 function adminDeleteSymptom(val){
@@ -3208,7 +3290,7 @@ document.addEventListener('click', function(e) {
   if (action === 'closeLogin')   closeLogin();
   if (action === 'doLogin')      doLogin();
   if (action === 'doRegister')   doRegister();
-  if (action === 'promoClose')   document.getElementById('promoBar').style.display='none';
+  if (action === 'promoClose')   (document.getElementById('promoBar')||{style:{}}).style.display='none';
   if (action === 'backTop')      window.scrollTo({top:0,behavior:'smooth'});
   if (action === 'subscribeNL')  subscribeNL();
   if (action === 'printRes')     printRes();

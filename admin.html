@@ -5,7 +5,7 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <title>TrueForm Botanical — System Administration</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -235,8 +235,103 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 
 /* Reset password tabs */
 .rpw-tab{flex:1;padding:8px;background:transparent;border:none;font-family:var(--sans);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .25s;font-weight:700;color:var(--text-soft)}.rpw-tab.active{background:var(--teal-mid);color:#fff}
-@media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr}.system-health-grid{grid-template-columns:1fr}.drawer{width:100%}}
-@media(max-width:600px){.stats-row{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.permission-grid{grid-template-columns:1fr}.sidebar{display:none}}
+
+
+/* ══ TABLET ══ */
+@media(max-width:1024px){
+  :root{--sidebar:220px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .system-health-grid{grid-template-columns:1fr 1fr}
+  .ph{flex-wrap:wrap;gap:.6rem}
+  .ph-actions{flex-wrap:wrap}
+}
+
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  :root{--sidebar:280px;--topbar-h:56px}
+
+  /* App layout — sidebar slides over content */
+  .app{position:relative}
+  .sidebar{
+    position:fixed;left:-290px;top:var(--topbar-h);bottom:0;
+    width:var(--sidebar);z-index:500;
+    transition:left .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.3)
+  }
+  .sidebar.mobile-open{left:0}
+  .sidebar-overlay{
+    display:none;position:fixed;inset:0;top:var(--topbar-h);
+    background:rgba(0,0,0,.5);z-index:499
+  }
+  .sidebar-overlay.active{display:block}
+
+  /* Topbar — add menu button */
+  .topbar{padding:0 1rem}
+  .tb-menu-btn{
+    display:flex!important;align-items:center;justify-content:center;
+    width:38px;height:38px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);border-radius:6px;
+    cursor:pointer;color:#fff;font-size:1.1rem;flex-shrink:0
+  }
+  .tb-admin-name{display:none}
+
+  /* Content takes full width */
+  .content{width:100%}
+
+  /* Panels */
+  .panel{padding:1rem}
+  .ph{flex-direction:column;gap:.8rem;align-items:flex-start}
+  .ph-actions{width:100%;display:flex;flex-wrap:wrap;gap:.5rem}
+  .ph-actions .btn{flex:1;min-width:80px;justify-content:center;font-size:.72rem;padding:7px 10px}
+
+  /* Stats */
+  .stats-row{grid-template-columns:1fr 1fr;gap:.6rem}
+  .stat-card{padding:1rem}
+  .sc-val{font-size:1.6rem}
+
+  /* Tables — horizontal scroll */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .data-table{min-width:600px}
+  .data-table th,.data-table td{padding:.5rem .7rem;font-size:.76rem}
+
+  /* Toolbar */
+  .toolbar{flex-direction:column;gap:.6rem}
+  .search-box{width:100%}
+  .filter-row{flex-wrap:wrap;gap:.4rem}
+  .f-select{flex:1;min-width:120px}
+
+  /* System health */
+  .system-health-grid{grid-template-columns:1fr}
+  .overview-body{padding:0}
+
+  /* Drawer — full screen on mobile */
+  .drawer{width:100%!important;max-width:100%}
+
+  /* Forms */
+  .frow{grid-template-columns:1fr!important}
+  .permission-grid{grid-template-columns:1fr 1fr}
+
+  /* Hide less important columns on small screens */
+  .data-table th:nth-child(4),.data-table td:nth-child(4){display:none}
+}
+
+/* ══ SMALL MOBILE ══ */
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr;gap:.5rem}
+  .sc-val{font-size:1.4rem}
+  .sc-label{font-size:.7rem}
+  .permission-grid{grid-template-columns:1fr}
+  .data-table{min-width:500px}
+  .data-table th:nth-child(3),.data-table td:nth-child(3){display:none}
+  .ph-actions .btn{font-size:.68rem}
+}
+
+
+/* ── TOUCH / MOBILE BASE ── */
+*{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,a,[role="button"]{min-height:44px}
+input,select,textarea{font-size:max(16px,1em)}
+@media(hover:none){button:hover{opacity:1}}
 </style>
 
 <!-- Supabase SDK -->
@@ -442,6 +537,7 @@ async function dbDelete(table, filters) {
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="tb-left">
+      <button class="tb-menu-btn" id="adminMenuBtn" onclick="toggleAdminSidebar()" style="display:none" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
       <button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button>
       <div class="tb-divider"></div>
       <div class="tb-badge">System Administration</div>
@@ -454,6 +550,7 @@ async function dbDelete(table, filters) {
     </div>
   </div>
 
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleAdminSidebar()"></div>
   <div class="app">
     <!-- SIDEBAR -->
     <nav class="sidebar" aria-label="Administration navigation">
@@ -840,7 +937,7 @@ async function dbDelete(table, filters) {
               <div style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-mid);font-weight:700;margin-bottom:.6rem">Backup Preview</div>
               <div id="restorePreviewBody" style="font-size:.84rem;color:var(--text-mid);line-height:1.7"></div>
               <div style="display:flex;gap:.7rem;margin-top:.9rem">
-                <button class="btn btn-ghost" onclick="document.getElementById('restorePreview').style.display='none'">Cancel</button>
+                <button class="btn btn-ghost" onclick="(document.getElementById('restorePreview')||{style:{}}).style.display='none'">Cancel</button>
                 <button class="btn btn-danger" id="restoreConfirmBtn" onclick="confirmRestore()">⚠️ Restore Data</button>
               </div>
             </div>
@@ -1027,8 +1124,8 @@ async function doAdminLogin(){
   }
 
   currentAdmin = { id:'admin', name: adminName, email: email==='admin'?'trueformbotanical@gmail.com':email, role:'admin' };
-  document.getElementById('loginGate').style.display='none';
-  document.getElementById('adminApp').style.display='flex';
+  (document.getElementById('loginGate')||{style:{}}).style.display='none';
+  (document.getElementById('adminApp')||{style:{}}).style.display='flex';
   await loadAll();
   startRealtimeSync();
   await appendAudit({type:'login',icon:'🔑',action:'Admin login',actor:currentAdmin.name,target:'System'});
@@ -1037,8 +1134,8 @@ async function doAdminLogin(){
 async function doLogout(){
   await sbSignOut();
   currentAdmin = null;
-  document.getElementById('adminApp').style.display='none';
-  document.getElementById('loginGate').style.display='flex';
+  (document.getElementById('adminApp')||{style:{}}).style.display='none';
+  (document.getElementById('loginGate')||{style:{}}).style.display='flex';
   showToast('👋 Signed out.');
 }
 document.getElementById('adminPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
@@ -1263,7 +1360,7 @@ async function loadAll(){
   const lastBk = await sget('tfb_last_backup');
   if(lastBk) setText('lastBackupTime', new Date(lastBk).toLocaleString());
   // Check storage health
-  document.getElementById('hStorageStatus').textContent='Online';
+  setText('hStorageStatus','Online');
 }
 
 function updateStats(){
@@ -1444,10 +1541,10 @@ let drawerUserId=null;
 
 function openAddUser(role){
   drawerMode='add';drawerRole=role;drawerUserId=null;
-  document.getElementById('drawerTitle').textContent='Add '+capitalize(role);
-  document.getElementById('drawerSub').textContent='Create a new '+role+' account';
-  document.getElementById('drawerBody').innerHTML=buildUserForm(role,null);
-  document.getElementById('drawerFooter').innerHTML=`<span class="field-hint">All fields marked * are required</span><div style="display:flex;gap:.6rem"><button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="saveUser()">Create ${capitalize(role)}</button></div>`;
+  setText('drawerTitle','Add '+capitalize(role));
+  setText('drawerSub','Create a new '+role+' account');
+  (document.getElementById('drawerBody')||{}).innerHTML=buildUserForm(role,null);
+  (document.getElementById('drawerFooter')||{}).innerHTML=`<span class="field-hint">All fields marked * are required</span><div style="display:flex;gap:.6rem"><button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="saveUser()">Create ${capitalize(role)}</button></div>`;
   openDrawer();
 }
 function openEditUser(id,role){
@@ -1455,10 +1552,10 @@ function openEditUser(id,role){
   const list=role==='herbalist'?ALL_HERBALISTS:role==='admin'?ALL_ADMINS:ALL_CLIENTS_USR;
   const user=list.find(u=>u.id===id);
   if(!user){showToast('⚠️ User not found.');return;}
-  document.getElementById('drawerTitle').textContent='Edit '+capitalize(role)+': '+user.name;
-  document.getElementById('drawerSub').textContent='Modify account details and permissions';
-  document.getElementById('drawerBody').innerHTML=buildUserForm(role,user);
-  document.getElementById('drawerFooter').innerHTML=`<button class="btn btn-danger btn-sm" onclick="deleteUser('${id}','${role}')">Delete Account</button><div style="display:flex;gap:.6rem">${role==='herbalist'?`<button class="btn btn-indigo btn-sm" onclick="openResetPassword('${id}')">🔑 Reset Password</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="saveUser()">Save Changes</button></div>`;
+  setText('drawerTitle','Edit '+capitalize(role)+': '+(user.name||''));
+  setText('drawerSub','Modify account details and permissions');
+  (document.getElementById('drawerBody')||{}).innerHTML=buildUserForm(role,user);
+  (document.getElementById('drawerFooter')||{}).innerHTML=`<button class="btn btn-danger btn-sm" onclick="deleteUser('${id}','${role}')">Delete Account</button><div style="display:flex;gap:.6rem">${role==='herbalist'?`<button class="btn btn-indigo btn-sm" onclick="openResetPassword('${id}')">🔑 Reset Password</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="saveUser()">Save Changes</button></div>`;
   openDrawer();
 }
 
@@ -1888,6 +1985,34 @@ async function appendAudit(entry){
 // ══════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════
+function toggleAdminSidebar(){
+  const sb = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const btn = document.getElementById('adminMenuBtn');
+  const isOpen = sb.classList.toggle('mobile-open');
+  overlay.classList.toggle('active', isOpen);
+  if(btn){ btn.textContent = isOpen ? '✕' : '☰'; btn.setAttribute('aria-expanded', isOpen); }
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+
+// Show menu button on mobile, hide on desktop
+function updateMobileMenuVisibility(){
+  const btn = document.getElementById('adminMenuBtn');
+  if(btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+}
+window.addEventListener('resize', function(){
+  updateMobileMenuVisibility();
+  if(window.innerWidth > 768){
+    const sb = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if(sb){ sb.classList.remove('mobile-open'); }
+    if(overlay){ overlay.classList.remove('active'); }
+    document.body.style.overflow = '';
+  }
+});
+document.addEventListener('DOMContentLoaded', updateMobileMenuVisibility);
+
+// Close sidebar when nav item is clicked on mobile
 function nav(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
@@ -1908,8 +2033,8 @@ function closeDrawer(){document.getElementById('userDrawer').classList.remove('o
 // ══════════════════════════════════════════════════
 let _confirmCb=null;
 function showConfirm(title,msg,cb){
-  document.getElementById('confirmTitle').textContent=title;
-  document.getElementById('confirmMsg').textContent=msg;
+  setText('confirmTitle',title);
+  setText('confirmMsg',msg);
   _confirmCb=cb;
   document.getElementById('confirmModal').classList.add('open');
 }
@@ -1950,24 +2075,24 @@ function openResetPassword(herbalistId){
   generatedTempPw = null;
 
   // Populate user card
-  document.getElementById('resetPwAvatar').textContent = h.name.charAt(0);
-  document.getElementById('resetPwName').textContent   = h.name;
-  document.getElementById('resetPwEmail').textContent  = h.email || h.username || h.id;
+  setText('resetPwAvatar', h.name.charAt(0));
+  setText('resetPwName', h.name||'');
+  setText('resetPwEmail', h.email||h.username||h.id||'');
 
   // Reset modal state
   switchResetTab('generate', document.querySelector('.rpw-tab[data-tab="generate"]'));
-  document.getElementById('rpwGeneratedWrap').style.display = 'none';
-  document.getElementById('rpwGenBtn').style.display        = 'inline-flex';
-  document.getElementById('rpwApplyGenBtn').style.display   = 'none';
-  document.getElementById('rpwGeneratedPw').textContent     = '';
-  document.getElementById('rpwNewPw').value                 = '';
-  document.getElementById('rpwConfirmPw').value             = '';
-  document.getElementById('rpwStrBar').style.width          = '0%';
-  document.getElementById('rpwStrLabel').textContent        = '';
-  document.getElementById('rpwManualError').style.display   = 'none';
-  document.getElementById('rpwSuccess').style.display       = 'none';
-  document.getElementById('rpwTabGenerate').style.display   = 'block';
-  document.getElementById('rpwTabManual').style.display     = 'none';
+  (document.getElementById('rpwGeneratedWrap')||{style:{}}).style.display = 'none';
+  (document.getElementById('rpwGenBtn')||{style:{}}).style.display        = 'inline-flex';
+  (document.getElementById('rpwApplyGenBtn')||{style:{}}).style.display   = 'none';
+  setText('rpwGeneratedPw','');
+  (document.getElementById('rpwNewPw')||{}).value                 = '';
+  (document.getElementById('rpwConfirmPw')||{}).value             = '';
+  (document.getElementById('rpwStrBar')||{style:{}}).style.width          = '0%';
+  setText('rpwStrLabel','');
+  (document.getElementById('rpwManualError')||{style:{}}).style.display   = 'none';
+  (document.getElementById('rpwSuccess')||{style:{}}).style.display       = 'none';
+  (document.getElementById('rpwTabGenerate')||{style:{}}).style.display   = 'block';
+  (document.getElementById('rpwTabManual')||{style:{}}).style.display     = 'none';
 
   document.getElementById('resetPwModal').classList.add('open');
 }
@@ -1981,9 +2106,9 @@ function closeResetPw(){
 function switchResetTab(tab, btn){
   document.querySelectorAll('.rpw-tab').forEach(t => t.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  document.getElementById('rpwTabGenerate').style.display = tab === 'generate' ? 'block' : 'none';
-  document.getElementById('rpwTabManual').style.display   = tab === 'manual'   ? 'block' : 'none';
-  document.getElementById('rpwSuccess').style.display     = 'none';
+  (document.getElementById('rpwTabGenerate')||{style:{}}).style.display = tab === 'generate' ? 'block' : 'none';
+  (document.getElementById('rpwTabManual')||{style:{}}).style.display   = tab === 'manual'   ? 'block' : 'none';
+  (document.getElementById('rpwSuccess')||{style:{}}).style.display     = 'none';
 }
 
 // ── GENERATE TAB ──
@@ -1998,10 +2123,10 @@ function generateTempPassword(){
   const sym  = syms[Math.floor(Math.random() * syms.length)];
   generatedTempPw = adj + noun + num + sym;
 
-  document.getElementById('rpwGeneratedPw').textContent   = generatedTempPw;
-  document.getElementById('rpwGeneratedWrap').style.display= 'block';
-  document.getElementById('rpwGenBtn').textContent         = '🔄 Regenerate';
-  document.getElementById('rpwApplyGenBtn').style.display  = 'inline-flex';
+  setText('rpwGeneratedPw', generatedTempPw);
+  (document.getElementById('rpwGeneratedWrap')||{style:{}}).style.display= 'block';
+  setText('rpwGenBtn','🔄 Regenerate');
+  (document.getElementById('rpwApplyGenBtn')||{style:{}}).style.display  = 'inline-flex';
 }
 
 function copyGeneratedPw(){
@@ -2061,7 +2186,7 @@ async function applyManualPassword(){
   if(newPw !== confirmPw){
     errEl.textContent = '⚠️ Passwords do not match.';
     errEl.style.display = 'block';
-    document.getElementById('rpwConfirmPw').value = '';
+    (document.getElementById('rpwConfirmPw')||{}).value = '';
     document.getElementById('rpwConfirmPw').focus();
     return;
   }
@@ -2092,12 +2217,12 @@ async function _saveNewPassword(herbalistId, newPw, method){
   });
 
   // Show success state
-  document.getElementById('rpwTabGenerate').style.display = 'none';
-  document.getElementById('rpwTabManual').style.display   = 'none';
+  (document.getElementById('rpwTabGenerate')||{style:{}}).style.display = 'none';
+  (document.getElementById('rpwTabManual')||{style:{}}).style.display   = 'none';
   document.querySelectorAll('.rpw-tab').forEach(t => t.style.display = 'none');
   const successEl = document.getElementById('rpwSuccess');
   successEl.style.display = 'block';
-  document.getElementById('rpwSuccessMsg').innerHTML =
+  (document.getElementById('rpwSuccessMsg')||{}).innerHTML =
     `Password for <strong>${h.name}</strong> has been ${method === 'temporary' ? 'reset to a temporary password' : 'updated to your new password'}.<br/>
     ${method === 'temporary' ? `The temporary password is: <strong style="font-family:monospace;color:var(--teal-deep)">${newPw}</strong><br/>Please share it securely.` : ''}
     <br/><span style="color:var(--text-soft)">The practitioner can now sign in with the new password.</span>`;
@@ -2551,13 +2676,13 @@ function readRestoreFile(file){
       if(!parsed.data){ showToast('⚠️ Invalid backup file — missing data section.'); return; }
       restoreData = parsed;
       const d = parsed.data;
-      document.getElementById('restorePreviewBody').innerHTML = `
+      (document.getElementById('restorePreviewBody')||{}).innerHTML = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
           ${[['Herbalists',d.herbalists?.length||0],['Clients',d.clients?.length||0],['Assessments',d.assessments?.length||0],['Appointments',d.appointments?.length||0],['Announcements',d.announcements?.length||0],['Audit Events',d.audit?.length||0]]
             .map(([label,n])=>`<div style="font-size:.82rem;color:var(--text-mid)"><strong>${n}</strong> ${label}</div>`).join('')}
         </div>
         <div style="margin-top:.7rem;font-size:.78rem;color:var(--text-soft)">Exported: ${parsed.exportedAt?new Date(parsed.exportedAt).toLocaleString():'Unknown'} · By: ${parsed.exportedBy||'Unknown'}</div>`;
-      document.getElementById('restorePreview').style.display = 'block';
+      (document.getElementById('restorePreview')||{style:{}}).style.display = 'block';
     }catch(err){ showToast('⚠️ Could not parse backup file. Is it valid JSON?'); }
   };
   reader.readAsText(file);
@@ -2580,8 +2705,8 @@ async function confirmRestore(){
     if(d.settings) await sset('tfb_settings', d.settings);
     await appendAudit({type:'edit',icon:'📤',action:'System data restored from backup',actor:currentAdmin?.name||'Admin',target:`${restoreData.exportedAt||'unknown date'}`});
     restoreData = null;
-    document.getElementById('restorePreview').style.display = 'none';
-    document.getElementById('restoreFileInput').value = '';
+    (document.getElementById('restorePreview')||{style:{}}).style.display = 'none';
+    (document.getElementById('restoreFileInput')||{}).value = '';
     showToast('✅ Data restored successfully. Reloading…');
     setTimeout(()=>{ loadAll(); loadAppointments(); loadAnnouncements(); loadHerbAdmin(); }, 1200);
   });
@@ -2593,10 +2718,10 @@ async function confirmRestore(){
 let _drawerSaveCb = null;
 function showDrawerForm(title, body, saveCb){
   _drawerSaveCb = saveCb;
-  document.getElementById('drawerTitle').textContent = title;
-  document.getElementById('drawerSub').textContent   = '';
-  document.getElementById('drawerBody').innerHTML    = body;
-  document.getElementById('drawerFooter').innerHTML  = `<span></span><div style="display:flex;gap:.6rem"><button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="if(_drawerSaveCb)_drawerSaveCb()">Save</button></div>`;
+  setText('drawerTitle', title);
+  setText('drawerSub','');
+  (document.getElementById('drawerBody')||{}).innerHTML    = body;
+  (document.getElementById('drawerFooter')||{}).innerHTML  = `<span></span><div style="display:flex;gap:.6rem"><button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary" onclick="if(_drawerSaveCb)_drawerSaveCb()">Save</button></div>`;
   openDrawer();
 }
 
@@ -3240,8 +3365,8 @@ async function cleanupOrphanedAccounts(){
 sb.auth.onAuthStateChange(async (event, session) => {
   if(event === 'PASSWORD_RECOVERY'){
     // Hide login form, show reset form
-    document.getElementById('adminLoginBox').style.display = 'none';
-    document.getElementById('adminResetBox').style.display = 'block';
+    (document.getElementById('adminLoginBox')||{style:{}}).style.display = 'none';
+    (document.getElementById('adminResetBox')||{style:{}}).style.display = 'block';
   }
 });
 
@@ -3284,8 +3409,8 @@ async function doAdminPasswordReset(){
   }
 
   // Password set — show login form
-  document.getElementById('adminResetBox').style.display='none';
-  document.getElementById('adminLoginBox').style.display='block';
+  (document.getElementById('adminResetBox')||{style:{}}).style.display='none';
+  (document.getElementById('adminLoginBox')||{style:{}}).style.display='block';
   // Pre-fill email
   const emailEl = document.getElementById('adminUser');
   if(emailEl) emailEl.value = 'trueformbotanical@gmail.com';
@@ -3456,7 +3581,7 @@ function checkLoginRateLimit(){
   return true;
 }
 
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
 
 // ══ ESC to close drawer/modal ══
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal();}});
@@ -3518,8 +3643,8 @@ function startRealtimeSync(){
       email: email,
       role:  'admin'
     };
-    document.getElementById('loginGate').style.display  = 'none';
-    document.getElementById('adminApp').style.display   = 'flex';
+    (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
+    (document.getElementById('adminApp')||{style:{}}).style.display   = 'flex';
     await loadAll();
     startRealtimeSync();
     showToast('✅ Session restored — welcome back, ' + currentAdmin.name + '!');
