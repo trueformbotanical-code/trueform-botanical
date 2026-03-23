@@ -228,6 +228,30 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
 });
 
+// ── SAFE STORAGE: replaces window.storage with localStorage ──
+const safeStorage = {
+  get: async function(key, shared){
+    try { const v = localStorage.getItem(key); return v ? {key, value:v} : null; } catch(e){ return null; }
+  },
+  set: async function(key, value, shared){
+    try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key, value}; } catch(e){ return null; }
+  },
+  delete: async function(key, shared){
+    try { localStorage.removeItem(key); return {key, deleted:true}; } catch(e){ return null; }
+  },
+  list: async function(prefix, shared){
+    try {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return {keys};
+    } catch(e){ return {keys:[]}; }
+  }
+};
+// Polyfill window.storage if not available
+if(typeof window.storage === 'undefined' || typeof window.storage.get !== 'function'){
+  window.storage = safeStorage;
+}
+
+
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {
   return await sb.auth.signUp({ email, password, options: { data: meta } });

@@ -343,6 +343,30 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 
+// ── SAFE STORAGE: replaces window.storage with localStorage ──
+const safeStorage = {
+  get: async function(key, shared){
+    try { const v = localStorage.getItem(key); return v ? {key, value:v} : null; } catch(e){ return null; }
+  },
+  set: async function(key, value, shared){
+    try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key, value}; } catch(e){ return null; }
+  },
+  delete: async function(key, shared){
+    try { localStorage.removeItem(key); return {key, deleted:true}; } catch(e){ return null; }
+  },
+  list: async function(prefix, shared){
+    try {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return {keys};
+    } catch(e){ return {keys:[]}; }
+  }
+};
+// Polyfill window.storage if not available
+if(typeof window.storage === 'undefined' || typeof window.storage.get !== 'function'){
+  window.storage = safeStorage;
+}
+
+
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {
   return await sb.auth.signUp({ email, password, options: { data: meta } });
@@ -1417,7 +1441,7 @@ function setText(id,val){const el=document.getElementById(id);if(el)el.textConte
 function renderHerbalists(list=ALL_HERBALISTS){
   const tbody=document.getElementById('herbalistsTbody');
   if(!list.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No herbalists yet</div><div class="empty-msg">Add your first practitioner using the button above.</div></div></td></tr>`;return;}
-  tbody.innerHTML=list.map(h=>{
+  if(tbody){tbody.innerHTML=list.map(h=>{}
     const id=h.id;
     return`<tr onclick="openEditUser('${id}','herbalist')" data-id="${id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">${h.name.charAt(0)}</div>${h.name}</div></td>
@@ -1496,7 +1520,7 @@ async function refreshClientList(){
 function renderClients(list=ALL_CLIENTS_USR){
   const tbody=document.getElementById('clientsTbody');
   if(!list.length){
-    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">
+    if(tbody){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">}
       <div class="empty-icon">👥</div>
       <div class="empty-title">No clients found</div>
       <div class="empty-msg">Clients will appear here when they register via the portal or submit an assessment.<br/>
@@ -1504,7 +1528,7 @@ function renderClients(list=ALL_CLIENTS_USR){
       </div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML=list.map(c=>`
+  if(tbody){tbody.innerHTML=list.map(c=>`}
     <tr onclick="openEditUser('${c.id}','client')" data-id="${c.id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">${c.name.trim().charAt(0)||'?'}</div>${c.name||'—'}</div></td>
       <td style="font-size:.78rem">${c.email||'—'}</td>
@@ -1522,7 +1546,7 @@ function renderClients(list=ALL_CLIENTS_USR){
 
 function renderAdmins(list=ALL_ADMINS){
   const tbody=document.getElementById('adminsTbody');
-  tbody.innerHTML=list.map(a=>`
+  if(tbody){tbody.innerHTML=list.map(a=>`}
     <tr data-id="${a.id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--red),#9b1c1c)">${a.name.charAt(0)}</div>${a.name}</div></td>
       <td style="font-size:.78rem;font-weight:700;font-family:monospace">${a.username}</td>
@@ -2556,10 +2580,10 @@ function renderHerbAdmin(list){
   const tbody = document.getElementById('herbAdminTbody');
   if(!tbody) return;
   if(!list.length){
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No custom herbs added</div><div class="empty-msg">The default herb database is managed in herbalist.html. Add custom herbs here to extend it.</div></div></td></tr>`;
+    if(tbody){tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No custom herbs added</div><div class="empty-msg">The default herb database is managed in herbalist.html. Add custom herbs here to extend it.</div></div></td></tr>`;}
     return;
   }
-  tbody.innerHTML = list.map(h => `
+  if(tbody){tbody.innerHTML = list.map(h => `}
     <tr>
       <td><div class="name-cell"><span style="font-size:1.1rem">${h.emoji||'🌱'}</span><strong>${h.name}</strong></div></td>
       <td style="font-size:.76rem;font-style:italic;color:var(--text-soft)">${h.latin||'—'}</td>
@@ -2802,7 +2826,7 @@ function renderInvoices(list=ALL_INVOICES){
     overdue:`background:var(--red-pale);color:var(--red);border-color:var(--red-border)`,
     cancelled:`background:var(--surface-alt);color:var(--text-light);border-color:var(--border)`,
   }[s]||'');
-  tbody.innerHTML = list.map(inv=>`
+  if(tbody){tbody.innerHTML = list.map(inv=>`}
     <tr>
       <td style="font-family:monospace;font-size:.78rem;font-weight:700;color:var(--teal-mid)">${inv.number||'—'}</td>
       <td><div class="name-cell" style="gap:.4rem"><div class="avatar-sm" style="width:26px;height:26px;font-size:.65rem;background:linear-gradient(135deg,var(--saffron),var(--spice))">${(inv.client||'?').charAt(0)}</div>${inv.client||'—'}</div></td>
@@ -3470,11 +3494,11 @@ function renderAssessments(list){
   setText('nbAssessments', list.length);
 
   if(!list.length){
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No assessments yet</div><div class="empty-msg">Assessments submitted via the client form will appear here.</div></div></td></tr>';
+    if(tbody){tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No assessments yet</div><div class="empty-msg">Assessments submitted via the client form will appear here.</div></div></td></tr>';}
     return;
   }
 
-  tbody.innerHTML = list.map(a => {
+  if(tbody){tbody.innerHTML = list.map(a => {}
     const name    = sanitize((a.client_name || (a.personal?.firstName||'') + ' ' + (a.personal?.lastName||'') || '').trim() || a.client_email || '—');
     const email   = sanitize(a.client_email || a.personal?.email || '—');
     const ref     = sanitize(a.ref_code || a.meta?.refCode || '—');
@@ -3693,9 +3717,9 @@ function renderSuspended(){
   const hTbody = document.getElementById('suspendedHerbalistsTbody');
   if(hTbody){
     if(!suspH.length){
-      hTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';
+      if(hTbody){hTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';}
     } else {
-      hTbody.innerHTML = suspH.map(h=>'<tr>'+
+      if(hTbody){hTbody.innerHTML = suspH.map(h=>'<tr>'+}
         '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">'+sanitize(h.name.charAt(0))+'</div>'+sanitize(h.name)+'</div></td>'+
         '<td style="font-size:.78rem">'+sanitize(h.email||'—')+'</td>'+
         '<td style="font-size:.78rem">'+sanitize(h.specialty||'—')+'</td>'+
@@ -3711,9 +3735,9 @@ function renderSuspended(){
   const cTbody = document.getElementById('suspendedClientsTbody');
   if(cTbody){
     if(!suspC.length){
-      cTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';
+      if(cTbody){cTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';}
     } else {
-      cTbody.innerHTML = suspC.map(cl=>'<tr>'+
+      if(cTbody){cTbody.innerHTML = suspC.map(cl=>'<tr>'+}
         '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">'+sanitize((cl.name||'?').charAt(0))+'</div>'+sanitize(cl.name||'—')+'</div></td>'+
         '<td style="font-size:.78rem">'+sanitize(cl.email||'—')+'</td>'+
         '<td style="font-size:.78rem">'+sanitize(cl.assignedHerbalist||'Unassigned')+'</td>'+

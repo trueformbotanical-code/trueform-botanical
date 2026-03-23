@@ -701,6 +701,30 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
+// ── SAFE STORAGE: replaces window.storage with localStorage ──
+const safeStorage = {
+  get: async function(key, shared){
+    try { const v = localStorage.getItem(key); return v ? {key, value:v} : null; } catch(e){ return null; }
+  },
+  set: async function(key, value, shared){
+    try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key, value}; } catch(e){ return null; }
+  },
+  delete: async function(key, shared){
+    try { localStorage.removeItem(key); return {key, deleted:true}; } catch(e){ return null; }
+  },
+  list: async function(prefix, shared){
+    try {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return {keys};
+    } catch(e){ return {keys:[]}; }
+  }
+};
+// Polyfill window.storage if not available
+if(typeof window.storage === 'undefined' || typeof window.storage.get !== 'function'){
+  window.storage = safeStorage;
+}
+
+
 // Session is not persisted (persistSession:false) so no cleanup needed on load
 
 // ── AUTH HELPERS ──
@@ -3120,7 +3144,7 @@ function filterSymDropdown(q){
 }
 function renderSymDropdown(list){
   const inner=document.getElementById('symDropInner');
-  inner.innerHTML=list.map(s=>{
+  if(inner){inner.innerHTML=list.map(s=>{}
     const isSel=FS.syms.includes(s.value);
     return`<div class="sym-drop-item${isSel?' selected':''}" onclick="toggleSymFromDrop('${s.value}','${s.label}')">
       <span>${s.label}</span>
@@ -3146,7 +3170,7 @@ function renderSymChips(){
   if(!FS.syms.length){container.innerHTML='';lbl.style.display='none';return;}
   lbl.style.display='flex';
   (document.getElementById('symSelectedCount')||{}).textContent==FS.syms.length;
-  container.innerHTML=FS.syms.map(v=>{
+  if(container){container.innerHTML=FS.syms.map(v=>{}
     const sym=SYMPTOMS.find(s=>s.value===v)||{label:v,value:v};
     return`<span class="fchip sel-teal" style="display:inline-flex;align-items:center;gap:5px">${sym.label}<span class="chip-x" onclick="removeSymChip('${v}')" title="Remove">✕</span></span>`;
   }).join('');
@@ -3266,11 +3290,11 @@ function renderResults(herbs){
   if(FS.safetyF.length)chips.push("Safety: "+FS.safetyF.join(", "));
   chips.push(sevLbls[FS.severity].split(" — ")[0]);
   if(FS.constitution!=="mixed")chips.push("Constitution: "+FS.constitution);
-  af.innerHTML=chips.map(c=>`<span class="af-chip">${c}</span>`).join("");
+  if(af){af.innerHTML=chips.map(c=>`<span class="af-chip">${c}</span>`).join("");}
   (document.getElementById('resTitle')||{}).textContent==herbs.length?herbs.length+" herb"+(herbs.length>1?"s":"")+" matched your profile":"No herbs matched";
   const grid=document.getElementById("herbResultsGrid");
   if(!herbs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-soft)"><div style="font-size:3rem;margin-bottom:.8rem">🌿</div><h4 style="font-family:var(--serif);color:var(--text-dark);margin-bottom:.4rem">No herbs matched</h4><p style="font-size:.86rem">Try removing safety filters or selecting fewer traditions.</p></div>`;return;}
-  grid.innerHTML=herbs.map(h=>{
+  if(grid){grid.innerHTML=herbs.map(h=>{}
     const shopBtn=h.shopId?`<button class="btn-saffron" style="font-size:.72rem;padding:7px 14px" onclick="addToCart(${h.shopId});closeFinder()">🛒 Add to Cart</button>`:`<button class="btn-outline" style="font-size:.72rem;padding:7px 14px;border-color:var(--teal-mid);color:var(--teal-mid)" data-action="bookWithSyms">📅 Ask Herbalist</button>`;
     const safe=h.safeFor.map(s=>`<span class="hrc-tag tag-safe">✓ ${s}</span>`).join("");
     const warn=h.notSafe.length?`<span class="hrc-tag tag-warn">⚠ ${h.notSafe.join(", ")}</span>`:"";

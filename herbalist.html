@@ -326,6 +326,30 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
 });
 
+// ── SAFE STORAGE: replaces window.storage with localStorage ──
+const safeStorage = {
+  get: async function(key, shared){
+    try { const v = localStorage.getItem(key); return v ? {key, value:v} : null; } catch(e){ return null; }
+  },
+  set: async function(key, value, shared){
+    try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key, value}; } catch(e){ return null; }
+  },
+  delete: async function(key, shared){
+    try { localStorage.removeItem(key); return {key, deleted:true}; } catch(e){ return null; }
+  },
+  list: async function(prefix, shared){
+    try {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return {keys};
+    } catch(e){ return {keys:[]}; }
+  }
+};
+// Polyfill window.storage if not available
+if(typeof window.storage === 'undefined' || typeof window.storage.get !== 'function'){
+  window.storage = safeStorage;
+}
+
+
 // ── AUTH HELPERS ──
 async function sbSignUp(email, password, meta={}) {
   return await sb.auth.signUp({ email, password, options: { data: meta } });
@@ -1030,7 +1054,7 @@ function onUsernameInput(val) {
 function showSuggestions(list) {
   const box = document.getElementById('loginSuggestions');
   suggestFocusIdx = -1;
-  box.innerHTML = list.map((h, i) => `
+  if(box){box.innerHTML = list.map((h, i) => `}
     <div class="suggest-item${h.status === 'suspended' ? ' suggest-suspended' : ''}"
          data-idx="${i}"
          onmousedown="selectSuggest('${h.id}')"
@@ -1628,7 +1652,7 @@ function renderRecentTable(){
 // ══ CLIENTS TABLE ══
 function renderClientsTable(list){
   const tbody=document.getElementById('clientsTbody');
-  tbody.innerHTML=list.map(c=>{
+  if(tbody){tbody.innerHTML=list.map(c=>{}
     const sev=parseInt(c.symptoms.severity)||3;
     const urg=sev>=4?'high':sev>=3?'medium':'low';
     const status=c._reviewed?'reviewed':'new';
@@ -2397,10 +2421,10 @@ async function renderCalendar(){
   stored.sort((a,b)=>new Date(a.date)-new Date(b.date));
   const apptEl=document.getElementById('calendarView');
   if(!stored.length){
-    apptEl.innerHTML=`<div style="max-width:600px"><div style="padding:2rem;text-align:center;color:var(--text-light);background:var(--surface);border:1.5px solid var(--border);border-radius:10px"><div style="font-size:2rem;margin-bottom:.5rem">📅</div><p style="font-weight:600">No appointments scheduled yet.</p><p style="font-size:.82rem;margin-top:.3rem">Appointments are created when you send a protocol with a follow-up date.</p></div></div>`;
+    if(apptEl){apptEl.innerHTML=`<div style="max-width:600px"><div style="padding:2rem;text-align:center;color:var(--text-light);background:var(--surface);border:1.5px solid var(--border);border-radius:10px"><div style="font-size:2rem;margin-bottom:.5rem">📅</div><p style="font-weight:600">No appointments scheduled yet.</p><p style="font-size:.82rem;margin-top:.3rem">Appointments are created when you send a protocol with a follow-up date.</p></div></div>`;}
     return;
   }
-  apptEl.innerHTML=`<div style="max-width:600px">
+  if(apptEl){apptEl.innerHTML=`<div style="max-width:600px">}
     <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:1rem">Scheduled Appointments (${stored.length})</div>
     ${stored.map(a=>{
       const isPast=a.date&&new Date(a.date)<new Date();
