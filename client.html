@@ -185,6 +185,38 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
 button,a,[role="button"]{min-height:44px}
 input,select,textarea{font-size:max(16px,1em)}
 @media(hover:none){button:hover{opacity:1}}
+
+/* ══ CUSTOM SEVERITY DRAG BAR ══ */
+.sev-bar-wrap{margin-top:.5rem;user-select:none}
+.sev-track{position:relative;height:14px;background:var(--border);border-radius:7px;cursor:pointer;margin-bottom:2rem;touch-action:none}
+.sev-track:focus{outline:2px solid var(--teal-mid);outline-offset:3px}
+.sev-fill{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:linear-gradient(90deg,var(--teal-mid),var(--saffron),var(--spice));transition:width .05s;pointer-events:none}
+.sev-thumb{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal-mid);box-shadow:0 2px 8px rgba(0,0,0,.18);transform:translate(-50%,-50%);transition:left .05s,border-color .15s;pointer-events:none;z-index:2}
+.sev-ticks{position:absolute;top:18px;left:0;right:0;display:flex;justify-content:space-between}
+.sev-tick{font-size:.65rem;color:var(--text-soft);font-weight:600;cursor:pointer;padding-top:2px;text-align:center;flex:1}
+.sev-tick.active{color:var(--teal-mid);font-weight:700}
+.sev-label{font-size:.84rem;font-weight:600;color:var(--teal-deepest);margin-top:.3rem;min-height:1.2em}
+/* Colour thumb by severity */
+.sev-track[data-v="1"] .sev-thumb{border-color:#64b5a8}
+.sev-track[data-v="2"] .sev-thumb{border-color:#8dcfc7}
+.sev-track[data-v="3"] .sev-thumb{border-color:var(--saffron)}
+.sev-track[data-v="4"] .sev-thumb{border-color:#e07030}
+.sev-track[data-v="5"] .sev-thumb{border-color:var(--spice)}
+
+/* ══ BODY SYSTEMS ══ */
+.body-system-group{margin-bottom:.6rem;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+.bsg-header{display:flex;align-items:center;gap:.6rem;padding:.65rem .9rem;background:var(--surface);cursor:pointer;user-select:none;transition:background .15s}
+.bsg-header:hover{background:var(--surface-teal)}
+.bsg-icon{font-size:1.1rem;flex-shrink:0}
+.bsg-title{flex:1;font-weight:700;font-size:.85rem;color:var(--text-dark)}
+.bsg-arrow{font-size:.7rem;color:var(--text-soft);transition:transform .2s}
+.bsg-subs{display:none;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem;padding:.6rem .75rem;background:var(--bg)}
+.bsg-subs.open{display:grid}
+.sub-zone{font-size:.78rem;padding:.45rem .6rem}
+.body-zone{display:flex;align-items:center;gap:.4rem;padding:.55rem .7rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);transition:all .15s;font-size:.82rem;font-weight:500;color:var(--text-dark)}
+.body-zone:hover{border-color:var(--teal-mid);background:var(--surface-teal)}
+.body-zone.selected{border-color:var(--teal-mid);background:var(--surface-teal);color:var(--teal-deep);font-weight:700}
+.bz-icon{flex-shrink:0}
 </style>
 
 <!-- Supabase SDK -->
@@ -323,9 +355,21 @@ async function dbDelete(table, filters) {
         </div>
         <div class="fgrp">
           <label>Symptom Severity <span class="required-star">*</span></label>
-          <div class="scale-wrap"><div class="scale-labels"><span>None</span><span>Mild</span><span>Moderate</span><span>Severe</span><span>Debilitating</span></div>
-          <input type="range" class="scale-input scale-freq" id="severityScale" min="1" max="5" value="3" oninput="updateScale(this,'severityVal')"/>
-          <div class="scale-val" id="severityVal">Moderate — affects daily life occasionally</div></div>
+          <div class="sev-bar-wrap">
+            <div class="sev-track" id="sevTrack" role="slider" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3" aria-label="Symptom severity" tabindex="0">
+              <div class="sev-fill" id="sevFill"></div>
+              <div class="sev-thumb" id="sevThumb"></div>
+              <div class="sev-ticks">
+                <span class="sev-tick" data-v="1">None</span>
+                <span class="sev-tick" data-v="2">Mild</span>
+                <span class="sev-tick" data-v="3">Moderate</span>
+                <span class="sev-tick" data-v="4">Severe</span>
+                <span class="sev-tick" data-v="5">Debilitating</span>
+              </div>
+            </div>
+            <input type="hidden" id="severityScale" value="3"/>
+            <div class="sev-label" id="severityVal">Moderate — affects daily life occasionally</div>
+          </div>
         </div>
         <div class="fgrp">
           <label>Select All Symptoms You Are Experiencing</label>
@@ -358,25 +402,8 @@ async function dbDelete(table, filters) {
       <div class="sc-body">
         <div class="fgrp">
           <label>Affected Body Areas (select all)</label>
-          <div class="body-map-grid" id="bodyMapGrid">
-            <div class="body-zone" data-z="head" onclick="toggleZone(this)"><span class="bz-icon">🧠</span><span>Head / Brain</span></div>
-            <div class="body-zone" data-z="eyes" onclick="toggleZone(this)"><span class="bz-icon">👁️</span><span>Eyes / Vision</span></div>
-            <div class="body-zone" data-z="ears" onclick="toggleZone(this)"><span class="bz-icon">👂</span><span>Ears / Hearing</span></div>
-            <div class="body-zone" data-z="nose" onclick="toggleZone(this)"><span class="bz-icon">👃</span><span>Nose / Sinuses</span></div>
-            <div class="body-zone" data-z="throat" onclick="toggleZone(this)"><span class="bz-icon">🗣️</span><span>Throat / Neck</span></div>
-            <div class="body-zone" data-z="chest" onclick="toggleZone(this)"><span class="bz-icon">🫁</span><span>Chest / Lungs</span></div>
-            <div class="body-zone" data-z="heart" onclick="toggleZone(this)"><span class="bz-icon">❤️</span><span>Heart / Circulation</span></div>
-            <div class="body-zone" data-z="stomach" onclick="toggleZone(this)"><span class="bz-icon">🫃</span><span>Stomach / Abdomen</span></div>
-            <div class="body-zone" data-z="liver" onclick="toggleZone(this)"><span class="bz-icon">🫀</span><span>Liver / Gallbladder</span></div>
-            <div class="body-zone" data-z="kidneys" onclick="toggleZone(this)"><span class="bz-icon">🧫</span><span>Kidneys / Bladder</span></div>
-            <div class="body-zone" data-z="reproductive" onclick="toggleZone(this)"><span class="bz-icon">🌸</span><span>Reproductive</span></div>
-            <div class="body-zone" data-z="spine" onclick="toggleZone(this)"><span class="bz-icon">🦴</span><span>Spine / Back</span></div>
-            <div class="body-zone" data-z="joints" onclick="toggleZone(this)"><span class="bz-icon">🦵</span><span>Joints / Limbs</span></div>
-            <div class="body-zone" data-z="skin" onclick="toggleZone(this)"><span class="bz-icon">🤚</span><span>Skin / Hair</span></div>
-            <div class="body-zone" data-z="immune" onclick="toggleZone(this)"><span class="bz-icon">🛡️</span><span>Immune System</span></div>
-            <div class="body-zone" data-z="hormones" onclick="toggleZone(this)"><span class="bz-icon">⚗️</span><span>Hormones / Glands</span></div>
-            <div class="body-zone" data-z="nerves" onclick="toggleZone(this)"><span class="bz-icon">⚡</span><span>Nervous System</span></div>
-            <div class="body-zone" data-z="mental" onclick="toggleZone(this)"><span class="bz-icon">💭</span><span>Mental / Emotional</span></div>
+          <div id="bodyMapGrid" style="margin-top:.4rem">
+            <!-- Rendered by renderBodySystems() -->
           </div>
         </div>
         <div class="fgrp">
@@ -589,6 +616,196 @@ const scaleLbls={
 };
 function updateScale(el,valId){document.getElementById(valId).textContent=scaleLbls[el.id]?scaleLbls[el.id][el.value]||el.value:el.value;}
 
+// ══════════════════════════════════════════════════
+// CUSTOM SEVERITY DRAG BAR
+// ══════════════════════════════════════════════════
+const SEV_LABELS = {
+  1: 'None — no noticeable impact on daily life',
+  2: 'Mild — occasionally bothersome, manageable',
+  3: 'Moderate — affects daily activities periodically',
+  4: 'Severe — significantly impacts daily functioning',
+  5: 'Debilitating — unable to perform normal activities'
+};
+const SEV_COLORS = {1:'#64b5a8',2:'#3ab5a8',3:'#e8920c',4:'#e07030',5:'#b54a1e'};
+
+function initSeverityBar(){
+  const track = document.getElementById('sevTrack');
+  const fill  = document.getElementById('sevFill');
+  const thumb = document.getElementById('sevThumb');
+  const input = document.getElementById('severityScale');
+  const label = document.getElementById('severityVal');
+  if(!track) return;
+
+  let isDragging = false;
+
+  function pct(val){ return ((val-1)/4)*100; }
+
+  function setSev(val){
+    val = Math.min(5, Math.max(1, Math.round(val)));
+    input.value = val;
+    track.setAttribute('data-v', val);
+    track.setAttribute('aria-valuenow', val);
+    const p = pct(val);
+    fill.style.width  = p + '%';
+    thumb.style.left  = p + '%';
+    thumb.style.borderColor = SEV_COLORS[val];
+    fill.style.opacity = 0.85 + val * 0.03;
+    label.textContent = SEV_LABELS[val];
+    // Update tick highlights
+    track.querySelectorAll('.sev-tick').forEach(function(t){
+      t.classList.toggle('active', parseInt(t.dataset.v) === val);
+    });
+  }
+
+  function valFromX(clientX){
+    const rect = track.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    return Math.round(1 + ratio * 4);
+  }
+
+  // Mouse events
+  track.addEventListener('mousedown', function(e){
+    isDragging = true;
+    setSev(valFromX(e.clientX));
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e){
+    if(isDragging) setSev(valFromX(e.clientX));
+  });
+  document.addEventListener('mouseup', function(){ isDragging = false; });
+
+  // Touch events
+  track.addEventListener('touchstart', function(e){
+    isDragging = true;
+    setSev(valFromX(e.touches[0].clientX));
+    e.preventDefault();
+  }, {passive:false});
+  document.addEventListener('touchmove', function(e){
+    if(isDragging) setSev(valFromX(e.touches[0].clientX));
+  }, {passive:true});
+  document.addEventListener('touchend', function(){ isDragging = false; });
+
+  // Keyboard accessibility
+  track.addEventListener('keydown', function(e){
+    const cur = parseInt(input.value)||3;
+    if(e.key==='ArrowRight'||e.key==='ArrowUp'){ setSev(cur+1); e.preventDefault(); }
+    if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ setSev(cur-1); e.preventDefault(); }
+    if(e.key==='Home'){ setSev(1); e.preventDefault(); }
+    if(e.key==='End'){  setSev(5); e.preventDefault(); }
+  });
+
+  // Click on tick labels
+  track.querySelectorAll('.sev-tick').forEach(function(t){
+    t.addEventListener('click', function(){ setSev(parseInt(t.dataset.v)); });
+  });
+
+  setSev(3); // default
+}
+
+// ══════════════════════════════════════════════════
+// ALL HUMAN BODY SYSTEMS & SUB-SYSTEMS
+// ══════════════════════════════════════════════════
+const BODY_SYSTEMS = [
+  {
+    system: 'Nervous System', icon: '🧠', id: 'nervous',
+    sub: ['Brain','Spinal Cord','Peripheral Nerves','Autonomic Nervous System','Central Nervous System','Cranial Nerves','Sensory Nerves','Motor Nerves','Neurotransmitters']
+  },
+  {
+    system: 'Cardiovascular System', icon: '❤️', id: 'cardiovascular',
+    sub: ['Heart','Arteries','Veins','Capillaries','Coronary Vessels','Aorta','Pulmonary Circulation','Lymphatic Vessels','Blood Pressure Regulation']
+  },
+  {
+    system: 'Respiratory System', icon: '🫁', id: 'respiratory',
+    sub: ['Lungs','Bronchi','Bronchioles','Alveoli','Trachea','Larynx','Diaphragm','Pleura','Upper Airways','Lower Airways']
+  },
+  {
+    system: 'Digestive System', icon: '🫃', id: 'digestive',
+    sub: ['Mouth & Salivary Glands','Oesophagus','Stomach','Small Intestine','Large Intestine / Colon','Rectum & Anus','Liver','Gallbladder','Pancreas (Digestive)','Gut Microbiome']
+  },
+  {
+    system: 'Musculoskeletal System', icon: '🦴', id: 'musculoskeletal',
+    sub: ['Bones','Joints','Cartilage','Ligaments','Tendons','Skeletal Muscles','Spine & Vertebrae','Pelvis','Shoulders & Arms','Hips, Legs & Feet']
+  },
+  {
+    system: 'Endocrine System', icon: '⚗️', id: 'endocrine',
+    sub: ['Thyroid Gland','Parathyroid Gland','Adrenal Glands','Pituitary Gland','Pineal Gland','Pancreas (Hormonal)','Ovaries / Testes','Hypothalamus','Thymus']
+  },
+  {
+    system: 'Immune & Lymphatic System', icon: '🛡️', id: 'immune',
+    sub: ['White Blood Cells','Lymph Nodes','Spleen','Thymus','Bone Marrow','Tonsils','Appendix','Mucous Membranes','Inflammatory Response','Autoimmune Response']
+  },
+  {
+    system: 'Urinary System', icon: '🫧', id: 'urinary',
+    sub: ['Kidneys','Ureters','Bladder','Urethra','Renal Cortex','Renal Medulla','Nephrons','Fluid & Electrolyte Balance']
+  },
+  {
+    system: 'Reproductive System', icon: '🌸', id: 'reproductive',
+    sub: ['Uterus','Ovaries','Fallopian Tubes','Vagina','Cervix','Testes','Prostate Gland','Epididymis','Vas Deferens','Menstrual Cycle','Fertility','Pregnancy / Postpartum']
+  },
+  {
+    system: 'Integumentary System', icon: '🤚', id: 'integumentary',
+    sub: ['Skin (Epidermis)','Skin (Dermis)','Subcutaneous Tissue','Hair & Hair Follicles','Nails','Sebaceous Glands','Sweat Glands','Wound Healing']
+  },
+  {
+    system: 'Head, Eyes, Ears, Nose & Throat', icon: '👁️', id: 'heent',
+    sub: ['Eyes & Vision','Ears & Hearing','Nose & Nasal Passages','Sinuses','Mouth & Oral Cavity','Teeth & Gums','Throat & Pharynx','Larynx & Voice','Neck & Lymph Nodes']
+  },
+  {
+    system: 'Mental & Emotional Health', icon: '💭', id: 'mental',
+    sub: ['Anxiety','Depression','Stress & Burnout','Sleep & Insomnia','Mood Regulation','Cognitive Function / Memory','ADHD / Focus','Trauma & PTSD','Grief & Loss','Self-Esteem']
+  },
+  {
+    system: 'Haematological System', icon: '🩸', id: 'haematological',
+    sub: ['Red Blood Cells','White Blood Cells','Platelets','Haemoglobin','Blood Clotting','Iron Levels','Anaemia','Blood Sugar Regulation']
+  },
+  {
+    system: 'Sensory Systems', icon: '🫀', id: 'sensory',
+    sub: ['Vision','Hearing & Balance','Taste & Smell','Touch & Proprioception','Pain Perception','Vestibular System']
+  }
+];
+
+function renderBodySystems(){
+  const grid = document.getElementById('bodyMapGrid');
+  if(!grid) return;
+
+  let html = '';
+  BODY_SYSTEMS.forEach(function(sys){
+    html += '<div class="body-system-group">' +
+      '<div class="bsg-header" onclick="toggleSystemGroup(this)">' +
+        '<span class="bsg-icon">' + sys.icon + '</span>' +
+        '<span class="bsg-title">' + sys.system + '</span>' +
+        '<span class="bsg-arrow">▾</span>' +
+      '</div>' +
+      '<div class="bsg-subs">' +
+        sys.sub.map(function(sub){
+          return '<div class="body-zone sub-zone" data-z="' + sys.id + '_' + sub.toLowerCase().replace(/[^a-z0-9]/g,'_') + '" data-sys="' + sys.id + '" onclick="toggleZone(this)">' +
+            '<span class="bz-icon" style="font-size:.9rem">' + sys.icon + '</span>' +
+            '<span>' + sub + '</span>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+function toggleSystemGroup(header){
+  const subs = header.nextElementSibling;
+  const arrow = header.querySelector('.bsg-arrow');
+  const isOpen = subs.classList.toggle('open');
+  if(arrow) arrow.textContent = isOpen ? '▴' : '▾';
+}
+
+// ══════════════════════════════════════════════════
+// Init both on DOM ready
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  initSeverityBar();
+  renderBodySystems();
+});
+
+
 function goStep(n){
   document.getElementById('step'+currentStep).classList.add('hidden');
   document.getElementById('step'+n).classList.remove('hidden');
@@ -611,14 +828,14 @@ function updateProgress(){
 
 // ── CHIP TOGGLE ──
 function toggleChip(el){el.classList.toggle('sel');}
-function toggleZone(el){el.classList.toggle('sel');}
+function toggleZone(el){el.classList.toggle('selected');}
 function toggleLF(el,group){document.querySelectorAll('[data-l="'+group+'"]').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
 function toggleCheck(el){el.classList.toggle('sel');const box=el.querySelector('.check-box');if(box)box.innerHTML=el.classList.contains('sel')?'✓':'';}
 
 // ── COLLECT DATA ──
 function collectData(){
   const getChips=g=>[...document.querySelectorAll(`.chip[data-g="${g}"].sel`)].map(c=>c.dataset.v||c.textContent);
-  const getZones=()=>[...document.querySelectorAll('.body-zone.sel')].map(z=>z.dataset.z);
+  const getZones=()=>[...document.querySelectorAll('.body-zone.selected')].map(z=>z.querySelector('span:last-child')?.textContent||z.dataset.z);
   const getChecks=parent=>[...document.querySelectorAll(parent+' .check-item.sel .check-label')].map(l=>l.textContent);
   const getExercise=()=>{const s=document.querySelector('.lf-card.sel');return s?s.querySelector('span:last-child').textContent:'Not specified';};
   return{
