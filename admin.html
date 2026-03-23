@@ -304,6 +304,9 @@ async function dbDelete(table, filters) {
   return !error;
 }
 </script>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -404,6 +407,7 @@ async function dbDelete(table, filters) {
 </div>
 
 <!-- ══ LOGIN GATE ══ -->
+<a href="#contentArea" class="skip-link" style="position:absolute;top:-40px;left:0;background:var(--teal-mid);color:#fff;padding:8px 16px;z-index:9999;border-radius:0 0 4px 0;font-size:.9rem;font-weight:700;transition:top .2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
 <div id="loginGate" style="display:flex;flex-direction:column;height:100%">
   <div class="topbar">
     <div class="tb-left"><button class="tb-logo" onclick="window.location.href='index.html'" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none"><div class="tb-mark">🌿</div><span class="tb-name">TrueForm <em>Botanical</em></span></button></div>
@@ -452,13 +456,14 @@ async function dbDelete(table, filters) {
 
   <div class="app">
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="Administration navigation">
       <div class="sb-section">
         <div class="sb-label">Administration</div>
         <div class="sb-item active" onclick="nav('overview')"><span class="sb-icon">📊</span>Overview</div>
         <div class="sb-item" onclick="nav('herbalists')"><span class="sb-icon">🌿</span>Herbalists<span class="sb-badge teal" id="nbHerbalists">0</span></div>
         <div class="sb-item" onclick="nav('clients')"><span class="sb-icon">👥</span>Clients<span class="sb-badge teal" id="nbClients">0</span></div>
         <div class="sb-item" onclick="nav('admins')"><span class="sb-icon">🛡️</span>Admins<span class="sb-badge red" id="nbAdmins">1</span></div>
+        <div class="sb-item" onclick="nav('assessments')"><span class="sb-icon">📋</span>Assessments<span class="sb-badge teal" id="nbAssessments">0</span></div>
       </div>
       <div class="sb-section">
         <div class="sb-label">System</div>
@@ -489,10 +494,10 @@ async function dbDelete(table, filters) {
         <strong id="sbAdminName">System Admin</strong>
         <p>TrueForm Botanical<br/>Admin Portal v1.0<br/>All actions are logged.</p>
       </div>
-    </div>
+    </nav>
 
     <!-- CONTENT -->
-    <div class="content" id="contentArea">
+    <div class="content" id="contentArea" role="main" aria-label="Administration content">
 
       <!-- ══ OVERVIEW ══ -->
       <div class="panel active" id="panel-overview">
@@ -504,11 +509,36 @@ async function dbDelete(table, filters) {
             <button class="btn btn-primary" onclick="openAddUser('client')">+ Add Client</button>
           </div>
         </div>
-        <div class="stats-row">
-          <div class="stat-card sc-teal"><div class="sc-label">Herbalists</div><div class="sc-val" id="ovHerbalists">—</div><div class="sc-sub">Registered practitioners</div></div>
-          <div class="stat-card sc-saffron"><div class="sc-label">Clients</div><div class="sc-val" id="ovClients">—</div><div class="sc-sub">Registered users</div></div>
-          <div class="stat-card sc-green"><div class="sc-label">Assessments</div><div class="sc-val" id="ovAssessments">—</div><div class="sc-sub">Submitted forms</div></div>
-          <div class="stat-card sc-red"><div class="sc-label">Suspended</div><div class="sc-val" id="ovSuspended">—</div><div class="sc-sub">Accounts on hold</div></div>
+        <!-- Stat cards — clickable, navigate to relevant panel -->
+        <div class="stats-row" role="tablist" aria-label="Overview statistics">
+          <button class="stat-card sc-teal" onclick="nav('herbalists')" role="tab"
+            aria-label="Herbalists — click to manage" title="Click to manage herbalists"
+            style="cursor:pointer;border:none;text-align:left;width:100%">
+            <div class="sc-label">Herbalists</div>
+            <div class="sc-val" id="ovHerbalists">—</div>
+            <div class="sc-sub">Registered practitioners →</div>
+          </button>
+          <button class="stat-card sc-saffron" onclick="nav('clients')" role="tab"
+            aria-label="Clients — click to manage" title="Click to manage clients"
+            style="cursor:pointer;border:none;text-align:left;width:100%">
+            <div class="sc-label">Clients</div>
+            <div class="sc-val" id="ovClients">—</div>
+            <div class="sc-sub">Registered users →</div>
+          </button>
+          <button class="stat-card sc-green" onclick="nav('assessments')" role="tab"
+            aria-label="Assessments — click to view" title="Click to view assessments"
+            style="cursor:pointer;border:none;text-align:left;width:100%">
+            <div class="sc-label">Assessments</div>
+            <div class="sc-val" id="ovAssessments">—</div>
+            <div class="sc-sub">Submitted forms →</div>
+          </button>
+          <button class="stat-card sc-red" onclick="showSuspended()" role="tab"
+            aria-label="Suspended accounts — click to view" title="Click to view suspended accounts"
+            style="cursor:pointer;border:none;text-align:left;width:100%">
+            <div class="sc-label">Suspended</div>
+            <div class="sc-val" id="ovSuspended">—</div>
+            <div class="sc-sub">Accounts on hold →</div>
+          </button>
         </div>
         <div class="overview-body">
           <div class="system-health-grid">
@@ -574,6 +604,45 @@ async function dbDelete(table, filters) {
           </div>
           <table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Assigned Herbalist</th><th>Assessment</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="clientsTbody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ══ ASSESSMENTS ══ -->
+      <div class="panel" id="panel-assessments">
+        <div class="ph">
+          <div><div class="ph-title">Client <em>Assessments</em></div><div class="ph-sub">All submitted health assessment forms</div></div>
+          <div class="ph-actions">
+            <button class="btn btn-ghost" onclick="loadAll()">🔄 Refresh</button>
+            <button class="btn btn-ghost" onclick="exportAssessments()">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="padding-top:1rem">
+          <div class="toolbar">
+            <div class="search-box"><span>🔍</span><input type="text" placeholder="Search assessments…" oninput="filterAssessments(this.value)" aria-label="Search assessments"/></div>
+            <div class="filter-row">
+              <select class="f-select" onchange="filterAssessmentStatus(this.value)" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="protocol_sent">Protocol Sent</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table" role="table" aria-label="Client assessments">
+            <thead>
+              <tr>
+                <th scope="col">Client</th>
+                <th scope="col">Email</th>
+                <th scope="col">Ref Code</th>
+                <th scope="col">Tradition</th>
+                <th scope="col">Primary Concern</th>
+                <th scope="col">Submitted</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assessmentsTbody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -900,6 +969,7 @@ let currentAdmin=null;
 const DEFAULT_ADMIN={id:'admin',username:'admin',name:'System Administrator',email:'trueformbotanical@gmail.com',pw:'',role:'admin',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null};
 
 async function doAdminLogin(){
+  if(!checkLoginRateLimit()) return;
   const email = (document.getElementById('adminUser')?.value||'').trim();
   const pw    = document.getElementById('adminPw')?.value||'';
   const btn   = document.getElementById('adminLoginBtn');
@@ -1147,6 +1217,7 @@ async function loadAll(){
   updateStats();
   renderHerbalists();
   renderClients();
+  renderAssessments();
   renderAdmins();
   if(!ALL_CLIENTS_USR.length){
     console.info('No clients loaded. Checking Supabase profiles...');
@@ -1204,6 +1275,7 @@ function updateStats(){
   setText('ovSuspended',sus);
   setText('nbHerbalists',ALL_HERBALISTS.length);
   setText('nbClients',ALL_CLIENTS_USR.length);
+  setText('nbAssessments',(ALL_ASSESSMENTS||[]).length);
   setText('nbAdmins',ALL_ADMINS.length);
   setText('nbAudit',ALL_AUDIT.length);
   setText('hTotalUsers',ALL_HERBALISTS.length+ALL_CLIENTS_USR.length+ALL_ADMINS.length);
@@ -3218,6 +3290,171 @@ async function doAdminPasswordReset(){
   const emailEl = document.getElementById('adminUser');
   if(emailEl) emailEl.value = 'trueformbotanical@gmail.com';
   showToast('✅ Password updated! Please sign in with your new password.');
+}
+
+
+// ══════════════════════════════════════════════════
+// ASSESSMENTS PANEL
+// ══════════════════════════════════════════════════
+let filteredAssessments = [];
+
+function renderAssessments(list){
+  list = list || ALL_ASSESSMENTS || [];
+  filteredAssessments = list;
+  const tbody = document.getElementById('assessmentsTbody');
+  if(!tbody) return;
+  setText('nbAssessments', list.length);
+
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No assessments yet</div><div class="empty-msg">Assessments submitted via the client form will appear here.</div></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(a => {
+    const name    = sanitize((a.client_name || (a.personal?.firstName||'') + ' ' + (a.personal?.lastName||'') || '').trim() || a.client_email || '—');
+    const email   = sanitize(a.client_email || a.personal?.email || '—');
+    const ref     = sanitize(a.ref_code || a.meta?.refCode || '—');
+    const trad    = sanitize(a.personal?.herbalist || a.assigned_herbalist || 'Unassigned');
+    const concern = sanitize((a.symptoms?.primaryComplaint || a.personal?.primaryConcern || '—').substring(0, 60));
+    const date    = a.submitted_at || a.meta?.submittedAt || a.created_at;
+    const status  = a.status || (a.reviewed ? 'reviewed' : 'pending');
+
+    const statusBadgeHtml = status === 'protocol_sent'
+      ? '<span class="badge badge-green" role="status">Protocol Sent</span>'
+      : status === 'reviewed'
+      ? '<span class="badge badge-teal" role="status">Reviewed</span>'
+      : '<span class="badge badge-amber" role="status">Pending</span>';
+
+    return '<tr>' +
+      '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))" aria-hidden="true">' + (name.charAt(0)||'?') + '</div>' + name + '</div></td>' +
+      '<td style="font-size:.78rem">' + email + '</td>' +
+      '<td style="font-family:monospace;font-size:.72rem;color:var(--text-soft)">' + ref + '</td>' +
+      '<td style="font-size:.78rem">' + trad + '</td>' +
+      '<td style="font-size:.78rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + concern + '">' + concern + '</td>' +
+      '<td style="font-size:.76rem;color:var(--text-soft)">' + (date ? formatDt(date) : '—') + '</td>' +
+      '<td>' + statusBadgeHtml + '</td>' +
+      '<td onclick="event.stopPropagation()"><div class="action-row">' +
+        '<button class="btn btn-ghost btn-sm" onclick="markAssessmentReviewed('' + sanitize(ref) + '')" aria-label="Mark as reviewed">✓ Review</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteAssessment('' + sanitize(ref) + '')" aria-label="Delete assessment">Delete</button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filterAssessments(q){
+  q = q.toLowerCase();
+  const filtered = (ALL_ASSESSMENTS||[]).filter(a => {
+    const text = [
+      a.client_name, a.client_email,
+      a.personal?.firstName, a.personal?.lastName, a.personal?.email,
+      a.ref_code, a.symptoms?.primaryComplaint
+    ].join(' ').toLowerCase();
+    return text.includes(q);
+  });
+  renderAssessments(filtered);
+}
+
+function filterAssessmentStatus(status){
+  if(!status){ renderAssessments(ALL_ASSESSMENTS); return; }
+  renderAssessments((ALL_ASSESSMENTS||[]).filter(a => {
+    const s = a.status || (a.reviewed ? 'reviewed' : 'pending');
+    return s === status;
+  }));
+}
+
+async function markAssessmentReviewed(ref){
+  try {
+    await sb.from('assessments').update({ status:'reviewed', reviewed: true, reviewed_at: new Date().toISOString() }).eq('ref_code', ref);
+    const a = ALL_ASSESSMENTS.find(x=>(x.ref_code||x.meta?.refCode)===ref);
+    if(a){ a.status='reviewed'; a.reviewed=true; }
+    renderAssessments();
+    showToast('✅ Assessment marked as reviewed.');
+    await appendAudit({type:'edit',icon:'✓',action:'Assessment marked reviewed',actor:currentAdmin?.name||'Admin',target:ref});
+  } catch(e){ showToast('⚠️ Could not update assessment.'); }
+}
+
+async function deleteAssessment(ref){
+  showConfirm('Delete Assessment', 'Permanently delete assessment ' + ref + '? This cannot be undone.', async function(){
+    try {
+      await sb.from('assessments').delete().eq('ref_code', ref);
+      ALL_ASSESSMENTS = ALL_ASSESSMENTS.filter(a=>(a.ref_code||a.meta?.refCode)!==ref);
+      renderAssessments();
+      updateStats();
+      showToast('🗑️ Assessment deleted.');
+    } catch(e){ showToast('⚠️ Could not delete assessment.'); }
+  });
+}
+
+function exportAssessments(){
+  const rows = [['Name','Email','Ref Code','Tradition','Primary Concern','Submitted','Status']];
+  (filteredAssessments||ALL_ASSESSMENTS||[]).forEach(a=>{
+    rows.push([
+      sanitize((a.client_name||(a.personal?.firstName||'')+' '+(a.personal?.lastName||'')).trim()||''),
+      a.client_email||a.personal?.email||'',
+      a.ref_code||a.meta?.refCode||'',
+      a.personal?.herbalist||a.assigned_herbalist||'',
+      (a.symptoms?.primaryComplaint||'').replace(/,/g,' '),
+      a.submitted_at||a.meta?.submittedAt||'',
+      a.status||(a.reviewed?'reviewed':'pending')
+    ]);
+  });
+  const csv = rows.map(r=>r.map(f=>'"'+String(f).replace(/"/g,'""')+'"').join(',')).join('
+');
+  const a2 = document.createElement('a');
+  a2.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a2.download = 'assessments-' + new Date().toISOString().split('T')[0] + '.csv';
+  a2.click();
+}
+
+// Show suspended accounts across all roles
+function showSuspended(){
+  nav('clients');
+  setTimeout(function(){
+    const sel = document.querySelector('#panel-clients .f-select');
+    if(sel){ sel.value='suspended'; filterStatus('clients','suspended'); }
+  }, 150);
+}
+
+// ══════════════════════════════════════════════════
+// SECURITY — XSS PREVENTION
+// Sanitise all user-supplied content before inserting into DOM
+// ══════════════════════════════════════════════════
+function sanitize(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+// Content Security Policy meta tag enforcement check
+(function checkCSP(){
+  const metas = document.querySelectorAll('meta[http-equiv]');
+  let hasCsp = false;
+  metas.forEach(function(m){ if(m.getAttribute('http-equiv') === 'Content-Security-Policy') hasCsp = true; });
+  if(!hasCsp) console.warn('[Security] No CSP meta tag found. Consider adding one.');
+})();
+
+// Input sanitisation for all admin form submissions
+function sanitizeFormInput(val, maxLen){
+  maxLen = maxLen || 500;
+  return sanitize(String(val||'').trim().substring(0, maxLen));
+}
+
+// Rate limit tracker for login attempts
+const loginAttempts = { count: 0, lastReset: Date.now() };
+function checkLoginRateLimit(){
+  const now = Date.now();
+  if(now - loginAttempts.lastReset > 900000){ loginAttempts.count=0; loginAttempts.lastReset=now; }
+  loginAttempts.count++;
+  if(loginAttempts.count > 10){
+    showToast('⚠️ Too many login attempts. Please wait 15 minutes.');
+    return false;
+  }
+  return true;
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <meta name="description" content="TrueForm Botanical — Premium herb shop & botanical consultation. Ayurvedic, TCM, Western & African traditions."/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://images.unsplash.com https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://*.supabase.co;"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 <meta http-equiv="X-Frame-Options" content="DENY"/>
 <meta name="theme-color" content="#0d3d3a"/>
 <title>TrueForm Botanical — Herb Shop & Botanical Consultation</title>
@@ -647,6 +650,14 @@ async function sbSession() {
   return session;
 }
 
+// ── SECURITY: XSS sanitizer ──
+function sanitize(str){
+  if(!str) return '';
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
 // ── DATA HELPERS ──
 async function dbGet(table, filters={}) {
   let q = sb.from(table).select('*');
@@ -712,8 +723,8 @@ async function dbDelete(table, filters) {
 </div>
 
 <!-- ═══ LOGIN MODAL ═══ -->
-<div class="modal-bg" id="loginModal" role="dialog" aria-modal="true" aria-label="Portal Login">
-  <div class="modal" style="max-width:480px;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column">
+<div class="modal-bg" id="loginModal" role="dialog" aria-modal="true" aria-label="Client Portal Login" aria-describedby="portalModalDesc">
+  <span id="portalModalDesc" class="sr-only">Use Tab to navigate, Escape to close</span><div class="modal" style="max-width:480px;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column">
 
     <!-- ══ SCREEN 1: TWO CHOICES ══ -->
     <div id="portalRoleSelect" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
@@ -779,7 +790,7 @@ async function dbDelete(table, filters) {
         <!-- SIGN IN FORM -->
         <div id="clientSigninForm">
           <div id="portalSignInError" class="portal-error" style="display:none"><span>⚠️</span><span id="portalSignInMsg"></span></div>
-          <div id="roleSignInError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
+          <div id="roleSignInError" role="alert" aria-live="polite" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
           <div class="fgrp"><label>Email</label><input type="email" id="si-email" placeholder="your@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('si-pw').focus()"/></div>
           <div class="fgrp"><label>Password</label>
             <div style="position:relative"><input type="password" id="si-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:38px" onkeydown="if(event.key==='Enter')portalSignIn()"/><button onclick="togglePortalPw('si-pw','si-eye')" id="si-eye" class="pw-toggle">👁</button></div>
@@ -792,7 +803,7 @@ async function dbDelete(table, filters) {
         <!-- REGISTER FORM -->
         <div id="clientRegisterForm" style="display:none">
           <div id="portalRegError" class="portal-error" style="display:none"><span>⚠️</span><span id="portalRegMsg"></span></div>
-          <div id="roleRegError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
+          <div id="roleRegError" role="alert" aria-live="polite" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
           <div class="frow">
             <div class="fgrp"><label>First Name *</label><input type="text" id="reg-fn" placeholder="Jane" autocomplete="given-name"/></div>
             <div class="fgrp"><label>Last Name *</label><input type="text" id="reg-ln" placeholder="Smith" autocomplete="family-name"/></div>
@@ -903,7 +914,7 @@ async function dbDelete(table, filters) {
         <button onclick="closeLogin()" style="position:static;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;width:28px;height:28px;cursor:pointer;color:#fff;font-size:.9rem;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
       <div style="padding:1.5rem 1.8rem;overflow-y:auto;flex:1">
-        <div id="practError" class="portal-error-plain" style="display:none;margin-bottom:.9rem"></div>
+        <div id="practError" role="alert" aria-live="polite" class="portal-error-plain" style="display:none;margin-bottom:.9rem"></div>
         <div class="fgrp">
           <label>Username</label>
           <input type="text" id="pract-user" placeholder="Enter your username…" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('pract-pw').focus()"/>
@@ -1181,6 +1192,7 @@ async function dbDelete(table, filters) {
 </div>
 
 <!-- ═══ NAV ═══ -->
+<a href="#main" class="skip-link" style="position:fixed;top:-50px;left:1rem;background:var(--teal-mid);color:#fff;padding:10px 20px;border-radius:0 0 6px 6px;z-index:9999;font-weight:700;font-size:.9rem;transition:top .2s;text-decoration:none" onfocus="this.style.top='0'" onblur="this.style.top='-50px'">Skip to main content</a>
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <a href="#" class="logo"><div class="logo-mark" aria-hidden="true">🌿</div><span class="logo-text">TrueForm <em>Botanical</em></span></a>
   <div class="nav-center" id="navCenter" role="list">

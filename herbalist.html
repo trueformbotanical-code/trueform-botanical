@@ -263,6 +263,14 @@ async function sbSession() {
   return session;
 }
 
+// ── SECURITY: XSS sanitizer ──
+function sanitize(str){
+  if(!str) return '';
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
 // ── DATA HELPERS ──
 async function dbGet(table, filters={}) {
   let q = sb.from(table).select('*');
@@ -303,8 +311,11 @@ async function dbDelete(table, filters) {
   return !error;
 }
 </script>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 </head>
-<body>
+<body><a href="#main" class="skip-link" style="position:fixed;top:-50px;left:1rem;background:#1a7a74;color:#fff;padding:10px 20px;border-radius:0 0 6px 6px;z-index:9999;font-weight:700;transition:top .2s;text-decoration:none" onfocus="this.style.top='0'" onblur="this.style.top='-50px'">Skip to main content</a>
 
 <div class="toast" id="toast"></div>
 
