@@ -661,10 +661,26 @@ async function dbDelete(table, filters) {
           <div class="panel-actions"><button class="btn btn-ghost" onclick="refreshDashboard()">🔄 Refresh</button><button onclick="window.location.href='client.html'" class="btn btn-ghost">+ New Assessment Link</button><button class="btn btn-primary" onclick="showPanel('clients')">View All Clients →</button></div>
         </div>
         <div class="stats-row">
-          <div class="stat-card teal"><div class="stat-label">New Assessments</div><div class="stat-value" id="statNew">2</div><div class="stat-sub">Awaiting review</div></div>
-          <div class="stat-card saffron"><div class="stat-label">Total Clients</div><div class="stat-value" id="statTotal">4</div><div class="stat-sub">Active this month</div></div>
-          <div class="stat-card green"><div class="stat-label">Protocols Sent</div><div class="stat-value">7</div><div class="stat-sub">This month</div></div>
-          <div class="stat-card amber"><div class="stat-label">Appointments</div><div class="stat-value">3</div><div class="stat-sub">Next 7 days</div></div>
+          <button class="stat-card teal" onclick="showPanel('clients')" style="cursor:pointer;border:none;text-align:left;width:100%" aria-label="New assessments — click to view clients">
+            <div class="stat-label">New Assessments</div>
+            <div class="stat-value" id="statNew">0</div>
+            <div class="stat-sub">Awaiting review →</div>
+          </button>
+          <button class="stat-card saffron" onclick="showPanel('clients')" style="cursor:pointer;border:none;text-align:left;width:100%" aria-label="Total clients — click to view all clients">
+            <div class="stat-label">Total Clients</div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-sub">Active this month →</div>
+          </button>
+          <button class="stat-card green" onclick="showPanel('protocols')" style="cursor:pointer;border:none;text-align:left;width:100%" aria-label="Protocols sent — click to view protocols">
+            <div class="stat-label">Protocols Sent</div>
+            <div class="stat-value" id="statProtocols">0</div>
+            <div class="stat-sub">This month →</div>
+          </button>
+          <button class="stat-card amber" onclick="showPanel('calendar')" style="cursor:pointer;border:none;text-align:left;width:100%" aria-label="Appointments — click to view calendar">
+            <div class="stat-label">Appointments</div>
+            <div class="stat-value" id="statAppts">0</div>
+            <div class="stat-sub">Next 7 days →</div>
+          </button>
         </div>
         <div class="table-wrap">
           <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-light);font-weight:700;margin-bottom:.8rem">Recent Assessments — Awaiting Review</div>
@@ -1438,10 +1454,12 @@ document.getElementById('loginUsername').addEventListener('keydown', e => { if (
 
     showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
     ALL_CLIENTS = await loadAllClients();
-    (document.getElementById('statNew')||{}).textContent== ALL_CLIENTS.filter(c => !c._reviewed).length;
-    (document.getElementById('statTotal')||{}).textContent== ALL_CLIENTS.length;
-    (document.getElementById('nbNew')||{}).textContent== ALL_CLIENTS.filter(c => !c._reviewed).length;
-    (document.getElementById('nbClients')||{}).textContent== ALL_CLIENTS.length;
+    (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl => !cl._reviewed).length;
+    (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
+    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
+    (document.getElementById('nbNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+    (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
     renderRecentTable();
     renderClientsTable(ALL_CLIENTS);
     renderHerbDb();
@@ -1541,10 +1559,12 @@ async function doLogin() {
 
   showToast('🌿 Loading client assessments…');
   ALL_CLIENTS = await loadAllClients();
-  (document.getElementById('statNew')||{}).textContent== ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('statTotal')||{}).textContent== ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
+    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
   (document.getElementById('nbNew')||{}).textContent== ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('nbClients')||{}).textContent== ALL_CLIENTS.length;
+  (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
   renderRecentTable(); renderClientsTable(ALL_CLIENTS);
   renderHerbDb(); renderProtocolLibrary(); loadProtocols();
   await loadAllThreads(); await refreshMessages();
@@ -2520,8 +2540,10 @@ async function deleteClient(ref){
   }catch(e){}
   ALL_CLIENTS=ALL_CLIENTS.filter(c=>c.meta.refCode!==ref);
   renderClientsTable(ALL_CLIENTS);
-  (document.getElementById('statNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('statTotal')||{}).textContent==ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
+    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
   showPanel('clients');
   showToast('🗑️ Client record deleted.');
 }
@@ -2544,10 +2566,12 @@ function sevBadge(n){const cls=n<=2?'status-reviewed':n<=3?'status-pending':'sta
 async function refreshDashboard(){
   showToast('🔄 Refreshing client data…');
   ALL_CLIENTS=await loadAllClients();
-  (document.getElementById('statNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('statTotal')||{}).textContent==ALL_CLIENTS.length;
-  (document.getElementById('nbNew')||{}).textContent==ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('nbClients')||{}).textContent==ALL_CLIENTS.length;
+  (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
+    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
+  (document.getElementById('nbNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+  (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
   renderRecentTable();
   renderClientsTable(ALL_CLIENTS);
   await renderCalendar();
@@ -2555,9 +2579,8 @@ async function refreshDashboard(){
 }
 // ══ TOAST ══
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
-</script>
-</body>
-</html>async function loadAllClients(){
+
+async function loadAllClients(){
   try {
     // Load assessments from Supabase
     const { data: assessments, error } = await sb.from('assessments').select('*').order('submitted_at', { ascending: false });
@@ -2589,3 +2612,6 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
     return [];
   }
 }
+</script>
+</body>
+</html>
