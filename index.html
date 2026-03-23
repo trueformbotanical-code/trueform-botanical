@@ -2844,19 +2844,7 @@ function goToSymptomDiary(){
   // Update button sub-text on dashboard to show last entry date
   updateDiaryBtnSub();
 
-  // Load assessment reviewed/assigned state from Supabase
-  if(ref){
-    try {
-      const { data: asmData } = await sb.from('assessments').select('reviewed,assigned_herbalist,status').eq('ref_code',ref).single();
-      if(asmData){
-        portalCurrentUser._assessed_reviewed = asmData.reviewed || asmData.status === 'reviewed' || asmData.status === 'protocol_sent';
-        portalCurrentUser._assessed_assigned = !!(asmData.assigned_herbalist);
-      }
-    } catch(e){}
-  }
 
-  // Render action buttons based on assessment state
-  renderPortalActionButtons();
 }
 
 function resetDiaryForm(){
@@ -2946,19 +2934,7 @@ async function saveDiaryEntry(){
   loadDiaryHistory();
   updateDiaryBtnSub();
 
-  // Load assessment reviewed/assigned state from Supabase
-  if(ref){
-    try {
-      const { data: asmData } = await sb.from('assessments').select('reviewed,assigned_herbalist,status').eq('ref_code',ref).single();
-      if(asmData){
-        portalCurrentUser._assessed_reviewed = asmData.reviewed || asmData.status === 'reviewed' || asmData.status === 'protocol_sent';
-        portalCurrentUser._assessed_assigned = !!(asmData.assigned_herbalist);
-      }
-    } catch(e){}
-  }
 
-  // Render action buttons based on assessment state
-  renderPortalActionButtons();
 }
 
 async function loadDiaryHistory(){
