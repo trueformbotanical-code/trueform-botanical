@@ -668,46 +668,84 @@ async function submitAssessment(){
     return;
   }
 
-  const refCode = 'TFB-' + Date.now().toString(36).toUpperCase();
-  data.meta = { refCode, submittedAt: new Date().toISOString() };
+  // Check if this is an EDIT of existing assessment
+  let existingRef = null;
+  let isEdit = false;
+  try {
+    const raw = sessionStorage.getItem('tfb_client_session');
+    if(raw){
+      const sess = JSON.parse(raw);
+      if(sess.assessmentRef){ existingRef = sess.assessmentRef; isEdit = true; }
+    }
+  } catch(e){}
+
+  // Also check Supabase for existing assessment for this email (prevent duplicates)
+  if(!isEdit){
+    try {
+      const { data: existing } = await sb.from('assessments')
+        .select('ref_code, reviewed, assigned_herbalist')
+        .eq('client_email', data.personal.email)
+        .single();
+      if(existing){
+        // If already reviewed or assigned — block submission
+        if(existing.reviewed || existing.assigned_herbalist){
+          showToast('⚠️ Your assessment is currently being reviewed and cannot be replaced.');
+          return;
+        }
+        // Has existing unreviewed — treat as edit
+        existingRef = existing.ref_code;
+        isEdit = true;
+      }
+    } catch(e){}
+  }
+
+  const refCode = existingRef || ('TFB-' + Date.now().toString(36).toUpperCase());
+  const now = new Date().toISOString();
+  data.meta = { refCode, submittedAt: now };
 
   // Get current Supabase user if signed in
   const user = await sbUser();
 
   const row = {
-    ref_code:          refCode,
-    client_id:         user?.id || null,
-    client_email:      data.personal.email,
-    client_name:       data.personal.firstName + ' ' + data.personal.lastName,
-    personal:          data.personal,
-    symptoms:          data.symptoms,
-    body_areas:        data.bodyAreas,
-    history:           data.history,
-    lifestyle:         data.lifestyle,
+    ref_code:           refCode,
+    client_id:          user?.id || null,
+    client_email:       data.personal.email,
+    client_name:        (data.personal.firstName + ' ' + data.personal.lastName).trim(),
+    personal:           data.personal,
+    symptoms:           data.symptoms,
+    body_areas:         data.bodyAreas,
+    history:            data.history,
+    lifestyle:          data.lifestyle,
     assigned_herbalist: data.personal.herbalist || null,
-    submitted_at:      new Date().toISOString(),
+    submitted_at:       isEdit ? undefined : now,
+    updated_at:         now,
+    reviewed:           false,
   };
+  if(isEdit) delete row.submitted_at; // keep original submission date
 
-  // Save to Supabase
+  // Save to Supabase — upsert handles both insert and edit
   let saved = false;
   try {
-    const { error } = await sb.from('assessments').insert(row);
+    const { error } = isEdit
+      ? await sb.from('assessments').update(row).eq('ref_code', refCode)
+      : await sb.from('assessments').insert({...row, submitted_at: now});
     if(!error) saved = true;
-    else console.error('Supabase assessment insert:', error);
+    else console.error('Supabase assessment save:', error);
   } catch(e) { console.error(e); }
 
   // Also save to localStorage as backup
   try {
     const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
-    refs.push(refCode);
+    if(!refs.includes(refCode)) refs.push(refCode);
     localStorage.setItem('tfb_refs', JSON.stringify(refs));
     localStorage.setItem('tfb_assessment_'+refCode, JSON.stringify({...data, meta:{...data.meta}}));
   } catch(e){}
 
+  const action = isEdit ? 'updated' : 'submitted';
   if(saved){
-    showToast('✅ Assessment submitted! Your reference: ' + refCode);
+    showToast('✅ Assessment ' + action + '! Reference: ' + refCode);
   } else {
-    showToast('✅ Assessment saved locally. Ref: ' + refCode);
+    showToast('✅ Assessment ' + action + ' locally. Ref: ' + refCode);
   }
 
   // Show confirmation

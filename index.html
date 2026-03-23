@@ -944,11 +944,8 @@ async function dbDelete(table, filters) {
               <button onclick="clientSendReply()" class="btn-primary" style="width:100%;justify-content:center;padding:9px;margin-top:.4rem;font-size:.8rem">Send Reply →</button>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem">
-            <button onclick="goToAssessment()" class="portal-action-btn">📋 My Assessment</button>
-            <button onclick="goToBooking()" class="portal-action-btn">📅 Book Session</button>
-            <button onclick="goToHerbFinder()" class="portal-action-btn">🌿 Herb Finder</button>
-            <button onclick="goToSymptomDiary()" class="portal-action-btn">📓 Symptom Diary</button>
+          <div id="pdActionButtons" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem">
+            <!-- Buttons are rendered dynamically by renderPortalActionButtons() -->
           </div>
           <div id="portalDiary" style="display:none;margin-top:1rem"></div>
         </div>
@@ -2227,6 +2224,20 @@ async function loadPortalDashboard(){
     const msgEl=document.getElementById('pdMessages');if(msgEl)msgEl.style.display='none';
   }
   updateDiaryBtnSub();
+
+  // Load assessment reviewed/assigned state from Supabase
+  if(ref){
+    try {
+      const { data: asmData } = await sb.from('assessments').select('reviewed,assigned_herbalist,status').eq('ref_code',ref).single();
+      if(asmData){
+        portalCurrentUser._assessed_reviewed = asmData.reviewed || asmData.status === 'reviewed' || asmData.status === 'protocol_sent';
+        portalCurrentUser._assessed_assigned = !!(asmData.assigned_herbalist);
+      }
+    } catch(e){}
+  }
+
+  // Render action buttons based on assessment state
+  renderPortalActionButtons();
 }
 async function portalLogout(){
   // Sign out from Supabase
@@ -2439,20 +2450,247 @@ function setElStyle(id,prop,val){const el=document.getElementById(id);if(el)el.s
 
 // 1. ASSESSMENT — navigate to client.html, pre-fill name/email from session
 function goToAssessment(){
-  if(portalCurrentUser){
+  // Delegate to assessment action handler — checks state before navigating
+  handleAssessmentAction();
+}
+
+function handleAssessmentAction(){
+  const u = portalCurrentUser;
+  if(!u){ clientTab('signin'); return; }
+
+  const reviewed   = u._assessed_reviewed   || false;
+  const assigned   = u._assessed_assigned   || false;
+  const hasAsm     = !!u.assessmentRef;
+  const locked     = reviewed || assigned;  // can no longer edit
+
+  if(!hasAsm){
+    // No assessment yet — go to form
+    _launchAssessmentForm();
+  } else if(locked){
+    // Under review or assigned — view-only readable summary
+    showAssessmentReadView();
+  } else {
+    // Has assessment, not yet reviewed — offer edit/delete options
+    showAssessmentManageOptions();
+  }
+}
+
+function _launchAssessmentForm(){
+  // Block if already has an assessment that is under review
+  const u = portalCurrentUser;
+  if(u && u.assessmentRef && (u._assessed_reviewed || u._assessed_assigned)){
+    showAssessmentReadView();
+    return;
+  }
+  if(u){
     try{
-      const name = portalCurrentUser.name || '';
+      const name = u.name || '';
       sessionStorage.setItem('tfb_client_session', JSON.stringify({
-        email:     portalCurrentUser.email || '',
-        firstName: portalCurrentUser.firstName || name.split(' ')[0] || '',
-        lastName:  portalCurrentUser.lastName  || name.split(' ').slice(1).join(' ') || '',
+        email:     u.email || '',
+        firstName: u.firstName || name.split(' ')[0] || '',
+        lastName:  u.lastName  || name.split(' ').slice(1).join(' ') || '',
         name:      name,
+        assessmentRef: u.assessmentRef || null,  // pass existing ref for editing
+        isEdit:    !!u.assessmentRef,             // flag for client.html to pre-fill
         ts:        Date.now()
       }));
     }catch(e){}
   }
   window.location.href = 'client.html';
 }
+
+// ── RENDER PORTAL ACTION BUTTONS based on assessment state ──
+function renderPortalActionButtons(){
+  const u   = portalCurrentUser;
+  const btn = document.getElementById('pdActionButtons');
+  if(!btn || !u) return;
+
+  const hasAsm  = !!u.assessmentRef;
+  const reviewed = u._assessed_reviewed || false;
+  const assigned = u._assessed_assigned || false;
+  const locked   = reviewed || assigned;
+
+  let asmBtn = '';
+  if(!hasAsm){
+    asmBtn = '<button onclick="handleAssessmentAction()" class="portal-action-btn" style="grid-column:span 2;background:var(--teal-mid);color:#fff;border-color:var(--teal-mid)">📋 Start Assessment</button>';
+  } else if(locked){
+    asmBtn = '<button onclick="showAssessmentReadView()" class="portal-action-btn" style="grid-column:span 2">👁 View My Assessment</button>';
+  } else {
+    asmBtn = `<button onclick="showAssessmentManageOptions()" class="portal-action-btn" style="grid-column:span 2;background:var(--saffron-pale);border-color:var(--saffron)">📋 My Assessment <span style="font-size:.65rem;padding:1px 6px;border-radius:10px;background:var(--saffron);color:#fff;margin-left:.3rem">Pending</span></button>`;
+  }
+
+  btn.innerHTML = asmBtn +
+    '<button onclick="goToBooking()" class="portal-action-btn">📅 Book Session</button>' +
+    '<button onclick="goToHerbFinder()" class="portal-action-btn">🌿 Herb Finder</button>' +
+    '<button onclick="goToSymptomDiary()" class="portal-action-btn">📓 Symptom Diary</button>';
+}
+
+// ── MANAGE OPTIONS for editable assessment ──
+function showAssessmentManageOptions(){
+  const overlay = document.createElement('div');
+  overlay.id = 'asmManageOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;display:flex;align-items:center;justify-content:center;padding:1rem';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:14px;padding:1.8rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+      <div style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deepest);margin-bottom:.4rem">Your Assessment</div>
+      <p style="font-size:.83rem;color:var(--text-mid);margin-bottom:1.2rem;line-height:1.6">Your assessment has not yet been reviewed by a herbalist. You can edit it, delete it, or view what you submitted.</p>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <button onclick="editAssessment()" style="padding:11px 16px;border-radius:8px;border:2px solid var(--teal-mid);background:var(--teal-mid);color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:700;cursor:pointer">✏️ Edit My Assessment</button>
+        <button onclick="showAssessmentReadView()" style="padding:11px 16px;border-radius:8px;border:1.5px solid var(--border-mid);background:none;font-family:var(--sans);font-size:.88rem;font-weight:600;cursor:pointer;color:var(--text-dark)">👁 View What I Submitted</button>
+        <button onclick="confirmDeleteAssessment()" style="padding:11px 16px;border-radius:8px;border:1.5px solid #fca5a5;background:#fee2e2;color:#dc2626;font-family:var(--sans);font-size:.88rem;font-weight:600;cursor:pointer">🗑 Delete My Assessment</button>
+        <button onclick="closeAsmManage()" style="padding:8px;border-radius:8px;border:none;background:none;font-family:var(--sans);font-size:.82rem;color:var(--text-light);cursor:pointer">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAsmManage(); });
+}
+
+function closeAsmManage(){
+  const ov = document.getElementById('asmManageOverlay');
+  if(ov) ov.remove();
+}
+
+// ── EDIT assessment — launch form with pre-filled data ──
+function editAssessment(){
+  closeAsmManage();
+  _launchAssessmentForm();
+}
+
+// ── DELETE assessment ──
+function confirmDeleteAssessment(){
+  closeAsmManage();
+  const confirmed = confirm('Are you sure you want to delete your assessment? This cannot be undone.');
+  if(!confirmed) return;
+  deleteClientAssessment();
+}
+
+async function deleteClientAssessment(){
+  const u = portalCurrentUser;
+  if(!u || !u.assessmentRef){ showToast('⚠️ No assessment found.'); return; }
+  const ref = u.assessmentRef;
+
+  showToast('🗑 Deleting your assessment…');
+
+  // Delete from Supabase
+  try { await sb.from('assessments').delete().eq('ref_code', ref); } catch(e){}
+  // Delete from localStorage/storage
+  try { await pDel('tfb_assessment_'+ref); await pDel('tfb_state_'+ref); } catch(e){}
+  try {
+    const refs = (await pGet('tfb_refs'))||[];
+    await pSet('tfb_refs', refs.filter(r=>r!==ref));
+  } catch(e){}
+  try { localStorage.removeItem('tfb_assessment_'+ref); } catch(e){}
+
+  // Clear from current user object
+  portalCurrentUser.assessmentRef = null;
+  portalCurrentUser._assessed_reviewed = false;
+  portalCurrentUser._assessed_assigned = false;
+  try { await pSet(emailKey(u.email), portalCurrentUser); } catch(e){}
+
+  showToast('✅ Assessment deleted. You can submit a new one anytime.');
+  await loadPortalDashboard();
+}
+
+// ── VIEW assessment in read-only readable format ──
+async function showAssessmentReadView(){
+  closeAsmManage();
+  const u = portalCurrentUser;
+  if(!u || !u.assessmentRef){ showToast('⚠️ No assessment found.'); return; }
+  const ref = u.assessmentRef;
+
+  // Load assessment data
+  let asm = null;
+  try {
+    const { data } = await sb.from('assessments').select('*').eq('ref_code', ref).single();
+    asm = data;
+  } catch(e){}
+  if(!asm){ try { asm = await pGet('tfb_assessment_'+ref); } catch(e){} }
+  if(!asm){ showToast('⚠️ Could not load assessment data.'); return; }
+
+  const p = asm.personal || {};
+  const s = asm.symptoms || {};
+  const h = asm.history  || {};
+  const l = asm.lifestyle || {};
+  const reviewed = asm.reviewed || u._assessed_reviewed || false;
+  const assigned = asm.assigned_herbalist || u._assessed_assigned || null;
+  const locked = reviewed || !!assigned;
+
+  const statusBadge = locked
+    ? `<span style="font-size:.72rem;padding:3px 10px;border-radius:20px;background:#dcfce7;color:#16a34a;border:1px solid #86efac;font-weight:700">${reviewed ? '✓ Under Review' : '🌿 Assigned to Herbalist'}</span>`
+    : `<span style="font-size:.72rem;padding:3px 10px;border-radius:20px;background:var(--saffron-pale);color:var(--spice);border:1px solid var(--saffron-light);font-weight:700">⏳ Pending Review</span>`;
+
+  const section = (title, content) =>
+    content ? `<div style="margin-bottom:1rem"><div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-mid);font-weight:700;margin-bottom:.35rem">${title}</div><div style="font-size:.84rem;color:var(--text-dark);line-height:1.7;background:var(--surface);padding:.6rem .8rem;border-radius:7px;border:1px solid var(--border)">${content}</div></div>` : '';
+
+  const field = (label, val) =>
+    val ? `<div style="margin-bottom:.35rem"><span style="color:var(--text-soft);font-size:.78rem">${label}:</span> <strong style="color:var(--text-dark)">${sanitizeForDisplay(val)}</strong></div>` : '';
+
+  const readHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+      <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--teal-deepest)">📋 Your Assessment</div>
+      ${statusBadge}
+    </div>
+    <div style="font-size:.72rem;color:var(--text-light);margin-bottom:1rem">Ref: <code>${sanitizeForDisplay(ref)}</code> · Submitted: ${asm.submitted_at ? new Date(asm.submitted_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—'}</div>
+
+    ${section('Personal Details',
+      field('Name', (p.firstName||'') + ' ' + (p.lastName||'')) +
+      field('Date of Birth', p.dob) +
+      field('Gender', p.gender) +
+      field('Country', p.country) +
+      field('Phone', p.phone) +
+      field('Preferred Herbalist', p.herbalist)
+    )}
+
+    ${section('Primary Concern',
+      field('Main Complaint', p.primaryConcern || s.primaryComplaint) +
+      field('Duration', s.duration) +
+      field('Severity', s.severity)
+    )}
+
+    ${s.symptoms?.length ? section('Reported Symptoms', Array.isArray(s.symptoms) ? s.symptoms.map(x=>`<span style="display:inline-block;margin:.15rem .2rem;padding:2px 8px;background:var(--saffron-pale);border:1px solid var(--saffron-light);border-radius:10px;font-size:.75rem;color:var(--spice)">${sanitizeForDisplay(x)}</span>`).join('') : sanitizeForDisplay(s.symptoms)) : ''}
+
+    ${section('Medical History',
+      field('Current Medications', h.medications) +
+      field('Known Allergies', h.allergies) +
+      field('Previous Conditions', h.conditions) +
+      field('Surgeries / Procedures', h.surgeries)
+    )}
+
+    ${section('Lifestyle',
+      field('Diet', l.diet) +
+      field('Exercise', l.exercise) +
+      field('Sleep', l.sleep) +
+      field('Stress Level', l.stress) +
+      field('Smoking', l.smoking) +
+      field('Alcohol', l.alcohol)
+    )}
+
+    ${!locked ? `<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;gap:.6rem;flex-wrap:wrap">
+      <button onclick="editAssessment()" style="flex:1;min-width:120px;padding:10px;border-radius:8px;border:2px solid var(--teal-mid);background:var(--teal-mid);color:#fff;font-family:var(--sans);font-size:.84rem;font-weight:700;cursor:pointer">✏️ Edit</button>
+      <button onclick="confirmDeleteAssessment()" style="flex:1;min-width:120px;padding:10px;border-radius:8px;border:1.5px solid #fca5a5;background:#fee2e2;color:#dc2626;font-family:var(--sans);font-size:.84rem;font-weight:600;cursor:pointer">🗑 Delete</button>
+    </div>` : `<p style="margin-top:1rem;font-size:.78rem;color:var(--text-soft);background:var(--surface);padding:.6rem .8rem;border-radius:7px;border:1px solid var(--border)">🔒 Your assessment is currently being reviewed by your herbalist and can no longer be edited or deleted.</p>`}
+    <div style="margin-top:.8rem"><button onclick="closeAsmReadView()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--border-mid);background:none;font-family:var(--sans);font-size:.84rem;cursor:pointer;color:var(--text-soft)">← Back to Dashboard</button></div>
+  `;
+
+  // Show in overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'asmReadOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;display:flex;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto';
+  overlay.innerHTML = `<div style="background:#fff;border-radius:14px;padding:1.8rem;max-width:500px;width:100%;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)">${readHTML}</div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAsmReadView(); });
+}
+
+function closeAsmReadView(){
+  const ov = document.getElementById('asmReadOverlay');
+  if(ov) ov.remove();
+}
+
+function sanitizeForDisplay(val){
+  if(!val) return '';
+  return String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 
 // 2. BOOK CONSULT — close portal modal then scroll page to booking section
 function goToBooking(){
@@ -2615,6 +2853,20 @@ function goToSymptomDiary(){
   loadDiaryHistory();
   // Update button sub-text on dashboard to show last entry date
   updateDiaryBtnSub();
+
+  // Load assessment reviewed/assigned state from Supabase
+  if(ref){
+    try {
+      const { data: asmData } = await sb.from('assessments').select('reviewed,assigned_herbalist,status').eq('ref_code',ref).single();
+      if(asmData){
+        portalCurrentUser._assessed_reviewed = asmData.reviewed || asmData.status === 'reviewed' || asmData.status === 'protocol_sent';
+        portalCurrentUser._assessed_assigned = !!(asmData.assigned_herbalist);
+      }
+    } catch(e){}
+  }
+
+  // Render action buttons based on assessment state
+  renderPortalActionButtons();
 }
 
 function resetDiaryForm(){
@@ -2703,6 +2955,20 @@ async function saveDiaryEntry(){
   showToast('📓 Diary entry saved!');
   loadDiaryHistory();
   updateDiaryBtnSub();
+
+  // Load assessment reviewed/assigned state from Supabase
+  if(ref){
+    try {
+      const { data: asmData } = await sb.from('assessments').select('reviewed,assigned_herbalist,status').eq('ref_code',ref).single();
+      if(asmData){
+        portalCurrentUser._assessed_reviewed = asmData.reviewed || asmData.status === 'reviewed' || asmData.status === 'protocol_sent';
+        portalCurrentUser._assessed_assigned = !!(asmData.assigned_herbalist);
+      }
+    } catch(e){}
+  }
+
+  // Render action buttons based on assessment state
+  renderPortalActionButtons();
 }
 
 async function loadDiaryHistory(){
