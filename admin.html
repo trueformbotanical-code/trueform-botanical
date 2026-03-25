@@ -1440,11 +1440,12 @@ function setText(id,val){const el=document.getElementById(id);if(el)el.textConte
 // ══════════════════════════════════════════════════
 function renderHerbalists(list=ALL_HERBALISTS){
   const tbody=document.getElementById('herbalistsTbody');
+  if(!tbody) return;
   if(!list.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No herbalists yet</div><div class="empty-msg">Add your first practitioner using the button above.</div></div></td></tr>`;return;}
-  tbody.tbody.innerHTML=list.map(h=>{
+  tbody.innerHTML=list.map(h=>{
     const id=h.id;
     return`<tr onclick="openEditUser('${id}','herbalist')" data-id="${id}">
-      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">${h.name.charAt(0)}</div>${h.name}</div></td>
+      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">${(h.name||"?").charAt(0)}</div>${h.name||"—"}</div></td>
       <td style="font-size:.78rem">${h.email||'—'}</td>
       <td style="font-size:.78rem;color:var(--text-mid)">${h.specialty||'—'}</td>
       <td><span style="font-size:.72rem;padding:2px 8px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:20px;color:var(--teal-deep);font-weight:600">${h.tradition||'—'}</span></td>
@@ -1519,6 +1520,7 @@ async function refreshClientList(){
 }
 function renderClients(list=ALL_CLIENTS_USR){
   const tbody=document.getElementById('clientsTbody');
+  if(!tbody) return;
   if(!list.length){
     tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">
       <div class="empty-icon">👥</div>
@@ -1530,7 +1532,7 @@ function renderClients(list=ALL_CLIENTS_USR){
   }
   tbody.innerHTML=list.map(c=>`
     <tr onclick="openEditUser('${c.id}','client')" data-id="${c.id}">
-      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">${c.name.trim().charAt(0)||'?'}</div>${c.name||'—'}</div></td>
+      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">${(c.name||"?").trim().charAt(0)||"?"}</div>${c.name||'—'}</div></td>
       <td style="font-size:.78rem">${c.email||'—'}</td>
       <td style="font-size:.78rem;color:var(--text-mid);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.assignedHerbalist||'Unassigned'}</td>
       <td>${c.hasAssessment?`<span style="font-size:.68rem;padding:2px 9px;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);border-radius:20px;font-weight:700">✓ Submitted</span>`:`<span style="font-size:.68rem;padding:2px 9px;background:var(--surface-alt);color:var(--text-light);border:1px solid var(--border);border-radius:20px;font-weight:700">Pending</span>`}</td>
@@ -1546,9 +1548,10 @@ function renderClients(list=ALL_CLIENTS_USR){
 
 function renderAdmins(list=ALL_ADMINS){
   const tbody=document.getElementById('adminsTbody');
+  if(!tbody) return;
   tbody.innerHTML=list.map(a=>`
     <tr data-id="${a.id}">
-      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--red),#9b1c1c)">${a.name.charAt(0)}</div>${a.name}</div></td>
+      <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--red),#9b1c1c)">${(a.name||"?").charAt(0)}</div>${a.name||"—"}</div></td>
       <td style="font-size:.78rem;font-weight:700;font-family:monospace">${a.username}</td>
       <td style="font-size:.78rem">${a.email||'—'}</td>
       <td style="font-size:.76rem;color:var(--text-soft)">${a.lastLogin?formatDt(a.lastLogin):'Never'}</td>
