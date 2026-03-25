@@ -1441,7 +1441,7 @@ function setText(id,val){const el=document.getElementById(id);if(el)el.textConte
 function renderHerbalists(list=ALL_HERBALISTS){
   const tbody=document.getElementById('herbalistsTbody');
   if(!list.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No herbalists yet</div><div class="empty-msg">Add your first practitioner using the button above.</div></div></td></tr>`;return;}
-  if(tbody){tbody.innerHTML=list.map(h=>{}
+  tbody.tbody.innerHTML=list.map(h=>{
     const id=h.id;
     return`<tr onclick="openEditUser('${id}','herbalist')" data-id="${id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">${h.name.charAt(0)}</div>${h.name}</div></td>
@@ -1520,7 +1520,7 @@ async function refreshClientList(){
 function renderClients(list=ALL_CLIENTS_USR){
   const tbody=document.getElementById('clientsTbody');
   if(!list.length){
-    if(tbody){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">}
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">
       <div class="empty-icon">👥</div>
       <div class="empty-title">No clients found</div>
       <div class="empty-msg">Clients will appear here when they register via the portal or submit an assessment.<br/>
@@ -1528,7 +1528,7 @@ function renderClients(list=ALL_CLIENTS_USR){
       </div></div></td></tr>`;
     return;
   }
-  if(tbody){tbody.innerHTML=list.map(c=>`}
+  tbody.innerHTML=list.map(c=>`
     <tr onclick="openEditUser('${c.id}','client')" data-id="${c.id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">${c.name.trim().charAt(0)||'?'}</div>${c.name||'—'}</div></td>
       <td style="font-size:.78rem">${c.email||'—'}</td>
@@ -1546,7 +1546,7 @@ function renderClients(list=ALL_CLIENTS_USR){
 
 function renderAdmins(list=ALL_ADMINS){
   const tbody=document.getElementById('adminsTbody');
-  if(tbody){tbody.innerHTML=list.map(a=>`}
+  tbody.innerHTML=list.map(a=>`
     <tr data-id="${a.id}">
       <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--red),#9b1c1c)">${a.name.charAt(0)}</div>${a.name}</div></td>
       <td style="font-size:.78rem;font-weight:700;font-family:monospace">${a.username}</td>
@@ -1860,7 +1860,7 @@ function filterAuditType(t){renderAuditLog(t?ALL_AUDIT.filter(e=>e.type===t):ALL
 function updateAssignedFilter(){
   const sel=document.getElementById('assignedFilter');
   if(!sel)return;
-  sel.innerHTML='<option value="">All Herbalists</option>'+ALL_HERBALISTS.map(h=>`<option value="${h.name}">${h.name}</option>`).join('');
+  if(sel){sel.innerHTML='<option value="">All Herbalists</option>'+ALL_HERBALISTS.map(h=>`<option value="${h.name}">${h.name}</option>`).join('');}
 }
 
 // ══════════════════════════════════════════════════
@@ -2069,7 +2069,7 @@ function nav(id){
   const panel = document.getElementById('panel-'+id);
   if(panel) panel.classList.add('active');
   const item = document.querySelector('[data-nav="'+id+'"]') ||
-               document.querySelector('.sb-item[onclick*="''+id+''"]');
+               (function(){ var sbs=document.querySelectorAll('.sb-item'); for(var j=0;j<sbs.length;j++){var oc=sbs[j].getAttribute('onclick')||''; if(oc.indexOf("'"+id+"'")>-1||oc.indexOf('"'+id+'"')>-1)return sbs[j];} return null; })();
   if(item) item.classList.add('active');
   if(id==='analytics') renderAnalytics();
   if(id==='schedule')  renderSchedule();
@@ -2580,10 +2580,10 @@ function renderHerbAdmin(list){
   const tbody = document.getElementById('herbAdminTbody');
   if(!tbody) return;
   if(!list.length){
-    if(tbody){tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No custom herbs added</div><div class="empty-msg">The default herb database is managed in herbalist.html. Add custom herbs here to extend it.</div></div></td></tr>`;}
+    if(tbody){tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">No custom herbs added</div><div class="empty-msg">The default herb database is managed in herbalist.html. Add custom herbs here to extend it.</div></div></td></tr>`;}
     return;
   }
-  if(tbody){tbody.innerHTML = list.map(h => `}
+  tbody.innerHTML=list.map(h => `
     <tr>
       <td><div class="name-cell"><span style="font-size:1.1rem">${h.emoji||'🌱'}</span><strong>${h.name}</strong></div></td>
       <td style="font-size:.76rem;font-style:italic;color:var(--text-soft)">${h.latin||'—'}</td>
@@ -2826,7 +2826,7 @@ function renderInvoices(list=ALL_INVOICES){
     overdue:`background:var(--red-pale);color:var(--red);border-color:var(--red-border)`,
     cancelled:`background:var(--surface-alt);color:var(--text-light);border-color:var(--border)`,
   }[s]||'');
-  if(tbody){tbody.innerHTML = list.map(inv=>`}
+  tbody.innerHTML=list.map(inv=>`
     <tr>
       <td style="font-family:monospace;font-size:.78rem;font-weight:700;color:var(--teal-mid)">${inv.number||'—'}</td>
       <td><div class="name-cell" style="gap:.4rem"><div class="avatar-sm" style="width:26px;height:26px;font-size:.65rem;background:linear-gradient(135deg,var(--saffron),var(--spice))">${(inv.client||'?').charAt(0)}</div>${inv.client||'—'}</div></td>
@@ -3494,11 +3494,11 @@ function renderAssessments(list){
   setText('nbAssessments', list.length);
 
   if(!list.length){
-    if(tbody){tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No assessments yet</div><div class="empty-msg">Assessments submitted via the client form will appear here.</div></div></td></tr>';}
+    if(tbody){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No assessments yet</div><div class="empty-msg">Assessments submitted via the client form will appear here.</div></div></td></tr>';}
     return;
   }
 
-  if(tbody){tbody.innerHTML = list.map(a => {}
+  tbody.innerHTML = list.map(a => {
     const name    = sanitize((a.client_name || (a.personal?.firstName||'') + ' ' + (a.personal?.lastName||'') || '').trim() || a.client_email || '—');
     const email   = sanitize(a.client_email || a.personal?.email || '—');
     const ref     = sanitize(a.ref_code || a.meta?.refCode || '—');
@@ -3595,69 +3595,55 @@ function exportAssessments(){
 
 // Show suspended accounts across all roles
 function showSuspended(){
-  // Gather all suspended accounts across herbalists and clients
-  const suspendedHerbalists = ALL_HERBALISTS.filter(h=>h.status==='suspended');
-  const suspendedClients    = ALL_CLIENTS_USR.filter(c=>c.status==='suspended');
-  const total = suspendedHerbalists.length + suspendedClients.length;
+  const suspH  = ALL_HERBALISTS.filter(h=>h.status==='suspended');
+  const suspC  = ALL_CLIENTS_USR.filter(cl=>cl.status==='suspended');
+  const total  = suspH.length + suspC.length;
 
-  if(total === 0){
-    showToast('✅ No suspended accounts found.');
-    return;
-  }
-
-  // Navigate to clients panel and show a merged suspended view
+  if(!total){ showToast('✅ No suspended accounts.'); return; }
   nav('clients');
 
-  // Build HTML for suspended accounts from both lists
   const tbody = document.getElementById('clientsTbody');
   if(!tbody) return;
 
-  const rows = [
-    ...suspendedHerbalists.map(h=>`
-      <tr>
-        <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">${sanitize((h.name||'?').charAt(0))}</div>${sanitize(h.name||'—')}</div></td>
-        <td style="font-size:.78rem">${sanitize(h.email||'—')}</td>
-        <td style="font-size:.78rem;color:var(--spice);font-weight:700">🌿 Herbalist</td>
-        <td>—</td>
-        <td style="font-size:.76rem;color:var(--text-soft)">${h.createdAt?formatDt(h.createdAt):'—'}</td>
-        <td><span style="font-size:.68rem;padding:2px 9px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;font-weight:700">● Suspended</span></td>
-        <td onclick="event.stopPropagation()"><div class="action-row">
-          <button class="btn btn-primary btn-sm" onclick="toggleSuspend('${sanitize(h.id)}','herbalist')">Reinstate</button>
-        </div></td>
-      </tr>`),
-    ...suspendedClients.map(cl=>`
-      <tr>
-        <td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">${sanitize((cl.name||'?').charAt(0))}</div>${sanitize(cl.name||'—')}</div></td>
-        <td style="font-size:.78rem">${sanitize(cl.email||'—')}</td>
-        <td style="font-size:.78rem;color:var(--teal-mid);font-weight:700">👤 Client</td>
-        <td>—</td>
-        <td style="font-size:.76rem;color:var(--text-soft)">${cl.createdAt?formatDt(cl.createdAt):'—'}</td>
-        <td><span style="font-size:.68rem;padding:2px 9px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;font-weight:700">● Suspended</span></td>
-        <td onclick="event.stopPropagation()"><div class="action-row">
-          <button class="btn btn-primary btn-sm" onclick="toggleSuspend('${sanitize(cl.id)}','client')">Reinstate</button>
-        </div></td>
-      </tr>`)
-  ];
+  function suspRow(obj, role){
+    const name  = sanitize(obj.name||'—');
+    const email = sanitize(obj.email||'—');
+    const id    = sanitize(obj.id||'');
+    const label = role==='herbalist' ? '🌿 Herbalist' : '👤 Client';
+    return '<tr>'+
+      '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">'+
+        (name.charAt(0)||'?')+'</div>'+name+'</div></td>'+
+      '<td style="font-size:.78rem">'+email+'</td>'+
+      '<td style="font-size:.78rem;color:var(--spice);font-weight:700">'+label+'</td>'+
+      '<td>—</td><td>—</td>'+
+      '<td><span style="font-size:.68rem;padding:2px 9px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:20px;font-weight:700">● Suspended</span></td>'+
+      '<td onclick="event.stopPropagation()"><div class="action-row">'+
+        '<button class="btn btn-primary btn-sm" onclick="toggleSuspend(this.dataset.id,this.dataset.role)" data-id="'+id+'" data-role="'+role+'">Reinstate</button>'+
+      '</div></td>'+
+    '</tr>';
+  }
 
-  tbody.innerHTML = rows.join('');
+  tbody.innerHTML = suspH.map(function(h){ return suspRow(h,'herbalist'); })
+    .concat(suspC.map(function(cl){ return suspRow(cl,'client'); }))
+    .join('');
 
-  // Update the panel header to show this is a filtered view
+  // Update panel header
   const phTitle = document.querySelector('#panel-clients .ph-title');
-  if(phTitle) phTitle.innerHTML = 'Suspended <em>Accounts</em> <span style="font-size:.7rem;padding:2px 8px;background:#fee2e2;color:#dc2626;border-radius:20px;margin-left:.5rem">' + total + ' suspended</span>';
+  if(phTitle) phTitle.innerHTML = 'Suspended <em>Accounts</em> <span style="font-size:.7rem;padding:2px 8px;background:#fee2e2;color:#dc2626;border-radius:20px;margin-left:.5rem">'+total+' suspended</span>';
 
-  // Add a "show all" button
+  // Add show-all button
   const phActions = document.querySelector('#panel-clients .ph-actions');
   if(phActions && !document.getElementById('showAllBtn')){
-    const btn = document.createElement('button');
-    btn.id = 'showAllBtn';
-    btn.className = 'btn btn-ghost';
-    btn.textContent = '← Show All Clients';
-    btn.onclick = function(){
+    var btn2 = document.createElement('button');
+    btn2.id = 'showAllBtn';
+    btn2.className = 'btn btn-ghost';
+    btn2.textContent = '← Show All Clients';
+    btn2.onclick = function(){
       if(phTitle) phTitle.innerHTML = 'Client <em>Accounts</em>';
-      btn.remove();
+      btn2.remove();
       renderClients();
     };
-    phActions.insertBefore(btn, phActions.firstChild);
+    phActions.insertBefore(btn2, phActions.firstChild);
   }
 }
 
@@ -3717,15 +3703,15 @@ function renderSuspended(){
   const hTbody = document.getElementById('suspendedHerbalistsTbody');
   if(hTbody){
     if(!suspH.length){
-      if(hTbody){hTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';}
+      if(hTbody){hTbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';}
     } else {
-      if(hTbody){hTbody.innerHTML = suspH.map(h=>'<tr>'+}
+      hTbody.innerHTML=suspH.map(h=>'<tr>'+
         '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright))">'+sanitize(h.name.charAt(0))+'</div>'+sanitize(h.name)+'</div></td>'+
         '<td style="font-size:.78rem">'+sanitize(h.email||'—')+'</td>'+
         '<td style="font-size:.78rem">'+sanitize(h.specialty||'—')+'</td>'+
         '<td style="font-size:.76rem;color:var(--text-soft)">—</td>'+
         '<td onclick="event.stopPropagation()"><div class="action-row">'+
-          '<button class="btn btn-primary btn-sm" onclick="toggleSuspend(''+sanitize(h.id)+'','herbalist')">Reinstate</button>'+
+          '<button class="btn btn-primary btn-sm" data-id="'+sanitize(h.id)+'" data-role="herbalist" onclick="toggleSuspend(this.dataset.id,this.dataset.role)">Reinstate</button>'+
         '</div></td>'+
       '</tr>').join('');
     }
@@ -3735,16 +3721,16 @@ function renderSuspended(){
   const cTbody = document.getElementById('suspendedClientsTbody');
   if(cTbody){
     if(!suspC.length){
-      if(cTbody){cTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';}
+      if(cTbody){cTbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';}
     } else {
-      if(cTbody){cTbody.innerHTML = suspC.map(cl=>'<tr>'+}
+      cTbody.innerHTML=suspC.map(cl=>'<tr>'+
         '<td><div class="name-cell"><div class="avatar-sm" style="background:linear-gradient(135deg,var(--saffron),var(--spice))">'+sanitize((cl.name||'?').charAt(0))+'</div>'+sanitize(cl.name||'—')+'</div></td>'+
         '<td style="font-size:.78rem">'+sanitize(cl.email||'—')+'</td>'+
         '<td style="font-size:.78rem">'+sanitize(cl.assignedHerbalist||'Unassigned')+'</td>'+
         '<td>'+statusBadge('suspended')+'</td>'+
         '<td onclick="event.stopPropagation()"><div class="action-row">'+
-          '<button class="btn btn-primary btn-sm" onclick="toggleSuspend(''+sanitize(cl.id)+'','client')">Reinstate</button>'+
-          '<button class="btn btn-danger btn-sm" onclick="deleteUser(''+sanitize(cl.id)+'','client')">Delete</button>'+
+          '<button class="btn btn-primary btn-sm" data-id="'+sanitize(cl.id)+'" data-role="client" onclick="toggleSuspend(this.dataset.id,this.dataset.role)">Reinstate</button>'+
+          '<button class="btn btn-danger btn-sm" data-id="'+sanitize(cl.id)+'" data-role="client" onclick="deleteUser(this.dataset.id,this.dataset.role)">Delete</button>'+
         '</div></td>'+
       '</tr>').join('');
     }
