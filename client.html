@@ -1069,23 +1069,56 @@ async function autoSave(){
     const raw = sessionStorage.getItem('tfb_client_session');
     if(!raw) return;
     const session = JSON.parse(raw);
-    // Only use if token is fresh (within 5 minutes)
     if(!session || Date.now() - session.ts > 300000) return;
-    // Pre-fill name and email from logged-in portal user
     const fields = {
       firstName: session.firstName || (session.name||'').split(' ')[0] || '',
       lastName:  session.lastName  || (session.name||'').split(' ').slice(1).join(' ') || '',
       email:     session.email || ''
     };
-    Object.entries(fields).forEach(([k,v])=>{
-      const el = document.getElementById(k);
-      if(el && v) el.value = v;
+    Object.entries(fields).forEach(function(pair){
+      const el = document.getElementById(pair[0]);
+      if(el && pair[1]) el.value = pair[1];
     });
-    // Show a welcome message
     if(session.firstName){
-      const nameEl = document.querySelector('.step-header h2, .page-title, h1');
       showToast('👋 Welcome, ' + session.firstName + '! Your details have been pre-filled.');
     }
+  }catch(e){}
+
+  // Also read booking context (came from Request a Consultation form)
+  try{
+    const bRaw = sessionStorage.getItem('tfb_booking_context');
+    if(!bRaw) return;
+    const bCtx = JSON.parse(bRaw);
+    if(!bCtx || Date.now() - bCtx.ts > 3600000) return;
+
+    // Pre-fill phone if present
+    if(bCtx.phone){
+      const phoneEl = document.getElementById('phone');
+      if(phoneEl && !phoneEl.value) phoneEl.value = bCtx.phone;
+    }
+
+    // Pre-fill primary concern (Step 2 field)
+    if(bCtx.healthConcern){
+      const concernEl = document.getElementById('primaryComplaint');
+      if(concernEl && !concernEl.value) concernEl.value = bCtx.healthConcern;
+      // Also fill the notes field on step 2
+      const notesEl = document.getElementById('symNotes');
+      if(notesEl && !notesEl.value) notesEl.value = bCtx.healthConcern;
+    }
+
+    // Show a banner at top of form if came from booking
+    const formTop = document.querySelector('.form-container, .step-wrapper, main, .form-body');
+    if(formTop && !document.getElementById('bookingContextBanner')){
+      const banner = document.createElement('div');
+      banner.id = 'bookingContextBanner';
+      banner.style.cssText = 'background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:10px;padding:.9rem 1.2rem;margin-bottom:1.2rem;font-size:.84rem;color:var(--teal-deep);line-height:1.6;display:flex;align-items:flex-start;gap:.7rem';
+      banner.innerHTML = '<span style="font-size:1.2rem;flex-shrink:0">🌿</span><div><strong>Your consultation request is saved.</strong><br/>Complete this health assessment so your herbalist can prepare a personalised protocol for you. Your name, email and health concern have been pre-filled.</div>';
+      formTop.insertBefore(banner, formTop.firstChild);
+    }
+
+    // Clear booking context after reading so it doesn't re-apply
+    sessionStorage.removeItem('tfb_booking_context');
+    showToast('✅ Your consultation request details have been pre-filled. Complete the assessment to continue.');
   }catch(e){}
 })();
 

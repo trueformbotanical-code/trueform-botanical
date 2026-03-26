@@ -819,6 +819,51 @@ async function dbDelete(table, filters) {
 </div>
 
 <!-- ═══ LOGIN MODAL ═══ -->
+<!-- ═══ BOOKING INTERCEPT MODAL ═══ -->
+<div class="modal-bg" id="bookingInterceptModal" role="dialog" aria-modal="true" aria-labelledby="biTitle" aria-describedby="biDesc" style="z-index:3100">
+  <div class="modal" style="max-width:460px;padding:0;overflow:hidden;border-radius:16px">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--teal-deep),var(--teal-deepest));padding:1.8rem 2rem 1.5rem;position:relative">
+      <div style="font-size:2.5rem;margin-bottom:.6rem" aria-hidden="true">🌿</div>
+      <h2 id="biTitle" style="font-family:var(--serif);font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:.4rem">One more step before we begin</h2>
+      <p id="biDesc" style="font-size:.84rem;color:rgba(255,255,255,.75);line-height:1.6;margin:0">To connect you with the right herbalist, we need a few more details about your health — this takes about 5 minutes.</p>
+    </div>
+    <!-- Body -->
+    <div style="padding:1.6rem 2rem">
+      <!-- Steps visual -->
+      <div style="display:flex;gap:0;margin-bottom:1.5rem;border-radius:10px;overflow:hidden;border:1.5px solid var(--border)">
+        <div style="flex:1;padding:.75rem .6rem;background:var(--surface-teal);text-align:center;border-right:1px solid var(--border)">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.2rem">Step 1</div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--teal-deep)">Create Account</div>
+          <div style="font-size:.68rem;color:var(--text-soft);margin-top:.15rem">Free, 1 minute</div>
+        </div>
+        <div style="flex:1;padding:.75rem .6rem;text-align:center;border-right:1px solid var(--border)">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.2rem">Step 2</div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-dark)">Health Assessment</div>
+          <div style="font-size:.68rem;color:var(--text-soft);margin-top:.15rem">~5 minutes</div>
+        </div>
+        <div style="flex:1;padding:.75rem .6rem;text-align:center">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.2rem">Step 3</div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-dark)">Get Matched</div>
+          <div style="font-size:.68rem;color:var(--text-soft);margin-top:.15rem">We handle this</div>
+        </div>
+      </div>
+      <!-- What we'll pre-fill notice -->
+      <div style="background:var(--saffron-pale);border:1px solid var(--saffron-light);border-radius:8px;padding:.8rem 1rem;margin-bottom:1.4rem;font-size:.8rem;color:var(--spice);line-height:1.6">
+        <strong>✨ Your details are already saved.</strong> We have pre-filled your name, email, phone and health concern from the booking form — just set a password to complete your account.
+      </div>
+      <!-- Buttons -->
+      <button id="biAcceptBtn" onclick="acceptBookingIntercept()" style="width:100%;padding:13px;background:var(--saffron);color:#fff;border:none;border-radius:8px;font-size:.92rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .2s;margin-bottom:.7rem" onmouseover="this.style.background='var(--saffron-bright)'" onmouseout="this.style.background='var(--saffron)'">
+        Create My Account &amp; Start Assessment →
+      </button>
+      <button onclick="dismissBookingIntercept()" style="width:100%;padding:11px;background:none;color:var(--text-soft);border:1.5px solid var(--border-mid);border-radius:8px;font-size:.88rem;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--text-soft)'" onmouseout="this.style.borderColor='var(--border-mid)'">
+        Maybe later — exit
+      </button>
+      <p style="font-size:.72rem;color:var(--text-light);text-align:center;margin-top:.9rem">Creating an account is free. No credit card required.</p>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="loginModal" role="dialog" aria-modal="true" aria-label="Client Portal Login" aria-describedby="portalModalDesc">
   <span id="portalModalDesc" class="sr-only">Use Tab to navigate, Escape to close</span><div class="modal" style="max-width:480px;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column">
 
@@ -911,6 +956,8 @@ async function dbDelete(table, filters) {
           </div>
           <div class="fgrp"><label>Confirm Password *</label><input type="password" id="reg-cpw" placeholder="Repeat password" autocomplete="new-password"/></div>
           <label class="ccheck" style="margin-bottom:1rem"><input type="checkbox" id="reg-terms"/><span>I agree to the <a href="#" style="color:var(--teal-mid);font-weight:700">Privacy Policy</a> &amp; <a href="#" style="color:var(--teal-mid);font-weight:700">Terms</a></span></label>
+          <!-- Pre-fill hint shown when coming from booking form -->
+          <div id="regBookingHint" style="display:none;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.75rem 1rem;font-size:.8rem;color:var(--teal-deep);line-height:1.55;margin-bottom:.8rem"></div>
           <button class="btn-primary" id="regBtn" style="width:100%;justify-content:center;padding:11px" onclick="portalRegister()">Create Account →</button>
           <p style="text-align:center;font-size:.71rem;color:var(--text-light);margin-top:.9rem">🔐 Your data is encrypted and never sold</p>
         </div>
@@ -2034,6 +2081,17 @@ async function portalRegister(){
         }, { onConflict: 'id' });
       } catch(e){ console.warn('client_registrations upsert:', e); }
     }
+
+    // If came from booking form, save health concern to sessionStorage for assessment
+    try {
+      const bCtx = sessionStorage.getItem('tfb_booking_context');
+      if(bCtx){
+        const bData = JSON.parse(bCtx);
+        if(bData && Date.now()-bData.ts < 3600000){
+          // Already stored; client.html will read it and pre-fill concern
+        }
+      }
+    } catch(e){}
 
     // Store pending user details for verification step
     portalPendingUser = {
@@ -3402,31 +3460,85 @@ if(typeof sb !== 'undefined'){
   })();
 }
 
+// Stores data from booking form for pre-filling registration
+let _pendingBooking = null;
+
 function submitBookingRequest(){
-  const fn      = document.getElementById('bf-fn')?.value.trim();
-  const ln      = document.getElementById('bf-ln')?.value.trim();
-  const email   = document.getElementById('bf-email')?.value.trim();
-  const phone   = document.getElementById('bf-phone')?.value.trim();
-  const trad    = document.getElementById('bf-trad')?.value;
-  const type    = document.getElementById('bf-type')?.value;
-  const concern = document.getElementById('bf-concern')?.value.trim();
-  if(!fn||!email){ showToast('Please enter your name and email.'); return; }
-  const row = {
-    client_name:    fn+' '+ln,
-    herbalist_name: trad||'To be assigned',
-    appt_type:      type||'Video Consultation',
-    notes:          concern||'',
-    status:         'upcoming',
-    created_at:     new Date().toISOString()
-  };
-  if(typeof sb !== 'undefined'){
-    sb.from('appointments').insert(row).then(function(res){ if(res.error) console.error('Booking error:', res.error); });
+  const fn      = (document.getElementById('bf-fn')?.value||'').trim();
+  const ln      = (document.getElementById('bf-ln')?.value||'').trim();
+  const email   = (document.getElementById('bf-email')?.value||'').trim();
+  const phone   = (document.getElementById('bf-phone')?.value||'').trim();
+  const type    = (document.getElementById('bf-type')?.value||'Video Consultation');
+  const concern = (document.getElementById('bf-concern')?.value||'').trim();
+
+  // Validate required fields
+  if(!fn){ showToast('⚠️ Please enter your first name.'); document.getElementById('bf-fn')?.focus(); return; }
+  if(!email||!/^[^@]+@[^@]+\.[^@]+$/.test(email)){ showToast('⚠️ Please enter a valid email address.'); document.getElementById('bf-email')?.focus(); return; }
+
+  // Store booking details for use after account creation
+  _pendingBooking = { fn, ln, email, phone, type, concern };
+
+  // Show intercept modal
+  const modal = document.getElementById('bookingInterceptModal');
+  if(modal){
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
-  const msg = 'Consultation request received! We will contact ' + email + ' within 24 hours.';
-  showToast('✅ ' + msg);
+}
+
+function acceptBookingIntercept(){
+  // Close intercept modal
+  const biModal = document.getElementById('bookingInterceptModal');
+  if(biModal) biModal.classList.remove('open');
+  document.body.style.overflow = '';
+
+  // Open the client portal registration form
+  const loginModal = document.getElementById('loginModal');
+  if(loginModal){
+    loginModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  showArea('portalClientArea');
+  clientTab('register');
+
+  // Pre-fill registration fields from booking form data
+  if(_pendingBooking){
+    setTimeout(function(){
+      const setVal = function(id, val){ const el=document.getElementById(id); if(el && val) el.value = val; };
+      setVal('reg-fn',  _pendingBooking.fn);
+      setVal('reg-ln',  _pendingBooking.ln);
+      setVal('reg-em',  _pendingBooking.email);
+      // Focus the password field since name/email are pre-filled
+      setTimeout(function(){ document.getElementById('reg-pw')?.focus(); }, 150);
+      // Store concern + type in sessionStorage so client.html can use it
+      try {
+        sessionStorage.setItem('tfb_booking_context', JSON.stringify({
+          sessionType:  _pendingBooking.type,
+          healthConcern: _pendingBooking.concern,
+          phone:        _pendingBooking.phone,
+          ts:           Date.now()
+        }));
+      } catch(e){}
+      // Show a contextual hint inside the register form
+      const hint = document.getElementById('regBookingHint');
+      if(hint){
+        hint.style.display = 'block';
+        hint.innerHTML = '👋 Welcome, <strong>' + (_pendingBooking.fn||'') + '</strong>! Your name and email have been pre-filled. Just create a password to continue.';
+      }
+    }, 100);
+  }
+}
+
+function dismissBookingIntercept(){
+  const biModal = document.getElementById('bookingInterceptModal');
+  if(biModal) biModal.classList.remove('open');
+  document.body.style.overflow = '';
+  _pendingBooking = null;
+  // Clear booking form
   ['bf-fn','bf-ln','bf-email','bf-phone','bf-concern'].forEach(function(id){
-    const el=document.getElementById(id); if(el) el.value='';
+    const el = document.getElementById(id); if(el) el.value = '';
   });
+  showToast('No problem! You can book a consultation anytime.');
 }
 
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),4200);}
