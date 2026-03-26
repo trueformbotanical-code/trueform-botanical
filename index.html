@@ -1336,7 +1336,7 @@ async function dbDelete(table, filters) {
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <a href="#" class="logo"><div class="logo-mark" aria-hidden="true">🌿</div><span class="logo-text">TrueForm <em>Botanical</em></span></a>
   <div class="nav-center" id="navCenter" role="list">
-    <a href="#booking" class="nav-link">Book a Consultation</a>
+    <a href="#how" class="nav-link">Book a Consultation</a>
     <a href="#blog" class="nav-link">Blog</a>
     <a href="faq.html" class="nav-link">FAQ</a>
     <button class="nav-link nav-finder-btn" data-action="openFinder" aria-label="Open Herb Finder"><span class="finder-pulse" aria-hidden="true"></span>🌿 Herb Finder</button>
@@ -1405,7 +1405,7 @@ async function dbDelete(table, filters) {
 </section>
 
 <!-- ═══ TRUST STRIP ═══ -->
-<div id="trust" style="background:#0d3d3a;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)">
+<div id="trust" style="background:linear-gradient(90deg,#071e1c 0%,#0d3d3a 50%,#071e1c 100%);border-top:1px solid rgba(34,168,159,.2);border-bottom:1px solid rgba(34,168,159,.2)">
   <div style="max-width:1200px;margin:0 auto;padding:.9rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem">
     <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">✓</span> Certified Practitioners</div>
     <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
@@ -1420,127 +1420,72 @@ async function dbDelete(table, filters) {
 </div>
 
 <!-- ═══ HOW IT WORKS ═══ -->
-<section id="how" style="padding:6rem 5%;background:#fff">
-  <div style="max-width:1200px;margin:0 auto">
-    <div style="text-align:center;margin-bottom:4rem">
-      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Simple Process</div>
-      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep);line-height:1.2">How it <em>works</em></h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+<section id="how" style="padding:6rem 5%;background:#fff;position:relative;overflow:hidden">
+  <!-- decorative background blobs -->
+  <div style="position:absolute;top:-120px;right:-120px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(34,168,159,.08) 0%,transparent 70%);pointer-events:none" aria-hidden="true"></div>
+  <div style="position:absolute;bottom:-100px;left:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(232,130,12,.07) 0%,transparent 70%);pointer-events:none" aria-hidden="true"></div>
 
-      <div style="position:relative">
-        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
-          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80&auto=format&fit=crop" alt="Submit assessment" style="width:100%;height:100%;object-fit:cover"/>
-        </div>
-        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-mid);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">01</div>
-          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Submit Your Assessment</h3>
-        </div>
-        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Register free, then complete your health assessment covering symptoms, lifestyle, and medical history.</p>
-      </div>
-
-      <div style="position:relative">
-        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
-          <img src="https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=600&q=80&auto=format&fit=crop" alt="Meet herbalist" style="width:100%;height:100%;object-fit:cover"/>
-        </div>
-        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">02</div>
-          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Meet Your Herbalist</h3>
-        </div>
-        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Your assigned practitioner reviews your assessment and schedules a personal one-to-one consultation.</p>
-      </div>
-
-      <div style="position:relative">
-        <div style="border-radius:16px;overflow:hidden;height:220px;margin-bottom:1.5rem">
-          <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&q=80&auto=format&fit=crop" alt="Receive protocol" style="width:100%;height:100%;object-fit:cover"/>
-        </div>
-        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-bright);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">03</div>
-          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--teal-deep)">Receive Your Protocol</h3>
-        </div>
-        <p style="font-size:.9rem;color:var(--text-soft);line-height:1.7">Get a personalised herbal protocol with dosages, dietary advice, and lifestyle guidance sent to your portal.</p>
-      </div>
-
-    </div>
-    <div style="text-align:center;margin-top:3rem">
-      <button onclick="openRegistrationPortal()" style="padding:14px 32px;background:var(--teal-mid);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s" onmouseover="this.style.background='var(--teal-bright)'" onmouseout="this.style.background='var(--teal-mid)'">Get Started Free →</button>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ BOOKING ═══ -->
-<section id="booking" style="padding:6rem 5%;background:var(--surface-alt)">
-  <div style="max-width:900px;margin:0 auto">
-
-    <!-- Section heading -->
-    <div style="text-align:center;margin-bottom:3.5rem">
-      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Book a Session</div>
-      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">Book your <em>consultation</em></h2>
-      <p style="font-size:.96rem;color:var(--text-soft);max-width:560px;margin:1rem auto 0;line-height:1.7">Create your free account, complete a short health assessment, and get matched with the right herbalist for you — all in one place.</p>
+  <div style="max-width:1200px;margin:0 auto;position:relative">
+    <div style="text-align:center;margin-bottom:4.5rem">
+      <span style="display:inline-block;background:linear-gradient(135deg,#e8f5f4,#d4f0ee);border:1px solid rgba(34,168,159,.3);border-radius:30px;padding:.4rem 1.2rem;font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:1rem">Simple 3-Step Process</span>
+      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--teal-deep);line-height:1.15;margin-bottom:.9rem">How it <em style="color:var(--saffron)">works</em></h2>
+      <p style="font-size:1rem;color:var(--text-soft);max-width:520px;margin:0 auto;line-height:1.75">From registration to your personalised herbal protocol — your journey to better health starts here.</p>
     </div>
 
-    <!-- How it works steps -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem">
-      <div style="background:#fff;border-radius:14px;padding:1.8rem 1.4rem;border:1px solid var(--border);text-align:center;position:relative">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-mid);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem">1</div>
-        <div style="font-size:1.5rem;margin-bottom:.6rem">👤</div>
-        <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Create Account</div>
-        <div style="font-size:.8rem;color:var(--text-soft);line-height:1.6">Register free — takes under a minute. No credit card required.</div>
+    <!-- Step cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-bottom:4rem">
+
+      <!-- Step 1 -->
+      <div style="position:relative;background:linear-gradient(145deg,#0d3d3a,#071e1c);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(7,30,28,.25)">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(34,168,159,.1)" aria-hidden="true"></div>
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(34,168,159,.2);border:1.5px solid rgba(34,168,159,.4);font-size:1.4rem;margin-bottom:1.4rem">👤</div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:.5rem">Step 01</div>
+        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Create Your Free Account</h3>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.65);line-height:1.75">Register in under a minute. No credit card required. Access your secure client portal immediately.</p>
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.1);font-size:.75rem;color:var(--teal-bright);font-weight:600">✓ Free forever &nbsp;·&nbsp; ✓ Instant access</div>
       </div>
-      <div style="background:#fff;border-radius:14px;padding:1.8rem 1.4rem;border:1px solid var(--border);text-align:center">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem">2</div>
-        <div style="font-size:1.5rem;margin-bottom:.6rem">📋</div>
-        <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Health Assessment</div>
-        <div style="font-size:.8rem;color:var(--text-soft);line-height:1.6">Complete your pre-consultation form (~5 min) covering symptoms, history &amp; lifestyle.</div>
+
+      <!-- Step 2 -->
+      <div style="position:relative;background:linear-gradient(145deg,#b54a1e,#8b3a10);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(181,74,30,.3);margin-top:1.5rem">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07)" aria-hidden="true"></div>
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:1.4rem;margin-bottom:1.4rem">📋</div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.5rem">Step 02</div>
+        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Complete Health Assessment</h3>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.75">Answer questions about your symptoms, medical history, and lifestyle — takes about 5 minutes.</p>
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.15);font-size:.75rem;color:rgba(255,255,255,.8);font-weight:600">✓ Secure &amp; private &nbsp;·&nbsp; ✓ Edit anytime</div>
       </div>
-      <div style="background:#fff;border-radius:14px;padding:1.8rem 1.4rem;border:1px solid var(--border);text-align:center">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--spice);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem">3</div>
-        <div style="font-size:1.5rem;margin-bottom:.6rem">🌿</div>
-        <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Get Matched</div>
-        <div style="font-size:.8rem;color:var(--text-soft);line-height:1.6">We assign the best herbalist for your needs and schedule your consultation.</div>
+
+      <!-- Step 3 -->
+      <div style="position:relative;background:linear-gradient(145deg,#22a89f,#166b65);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(34,168,159,.3)">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08)" aria-hidden="true"></div>
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:1.4rem;margin-bottom:1.4rem">🌿</div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.5rem">Step 03</div>
+        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Receive Your Protocol</h3>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.75">Your assigned herbalist reviews everything and sends a personalised herbal protocol directly to your portal.</p>
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.15);font-size:.75rem;color:rgba(255,255,255,.8);font-weight:600">✓ Within 48 hrs &nbsp;·&nbsp; ✓ Ongoing support</div>
       </div>
+
     </div>
 
-    <!-- Main CTA card -->
-    <div style="background:#fff;border-radius:20px;padding:3rem 2.5rem;box-shadow:0 8px 40px rgba(13,61,58,.1);text-align:center;border:1.5px solid var(--border-mid)">
-      <div style="font-size:2.5rem;margin-bottom:1rem">🌿</div>
-      <h3 style="font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--teal-deep);margin-bottom:.6rem">Ready to start your wellness journey?</h3>
-      <p style="font-size:.9rem;color:var(--text-soft);max-width:480px;margin:0 auto 2rem;line-height:1.7">Your first 15-minute introductory call is <strong style="color:var(--teal-mid)">completely free</strong>. Consultations from $85 with no hidden fees.</p>
-      <button onclick="openRegistrationPortal()" style="display:inline-flex;align-items:center;gap:.6rem;padding:16px 40px;background:var(--saffron);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all .25s;letter-spacing:.02em;box-shadow:0 4px 20px rgba(232,130,12,.35)" onmouseover="this.style.background='var(--saffron-bright)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--saffron)';this.style.transform='none'">
-        Create My Free Account →
-      </button>
-      <p style="font-size:.74rem;color:var(--text-light);margin-top:1rem">Already have an account? <button onclick="openLogin()" style="background:none;border:none;color:var(--teal-mid);font-weight:700;cursor:pointer;font-family:var(--sans);font-size:inherit;padding:0">Sign in here</button></p>
-    </div>
-
-    <!-- Info cards row -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem">
-      <div style="background:#fff;border-radius:12px;padding:1.1rem;border:1px solid var(--border);text-align:center">
-        <div style="font-size:1.3rem;margin-bottom:.4rem">🕐</div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--teal-deep);margin-bottom:.25rem">Session Duration</div>
-        <div style="font-size:.73rem;color:var(--text-soft);line-height:1.5">Initial: 60–90 min<br/>Follow-up: 30–45 min</div>
+    <!-- CTA card -->
+    <div style="background:linear-gradient(135deg,#fef3e2,#fde8d4);border:1.5px solid rgba(232,130,12,.2);border-radius:20px;padding:3rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap">
+      <div>
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--spice);margin-bottom:.5rem">Ready to start?</div>
+        <h3 style="font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Your first 15 minutes are <em>free</em></h3>
+        <p style="font-size:.88rem;color:var(--text-soft);line-height:1.6;max-width:480px">No obligation. Create your account, submit your assessment, and get a complimentary introductory call with a certified herbalist.</p>
       </div>
-      <div style="background:#fff;border-radius:12px;padding:1.1rem;border:1px solid var(--border);text-align:center">
-        <div style="font-size:1.3rem;margin-bottom:.4rem">🌍</div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--teal-deep);margin-bottom:.25rem">Worldwide</div>
-        <div style="font-size:.73rem;color:var(--text-soft);line-height:1.5">48+ countries<br/>7 days a week</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;padding:1.1rem;border:1px solid var(--border);text-align:center">
-        <div style="font-size:1.3rem;margin-bottom:.4rem">💵</div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--teal-deep);margin-bottom:.25rem">Transparent Pricing</div>
-        <div style="font-size:.73rem;color:var(--text-soft);line-height:1.5">From $85<br/>No hidden fees</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;padding:1.1rem;border:1px solid var(--border);text-align:center">
-        <div style="font-size:1.3rem;margin-bottom:.4rem">🔒</div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--teal-deep);margin-bottom:.25rem">Fully Secure</div>
-        <div style="font-size:.73rem;color:var(--text-soft);line-height:1.5">Encrypted sessions<br/>HIPAA aligned</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.8rem;flex-shrink:0">
+        <button onclick="openRegistrationPortal()" style="padding:15px 36px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;border:none;border-radius:10px;font-size:.96rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all .28s;letter-spacing:.02em;box-shadow:0 6px 24px rgba(181,74,30,.35);white-space:nowrap" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(181,74,30,.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(181,74,30,.35)'">
+          Book My Free Consultation →
+        </button>
+        <span style="font-size:.73rem;color:var(--text-light)">No credit card &nbsp;·&nbsp; Cancel anytime</span>
       </div>
     </div>
 
   </div>
 </section>
-
 <!-- ═══ TRADITIONS ═══ -->
-<section id="traditions" style="padding:6rem 5%;background:#fff">
+<section id="traditions" style="padding:6rem 5%;background:linear-gradient(180deg,#f5f9f8 0%,#fff 100%)">
   <div style="max-width:1200px;margin:0 auto">
     <div style="text-align:center;margin-bottom:4rem">
       <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Four World Traditions</div>
@@ -1548,7 +1493,7 @@ async function dbDelete(table, filters) {
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem">
 
-      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <div style="border-radius:16px;overflow:hidden;border:none;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 20px rgba(0,0,0,.08)" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
           <img src="https://images.unsplash.com/photo-1600618528240-fb9fc964b853?w=400&q=80&auto=format&fit=crop" alt="Ayurvedic herbs — turmeric, ashwagandha and spices" style="width:100%;height:100%;object-fit:cover"/>
         </div>
@@ -1560,7 +1505,7 @@ async function dbDelete(table, filters) {
         </div>
       </div>
 
-      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <div style="border-radius:16px;overflow:hidden;border:none;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 20px rgba(0,0,0,.08)" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
           <img src="https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=400&q=80&auto=format&fit=crop" alt="Traditional Chinese medicine — dried herbs and botanicals" style="width:100%;height:100%;object-fit:cover"/>
         </div>
@@ -1572,7 +1517,7 @@ async function dbDelete(table, filters) {
         </div>
       </div>
 
-      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <div style="border-radius:16px;overflow:hidden;border:none;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 20px rgba(0,0,0,.08)" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
           <img src="https://images.unsplash.com/photo-1543362906-acfc16c67564?w=400&q=80&auto=format&fit=crop" alt="Western phytotherapy — botanical tinctures and herbs" style="width:100%;height:100%;object-fit:cover"/>
         </div>
@@ -1584,7 +1529,7 @@ async function dbDelete(table, filters) {
         </div>
       </div>
 
-      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <div style="border-radius:16px;overflow:hidden;border:none;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 20px rgba(0,0,0,.08)" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
           <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400&q=80&auto=format&fit=crop" alt="African botanicals — moringa, rooibos and baobab plants" style="width:100%;height:100%;object-fit:cover"/>
         </div>
@@ -1600,7 +1545,7 @@ async function dbDelete(table, filters) {
 </section>
 
 <!-- ═══ BLOG ═══ -->
-<section id="blog" style="padding:6rem 5%;background:var(--surface-alt)">
+<section id="blog" style="padding:6rem 5%;background:linear-gradient(180deg,#fff 0%,#f0faf9 100%)">
   <div style="max-width:1200px;margin:0 auto">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:3rem">
       <div>
@@ -1674,7 +1619,7 @@ async function dbDelete(table, filters) {
       <div class="socials"><a href="#" class="soc-btn" aria-label="Instagram">📷</a><a href="#" class="soc-btn" aria-label="Facebook">📘</a><a href="#" class="soc-btn" aria-label="YouTube">▶️</a><a href="#" class="soc-btn" aria-label="Pinterest">📌</a></div>
     </div>
     <div class="footer-col"><h5>Shop</h5><ul><li><a href="#shop">All Products</a></li><li><a href="#">Tinctures</a></li><li><a href="#">Teas & Blends</a></li><li><a href="#">Capsules</a></li><li><a href="#">Gift Sets</a></li></ul></div>
-    <div class="footer-col"><h5>Consult</h5><ul><li><a href="#booking">Book a Session</a></li><li><a href="#herbalists">Our Herbalists</a></li><li><a href="#" data-action="openFinder">Herb Finder</a></li><li><a href="#">Telehealth</a></li><li><a href="#">In-Person Clinics</a></li></ul></div>
+    <div class="footer-col"><h5>Consult</h5><ul><li><a href="#how">Book a Session</a></li><li><a href="#herbalists">Our Herbalists</a></li><li><a href="#" data-action="openFinder">Herb Finder</a></li><li><a href="#">Telehealth</a></li><li><a href="#">In-Person Clinics</a></li></ul></div>
     <div class="footer-col"><h5>Learn</h5><ul><li><a href="#blog">Blog</a></li><li><a href="#traditions">Traditions</a></li><li><a href="faq.html">FAQ</a></li><li><a href="#newsletter">Free Guide</a></li></ul></div>
     <div class="footer-col"><h5>Contact</h5><ul><li><a href="#" onclick="window.location='mai'+'lto:hello@trueformbotanical.com';return false">hello&#64;trueformbotanical.com</a></li><li><a href="tel:+18005550123">+1 800 555 0123</a></li><li><a href="#">Client Portal</a></li><li><a href="#">Wholesale</a></li></ul></div>
   </div>
@@ -2592,7 +2537,7 @@ function renderPortalActionButtons(){
   }
 
   btn.innerHTML = asmBtn +
-    '<button onclick="goToBooking()" class="portal-action-btn">📅 Book Session</button>' +
+    '<button onclick="openRegistrationPortal()" class="portal-action-btn">📅 Book Session</button>' +
     '<button onclick="goToHerbFinder()" class="portal-action-btn">🌿 Herb Finder</button>' +
     '<button onclick="goToSymptomDiary()" class="portal-action-btn">📓 Symptom Diary</button>';
 }
