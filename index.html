@@ -3374,7 +3374,7 @@ renderCal();
 function selectMode(el){document.querySelectorAll(".mode-card").forEach(c=>c.classList.remove("active"));el.classList.add("active");}
 
 // ══ BOOKING ══
-document.getElementById("bookForm").addEventListener("submit",e=>{e.preventDefault();const rs=["bf-fn","bf-ln","bf-em","bf-sv","bf-tz","bf-cc"];let ok=true;rs.forEach(id=>{const el=document.getElementById(id);if(!el.value.trim()){el.style.borderColor="var(--spice)";ok=false;}else el.style.borderColor="";});["bf-c1","bf-c2"].forEach(id=>{const el=document.getElementById(id);if(!el.checked){el.style.outline="2px solid var(--spice)";ok=false;}else el.style.outline="";});if(!ok){showToast("⚠️ Please fill all required fields.");return;}const btn=document.getElementById("bookSubmit");btn.textContent="Requesting…";btn.disabled=true;setTimeout(()=>{btn.textContent="Request Appointment →";btn.disabled=false;e.target.reset();showToast("✅ Appointment requested! We'll confirm within 2 hours.");},1800);});
+(document.getElementById("bookForm")||document.createElement("form")).addEventListener("submit",e=>{e.preventDefault();const rs=["bf-fn","bf-ln","bf-em","bf-sv","bf-tz","bf-cc"];let ok=true;rs.forEach(id=>{const el=document.getElementById(id);if(!el.value.trim()){el.style.borderColor="var(--spice)";ok=false;}else el.style.borderColor="";});["bf-c1","bf-c2"].forEach(id=>{const el=document.getElementById(id);if(!el.checked){el.style.outline="2px solid var(--spice)";ok=false;}else el.style.outline="";});if(!ok){showToast("⚠️ Please fill all required fields.");return;}const btn=document.getElementById("bookSubmit");btn.textContent="Requesting…";btn.disabled=true;setTimeout(()=>{btn.textContent="Request Appointment →";btn.disabled=false;e.target.reset();showToast("✅ Appointment requested! We'll confirm within 2 hours.");},1800);});
 
 // ══ NEWSLETTER ══
 function subscribeNL(){const e=document.getElementById("nlEmail").value;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast("⚠️ Enter a valid email.");return;}showToast("🌿 Welcome! Check your inbox for your free Herb Guide.");(document.getElementById("nlEmail")||{}).value="";}
@@ -3388,7 +3388,7 @@ function addUser(txt){const m=document.getElementById("chatMsgs");const d=docume
 function getReply(msg){const m=msg.toLowerCase();if(m.includes("anxiet")||m.includes("calm"))return bR.anxiety;if(m.includes("sleep")||m.includes("insomn"))return bR.insomnia;if(m.includes("stress")||m.includes("adaptogen"))return bR.stress;if(m.includes("book")||m.includes("appoint")||m.includes("consult"))return bR.book;if(m.includes("ship")||m.includes("deliver"))return bR.ship;if(m.includes("finder")||m.includes("find")||m.includes("recommend")||m.includes("herb finder")||m.includes("open")){setTimeout(()=>openFinder(),600);return bR.finder;}return bR.default;}
 function sendChat(){const i=document.getElementById("chatInput");const msg=i.value.trim();if(!msg)return;addUser(msg);i.value="";setTimeout(()=>addBot(getReply(msg)),600);}
 function qMsg(msg){if(!chatOpen)toggleChat();setTimeout(()=>{addUser(msg);setTimeout(()=>addBot(getReply(msg)),600);},chatOpen?0:500);}
-document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
+(document.getElementById("chatInput")||document.createElement("input")).addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
 
 // ══ FAQ ══
 document.querySelectorAll(".faq-item").forEach(item=>{const q=item.querySelector(".faq-q");q.addEventListener("click",()=>{const o=item.classList.contains("open");document.querySelectorAll(".faq-item").forEach(i=>{i.classList.remove("open");i.querySelector(".faq-q").setAttribute("aria-expanded","false");});if(!o){item.classList.add("open");q.setAttribute("aria-expanded","true");}});q.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();q.click();}});});
@@ -3659,7 +3659,7 @@ document.addEventListener('click', function(e) {
 });
 
 // Nav cart / login / book — also wire via delegation safety net
-document.getElementById('nav').addEventListener('click', function(e){
+document.getElementById('nav')?.addEventListener('click', function(e){
   const btn = e.target.closest('button,a');
   if(!btn) return;
   if(btn.classList.contains('nav-login'))      { e.preventDefault(); openLogin(); }
@@ -3667,6 +3667,7 @@ document.getElementById('nav').addEventListener('click', function(e){
   if(btn.classList.contains('nav-finder-btn')) { e.preventDefault(); openFinder(); }
   if(btn.classList.contains('hamburger'))      { e.preventDefault(); toggleMenu(); }
 });
+
 
 // ── Cart stubs (shop removed) ──
 function openCart(){}
