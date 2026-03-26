@@ -1435,34 +1435,62 @@ async function dbDelete(table, filters) {
     <!-- Step cards -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-bottom:4rem">
 
-      <!-- Step 1 -->
-      <div style="position:relative;background:linear-gradient(145deg,#0d3d3a,#071e1c);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(7,30,28,.25)">
-        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(34,168,159,.1)" aria-hidden="true"></div>
-        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(34,168,159,.2);border:1.5px solid rgba(34,168,159,.4);font-size:1.4rem;margin-bottom:1.4rem">👤</div>
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:.5rem">Step 01</div>
-        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Create Your Free Account</h3>
-        <p style="font-size:.85rem;color:rgba(255,255,255,.65);line-height:1.75">Register in under a minute. No credit card required. Access your secure client portal immediately.</p>
-        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.1);font-size:.75rem;color:var(--teal-bright);font-weight:600">✓ Free forever &nbsp;·&nbsp; ✓ Instant access</div>
+      <!-- Step 1 — dark teal card + photo -->
+      <div style="position:relative;background:linear-gradient(145deg,#0d3d3a,#071e1c);border-radius:20px;overflow:hidden;color:#fff;box-shadow:0 16px 48px rgba(7,30,28,.25)">
+        <!-- Photo with teal colour overlay -->
+        <div style="position:relative;height:210px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80&auto=format&fit=crop"
+               alt="Person creating an online account on a laptop"
+               style="width:100%;height:100%;object-fit:cover;object-position:center top"/>
+          <!-- Gradient fade from photo into dark card -->
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,61,58,.15) 0%,rgba(13,61,58,.55) 60%,rgba(7,30,28,.98) 100%)"></div>
+          <!-- Step badge overlaid on photo -->
+          <div style="position:absolute;top:1rem;left:1.2rem;background:rgba(34,168,159,.85);backdrop-filter:blur(6px);border:1px solid rgba(34,168,159,.6);border-radius:20px;padding:.28rem .85rem;font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#fff">Step 01</div>
+        </div>
+        <!-- Content below photo -->
+        <div style="padding:1.6rem 1.8rem 2.2rem;position:relative">
+          <div style="position:absolute;top:-30px;right:-20px;width:110px;height:110px;border-radius:50%;background:rgba(34,168,159,.08)" aria-hidden="true"></div>
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:rgba(34,168,159,.2);border:1.5px solid rgba(34,168,159,.4);font-size:1.2rem;margin-bottom:1rem">👤</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;margin-bottom:.6rem;line-height:1.3">Create Your Free Account</h3>
+          <p style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.75;margin-bottom:0">Register in under a minute. No credit card required. Access your secure client portal immediately.</p>
+          <div style="margin-top:1.3rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.1);font-size:.73rem;color:var(--teal-bright);font-weight:600">✓ Free forever &nbsp;·&nbsp; ✓ Instant access</div>
+        </div>
       </div>
 
-      <!-- Step 2 -->
-      <div style="position:relative;background:linear-gradient(145deg,#b54a1e,#8b3a10);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(181,74,30,.3);margin-top:1.5rem">
-        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07)" aria-hidden="true"></div>
-        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:1.4rem;margin-bottom:1.4rem">📋</div>
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.5rem">Step 02</div>
-        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Complete Health Assessment</h3>
-        <p style="font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.75">Answer questions about your symptoms, medical history, and lifestyle — takes about 5 minutes.</p>
-        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.15);font-size:.75rem;color:rgba(255,255,255,.8);font-weight:600">✓ Secure &amp; private &nbsp;·&nbsp; ✓ Edit anytime</div>
+      <!-- Step 2 — spice/orange card + photo -->
+      <div style="position:relative;background:linear-gradient(145deg,#b54a1e,#8b3a10);border-radius:20px;overflow:hidden;color:#fff;box-shadow:0 16px 48px rgba(181,74,30,.3);margin-top:1.5rem">
+        <div style="position:relative;height:210px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80&auto=format&fit=crop"
+               alt="Client completing a health assessment form"
+               style="width:100%;height:100%;object-fit:cover;object-position:center"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(139,58,16,.1) 0%,rgba(139,58,16,.5) 60%,rgba(139,58,16,.98) 100%)"></div>
+          <div style="position:absolute;top:1rem;left:1.2rem;background:rgba(181,74,30,.85);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:.28rem .85rem;font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#fff">Step 02</div>
+        </div>
+        <div style="padding:1.6rem 1.8rem 2.2rem;position:relative">
+          <div style="position:absolute;top:-30px;right:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.06)" aria-hidden="true"></div>
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);font-size:1.2rem;margin-bottom:1rem">📋</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;margin-bottom:.6rem;line-height:1.3">Complete Health Assessment</h3>
+          <p style="font-size:.84rem;color:rgba(255,255,255,.72);line-height:1.75;margin-bottom:0">Answer questions about your symptoms, medical history, and lifestyle — takes about 5 minutes.</p>
+          <div style="margin-top:1.3rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.15);font-size:.73rem;color:rgba(255,255,255,.85);font-weight:600">✓ Secure &amp; private &nbsp;·&nbsp; ✓ Edit anytime</div>
+        </div>
       </div>
 
-      <!-- Step 3 -->
-      <div style="position:relative;background:linear-gradient(145deg,#22a89f,#166b65);border-radius:20px;overflow:hidden;padding:2.2rem 1.8rem 2.5rem;color:#fff;box-shadow:0 16px 48px rgba(34,168,159,.3)">
-        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08)" aria-hidden="true"></div>
-        <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:1.4rem;margin-bottom:1.4rem">🌿</div>
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.5rem">Step 03</div>
-        <h3 style="font-family:var(--serif);font-size:1.25rem;font-weight:700;margin-bottom:.7rem;line-height:1.3">Receive Your Protocol</h3>
-        <p style="font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.75">Your assigned herbalist reviews everything and sends a personalised herbal protocol directly to your portal.</p>
-        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.15);font-size:.75rem;color:rgba(255,255,255,.8);font-weight:600">✓ Within 48 hrs &nbsp;·&nbsp; ✓ Ongoing support</div>
+      <!-- Step 3 — bright teal card + photo -->
+      <div style="position:relative;background:linear-gradient(145deg,#22a89f,#166b65);border-radius:20px;overflow:hidden;color:#fff;box-shadow:0 16px 48px rgba(34,168,159,.3)">
+        <div style="position:relative;height:210px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&q=80&auto=format&fit=crop"
+               alt="Herbalist preparing a personalised herbal protocol"
+               style="width:100%;height:100%;object-fit:cover;object-position:center"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(22,107,101,.1) 0%,rgba(22,107,101,.5) 60%,rgba(22,107,101,.98) 100%)"></div>
+          <div style="position:absolute;top:1rem;left:1.2rem;background:rgba(34,168,159,.85);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:.28rem .85rem;font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#fff">Step 03</div>
+        </div>
+        <div style="padding:1.6rem 1.8rem 2.2rem;position:relative">
+          <div style="position:absolute;top:-30px;right:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)" aria-hidden="true"></div>
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);font-size:1.2rem;margin-bottom:1rem">🌿</div>
+          <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:700;margin-bottom:.6rem;line-height:1.3">Receive Your Protocol</h3>
+          <p style="font-size:.84rem;color:rgba(255,255,255,.72);line-height:1.75;margin-bottom:0">Your herbalist reviews everything and sends a personalised protocol with dosages and lifestyle guidance.</p>
+          <div style="margin-top:1.3rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.15);font-size:.73rem;color:rgba(255,255,255,.85);font-weight:600">✓ Within 48 hrs &nbsp;·&nbsp; ✓ Ongoing support</div>
+        </div>
       </div>
 
     </div>
