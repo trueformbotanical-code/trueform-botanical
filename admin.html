@@ -654,7 +654,7 @@ async function dbDelete(table, filters) {
             <div class="sc-val" id="ovAssessments">—</div>
             <div class="sc-sub">Submitted forms →</div>
           </button>
-          <button class="stat-card sc-red" onclick="showSuspended()" role="tab"
+          <button class="stat-card sc-red" onclick="nav('suspended')" role="tab"
             aria-label="Suspended accounts — click to view" title="Click to view suspended accounts"
             style="cursor:pointer;border:none;text-align:left;width:100%">
             <div class="sc-label">Suspended</div>
@@ -1541,6 +1541,7 @@ function renderClients(list=ALL_CLIENTS_USR){
       <td onclick="event.stopPropagation()"><div class="action-row">
         <button class="btn btn-ghost btn-sm" onclick="openEditUser('${c.id}','client')">Edit</button>
         ${c.hasAssessment?`<button onclick="window.location.href='herbalist.html'" class="btn btn-primary btn-sm">View Assessment</button>`:''}
+        <button class="btn btn-sm ${c.status==='suspended'?'btn-primary':'btn-saffron'}" onclick="toggleSuspend('${c.id}','client')">${c.status==='suspended'?'Reinstate':'Suspend'}</button>
         <button class="btn btn-danger btn-sm" onclick="deleteUser('${c.id}','client')">Delete</button>
       </div></td>
     </tr>`).join('');
@@ -1839,8 +1840,22 @@ async function toggleSuspend(id,role){
   if(!user)return;
   const newStatus=user.status==='suspended'?'active':'suspended';
   user.status=newStatus;
-  if(role==='herbalist'){ALL_HERBALISTS=ALL_HERBALISTS.map(h=>h.id===id?user:h);await sset('tfb_herbalists',ALL_HERBALISTS);renderHerbalists();}
-  else{ALL_CLIENTS_USR=ALL_CLIENTS_USR.map(c=>c.id===id?user:c);await sset('tfb_client_users',ALL_CLIENTS_USR);renderClients();}
+  if(role==='herbalist'){
+    ALL_HERBALISTS=ALL_HERBALISTS.map(h=>h.id===id?user:h);
+    await sset('tfb_herbalists',ALL_HERBALISTS);
+    renderHerbalists();
+  } else {
+    ALL_CLIENTS_USR=ALL_CLIENTS_USR.map(c=>c.id===id?user:c);
+    await sset('tfb_client_users',ALL_CLIENTS_USR);
+    renderClients();
+  }
+  // Always refresh suspended panel and stats
+  renderSuspended();
+  updateStats();
+  // Try to update Supabase status too
+  try {
+    await sb.from('profiles').update({status: newStatus}).eq('id', id);
+  } catch(e){}
   await appendAudit({type:'suspend',icon:newStatus==='suspended'?'🔴':'🟢',action:`${newStatus==='suspended'?'Suspended':'Reinstated'} ${role}: ${user.name}`,actor:currentAdmin?.name||'Admin',target:user.email});
   showToast(`${newStatus==='suspended'?'🔴 Suspended':'🟢 Reinstated'}: ${user.name}`);
 }
