@@ -1291,7 +1291,7 @@ async function dbDelete(table, filters) {
   <div class="nav-center" id="navCenter" role="list">
     <a href="#booking" class="nav-link">Book a Consultation</a>
     <a href="#blog" class="nav-link">Blog</a>
-    <a href="#faq" class="nav-link">FAQ</a>
+    <a href="faq.html" class="nav-link">FAQ</a>
     <button class="nav-link nav-finder-btn" data-action="openFinder" aria-label="Open Herb Finder"><span class="finder-pulse" aria-hidden="true"></span>🌿 Herb Finder</button>
   </div>
   <div class="nav-right">
@@ -1439,28 +1439,18 @@ async function dbDelete(table, filters) {
         </div>
         <div class="fgrp"><label>Email</label><input type="email" id="bf-email" placeholder="your@email.com" autocomplete="email"/></div>
         <div class="fgrp"><label>Phone</label><input type="tel" id="bf-phone" placeholder="+1 555 000 0000"/></div>
-        <div class="fgrp"><label>Preferred Tradition</label>
-          <select id="bf-trad">
-            <option value="">Select tradition…</option>
-            <option>Ayurveda</option>
-            <option>Traditional Chinese Medicine</option>
-            <option>Western Phytotherapy</option>
-            <option>African Botanicals</option>
-            <option>No preference</option>
-          </select>
-        </div>
+
         <div class="fgrp"><label>Session Type</label>
           <select id="bf-type">
             <option>Video Consultation</option>
             <option>Phone Consultation</option>
-            <option>In-Person (London)</option>
           </select>
         </div>
         <div class="fgrp"><label>Brief Health Concern</label>
           <textarea id="bf-concern" rows="3" placeholder="Tell us briefly what you would like help with…"></textarea>
         </div>
         <button onclick="submitBookingRequest()" style="width:100%;padding:14px;background:var(--saffron);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .25s;margin-top:.5rem" onmouseover="this.style.background='var(--saffron-bright)'" onmouseout="this.style.background='var(--saffron)'">Request Consultation →</button>
-        <p style="font-size:.76rem;color:var(--text-light);text-align:center;margin-top:.8rem">We confirm within 24 hours. First consultation from £65.</p>
+        <p style="font-size:.76rem;color:var(--text-light);text-align:center;margin-top:.8rem">We confirm within 24 hours. First consultation from $85.</p>
       </div>
 
       <!-- Info + photo -->
@@ -1480,9 +1470,9 @@ async function dbDelete(table, filters) {
             <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">48+ countries<br/>7 days a week</div>
           </div>
           <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
-            <div style="font-size:1.4rem;margin-bottom:.5rem">💷</div>
+            <div style="font-size:1.4rem;margin-bottom:.5rem">💵</div>
             <div style="font-size:.82rem;font-weight:700;color:var(--teal-deep);margin-bottom:.3rem">Transparent Pricing</div>
-            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">From £65<br/>No hidden fees</div>
+            <div style="font-size:.78rem;color:var(--text-soft);line-height:1.5">From $85<br/>No hidden fees</div>
           </div>
           <div style="background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border)">
             <div style="font-size:1.4rem;margin-bottom:.5rem">🔒</div>
@@ -1506,7 +1496,7 @@ async function dbDelete(table, filters) {
 
       <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
-          <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&q=80&auto=format&fit=crop" alt="Ayurveda" style="width:100%;height:100%;object-fit:cover"/>
+          <img src="https://images.unsplash.com/photo-1600618528240-fb9fc964b853?w=400&q=80&auto=format&fit=crop" alt="Ayurvedic herbs — turmeric, ashwagandha and spices" style="width:100%;height:100%;object-fit:cover"/>
         </div>
         <div style="padding:1.3rem">
           <div style="font-size:1.3rem;margin-bottom:.5rem">🕉️</div>
@@ -1518,7 +1508,7 @@ async function dbDelete(table, filters) {
 
       <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
-          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop" alt="TCM" style="width:100%;height:100%;object-fit:cover"/>
+          <img src="https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=400&q=80&auto=format&fit=crop" alt="Traditional Chinese medicine — dried herbs and botanicals" style="width:100%;height:100%;object-fit:cover"/>
         </div>
         <div style="padding:1.3rem">
           <div style="font-size:1.3rem;margin-bottom:.5rem">☯️</div>
@@ -1530,7 +1520,7 @@ async function dbDelete(table, filters) {
 
       <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
-          <img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=400&q=80&auto=format&fit=crop" alt="Western Phytotherapy" style="width:100%;height:100%;object-fit:cover"/>
+          <img src="https://images.unsplash.com/photo-1543362906-acfc16c67564?w=400&q=80&auto=format&fit=crop" alt="Western phytotherapy — botanical tinctures and herbs" style="width:100%;height:100%;object-fit:cover"/>
         </div>
         <div style="padding:1.3rem">
           <div style="font-size:1.3rem;margin-bottom:.5rem">🌿</div>
@@ -1542,7 +1532,7 @@ async function dbDelete(table, filters) {
 
       <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .25s,box-shadow .25s" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(13,61,58,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
         <div style="height:180px;overflow:hidden">
-          <img src="https://images.unsplash.com/photo-1487700160041-babef9c3cb55?w=400&q=80&auto=format&fit=crop" alt="African Botanicals" style="width:100%;height:100%;object-fit:cover"/>
+          <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400&q=80&auto=format&fit=crop" alt="African botanicals — moringa, rooibos and baobab plants" style="width:100%;height:100%;object-fit:cover"/>
         </div>
         <div style="padding:1.3rem">
           <div style="font-size:1.3rem;margin-bottom:.5rem">🌍</div>
@@ -1615,23 +1605,6 @@ async function dbDelete(table, filters) {
   </div>
 </section>
 
-<!-- ═══ FAQ ═══ -->
-<section id="faq" style="padding:6rem 5%;background:#fff">
-  <div style="max-width:720px;margin:0 auto">
-    <div style="text-align:center;margin-bottom:3.5rem">
-      <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:.9rem">Questions</div>
-      <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:var(--teal-deep)">Frequently <em>asked</em></h2>
-    </div>
-    <div class="faq-wrap">
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Is herbal consultation safe alongside conventional medicine?<span class="faq-chev">▾</span></div><div class="faq-a">Yes — all our herbalists are trained to screen for herb-drug interactions and will always review your current medications. They complement, never replace, your medical team.</div></div>
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How does the consultation process work?<span class="faq-chev">▾</span></div><div class="faq-a">Register a free account and submit your health assessment. Your assigned herbalist reviews it, schedules a video or phone consultation, then sends your personalised herbal protocol. You can message your herbalist anytime through the portal.</div></div>
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">How is my personal health data protected?<span class="faq-chev">▾</span></div><div class="faq-a">All data is encrypted at rest and in transit via Supabase. We operate HIPAA-aligned infrastructure with role-based access controls. We never sell your data and you may request full deletion at any time.</div></div>
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div><div class="faq-a">Absolutely. We serve clients in 48+ countries. Video sessions work on any device with flexible timezone scheduling.</div></div>
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">What is included in the client portal?<span class="faq-chev">▾</span></div><div class="faq-a">Your portal includes your health assessment, personalised herbal protocol, a daily symptom diary, direct messaging with your practitioner, and appointment scheduling — all in one secure place.</div></div>
-      <div class="faq-item"><div class="faq-q" tabindex="0" role="button" aria-expanded="false">Do you offer a free initial consultation?<span class="faq-chev">▾</span></div><div class="faq-a">Yes. We offer a free 15-minute introductory call for all new clients. Register through the portal and our team will be in touch to schedule your complimentary call.</div></div>
-    </div>
-  </div>
-</section>
 
 <!-- ═══ FOOTER ═══
 
@@ -1648,7 +1621,7 @@ async function dbDelete(table, filters) {
     </div>
     <div class="footer-col"><h5>Shop</h5><ul><li><a href="#shop">All Products</a></li><li><a href="#">Tinctures</a></li><li><a href="#">Teas & Blends</a></li><li><a href="#">Capsules</a></li><li><a href="#">Gift Sets</a></li></ul></div>
     <div class="footer-col"><h5>Consult</h5><ul><li><a href="#booking">Book a Session</a></li><li><a href="#herbalists">Our Herbalists</a></li><li><a href="#" data-action="openFinder">Herb Finder</a></li><li><a href="#">Telehealth</a></li><li><a href="#">In-Person Clinics</a></li></ul></div>
-    <div class="footer-col"><h5>Learn</h5><ul><li><a href="#blog">Blog</a></li><li><a href="#traditions">Traditions</a></li><li><a href="#faq">FAQ</a></li><li><a href="#newsletter">Free Guide</a></li></ul></div>
+    <div class="footer-col"><h5>Learn</h5><ul><li><a href="#blog">Blog</a></li><li><a href="#traditions">Traditions</a></li><li><a href="faq.html">FAQ</a></li><li><a href="#newsletter">Free Guide</a></li></ul></div>
     <div class="footer-col"><h5>Contact</h5><ul><li><a href="#" onclick="window.location='mai'+'lto:hello@trueformbotanical.com';return false">hello&#64;trueformbotanical.com</a></li><li><a href="tel:+18005550123">+1 800 555 0123</a></li><li><a href="#">Client Portal</a></li><li><a href="#">Wholesale</a></li></ul></div>
   </div>
   <div class="footer-bottom"><p>© 2025 TrueForm Botanical Inc. · Herbal consultations are complementary care and do not replace medical advice.</p><nav class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a><a href="#">Cookies</a></nav></div>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
+<meta name="description" content="Frequently Asked Questions — TrueForm Botanical herbal consultations, portal, pricing and safety."/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<title>FAQ — TrueForm Botanical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --teal-deepest:#071e1c;--teal-deep:#0d3d3a;--teal:#166b65;--teal-mid:#22a89f;--teal-bright:#2ecfc5;--teal-light:#7ee8e2;
+  --saffron:#e8820c;--saffron-bright:#f59b2b;--saffron-pale:#fef3e2;--saffron-light:#fcd5a0;
+  --spice:#b54a1e;--amber:#c47a0a;
+  --text-dark:#0d1a19;--text-mid:#2d4a48;--text-soft:#5a7572;--text-light:#8fa8a5;
+  --surface:#f5f9f8;--surface-teal:#e8f5f4;--border:#d4e6e4;--border-mid:#b8d4d2;
+  --sans:'Inter',sans-serif;--serif:'Playfair Display',Georgia,serif;
+  --r:8px;--shadow:0 2px 12px rgba(13,61,58,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);color:var(--text-dark);background:#fff;line-height:1.7;font-size:16px}
+a{color:var(--teal-mid);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;background:var(--teal-deepest);border-bottom:1px solid rgba(255,255,255,.08);padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.nav-logo .mark{font-size:1.4rem}
+.nav-logo .name{font-family:var(--serif);font-size:1.1rem;color:#fff;font-weight:600}
+.nav-logo .name em{color:var(--teal-bright)}
+.nav-links{display:flex;align-items:center;gap:1.5rem}
+.nav-links a{color:rgba(255,255,255,.75);font-size:.82rem;font-weight:500;letter-spacing:.04em;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:#fff;text-decoration:none}
+.nav-cta{background:var(--saffron);color:#fff!important;padding:8px 18px;border-radius:6px;font-weight:600!important}
+.nav-cta:hover{background:var(--saffron-bright)!important}
+
+/* ── HERO STRIP ── */
+.page-hero{background:linear-gradient(135deg,var(--teal-deep),var(--teal-deepest));padding:5rem 5% 4rem;text-align:center}
+.page-hero .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:.9rem}
+.page-hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:700;color:#fff;margin-bottom:1rem}
+.page-hero h1 em{color:var(--teal-bright)}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,.7);max-width:560px;margin:0 auto}
+
+/* ── CATEGORY TABS ── */
+.faq-tabs{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;padding:2.5rem 5% 0}
+.faq-tab{padding:8px 20px;border-radius:30px;border:1.5px solid var(--border-mid);background:#fff;font-family:var(--sans);font-size:.82rem;font-weight:600;cursor:pointer;color:var(--text-soft);transition:all .2s}
+.faq-tab:hover{border-color:var(--teal-mid);color:var(--teal-mid)}
+.faq-tab.active{background:var(--teal-mid);border-color:var(--teal-mid);color:#fff}
+
+/* ── FAQ ITEMS ── */
+.faq-body{max-width:760px;margin:2.5rem auto 5rem;padding:0 5%}
+.faq-category{margin-bottom:3rem}
+.faq-cat-title{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:2px solid var(--saffron-pale)}
+.faq-item{border-bottom:1px solid var(--border);cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 0;font-size:.96rem;font-weight:600;color:var(--text-dark);transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--teal-mid)}
+.faq-item.open .faq-q{color:var(--teal-mid)}
+.faq-chev{color:var(--teal-bright);font-size:.8rem;transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-chev{transform:rotate(180deg)}
+.faq-a{font-size:.88rem;color:var(--text-mid);max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;line-height:1.8}
+.faq-item.open .faq-a{max-height:400px;padding-bottom:1.1rem}
+
+/* ── CONTACT CTA ── */
+.faq-cta{background:var(--surface-teal);border:1.5px solid var(--border);border-radius:16px;padding:3rem;text-align:center;max-width:760px;margin:0 auto 5rem;padding-left:5%;padding-right:5%}
+.faq-cta h3{font-family:var(--serif);font-size:1.5rem;color:var(--teal-deep);margin-bottom:.6rem}
+.faq-cta p{font-size:.9rem;color:var(--text-soft);margin-bottom:1.5rem}
+.btn-teal{display:inline-block;padding:13px 32px;background:var(--teal-mid);color:#fff;border-radius:8px;font-weight:600;font-size:.92rem;font-family:var(--sans);border:none;cursor:pointer;transition:background .2s;text-decoration:none}
+.btn-teal:hover{background:var(--teal-bright);text-decoration:none;color:#fff}
+.btn-outline{display:inline-block;padding:13px 32px;background:none;color:var(--teal-mid);border:2px solid var(--teal-mid);border-radius:8px;font-weight:600;font-size:.92rem;font-family:var(--sans);cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-outline:hover{background:var(--teal-mid);color:#fff;text-decoration:none}
+
+/* ── FOOTER ── */
+footer{background:var(--teal-deepest);padding:2.5rem 5%;text-align:center;color:rgba(255,255,255,.45);font-size:.78rem}
+footer a{color:rgba(255,255,255,.55)}
+footer a:hover{color:#fff;text-decoration:none}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .page-hero{padding:3.5rem 5% 3rem}
+  .faq-tabs{padding:1.5rem 5% 0}
+}
+</style>
+</head>
+<body>
+
+<a href="#faq-content" style="position:fixed;top:-50px;left:1rem;background:var(--teal-mid);color:#fff;padding:10px 20px;border-radius:0 0 6px 6px;z-index:9999;font-weight:700;font-size:.9rem;transition:top .2s;text-decoration:none" onfocus="this.style.top='0'" onblur="this.style.top='-50px'">Skip to main content</a>
+
+<nav role="navigation" aria-label="Site navigation">
+  <a href="index.html" class="nav-logo">
+    <span class="mark">🌿</span>
+    <span class="name">TrueForm <em>Botanical</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#booking">Book a Consultation</a>
+    <a href="index.html#blog">Blog</a>
+    <a href="faq.html" class="active">FAQ</a>
+    <a href="index.html" onclick="setTimeout(function(){if(typeof openFinder==='function')openFinder();},300)" class="nav-link">🌿 Herb Finder</a>
+    <a href="index.html" onclick="setTimeout(function(){if(typeof openLogin==='function')openLogin();},300)" class="nav-cta">Client Portal</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow">Questions & Answers</div>
+  <h1>Frequently <em>Asked</em> Questions</h1>
+  <p>Everything you need to know about herbal consultations, your portal, pricing, and how we keep your data safe.</p>
+</div>
+
+<!-- Category tabs -->
+<div class="faq-tabs" role="tablist" aria-label="FAQ categories">
+  <button class="faq-tab active" onclick="filterCat('all')" role="tab" aria-selected="true">All Questions</button>
+  <button class="faq-tab" onclick="filterCat('consultations')" role="tab">Consultations</button>
+  <button class="faq-tab" onclick="filterCat('portal')" role="tab">Client Portal</button>
+  <button class="faq-tab" onclick="filterCat('pricing')" role="tab">Pricing</button>
+  <button class="faq-tab" onclick="filterCat('safety')" role="tab">Safety & Privacy</button>
+  <button class="faq-tab" onclick="filterCat('herbalists')" role="tab">Our Herbalists</button>
+</div>
+
+<main id="faq-content" class="faq-body" role="main">
+
+  <!-- CONSULTATIONS -->
+  <div class="faq-category" data-cat="consultations">
+    <div class="faq-cat-title">Consultations</div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How does the consultation process work?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Register a free account and submit your health assessment. Your assigned herbalist reviews it, schedules a video or phone consultation, then sends your personalised herbal protocol. You can message your herbalist anytime through the portal.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How long does an initial consultation take?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Initial consultations are 60–90 minutes, giving your herbalist time to fully understand your health history, lifestyle, and goals. Follow-up sessions are typically 30–45 minutes.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Can I access consultations from anywhere in the world?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Absolutely. We serve clients in 48+ countries. All consultations are conducted via video or phone call with flexible timezone scheduling, 7 days a week.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What traditions do your herbalists practice?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Our practitioners are trained across four major traditions: Ayurveda, Traditional Chinese Medicine (TCM), Western Phytotherapy, and African Botanical Medicine. When you register, you can indicate which tradition resonates with you, or we will match you with the best fit.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Do you offer a free initial consultation?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes. We offer a free 15-minute introductory call for all new clients. Register through the portal and our team will be in touch to schedule your complimentary call within 24 hours.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What happens after my consultation?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Your herbalist will prepare a personalised herbal protocol — a detailed plan including specific herbs, dosages, preparation methods, and lifestyle recommendations. This is sent to you via your Client Portal within 48 hours of your consultation. Follow-up check-ins are scheduled at 4–6 week intervals.</div>
+    </div>
+  </div>
+
+  <!-- CLIENT PORTAL -->
+  <div class="faq-category" data-cat="portal">
+    <div class="faq-cat-title">Client Portal</div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What is included in the Client Portal?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Your portal includes your health assessment, personalised herbal protocol, a daily symptom diary, direct messaging with your practitioner, appointment scheduling, and your full consultation history — all in one secure place.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Can I edit my health assessment after submitting it?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes — you can edit or delete your assessment at any time before your herbalist begins their review. Once your assessment is under review or you have been assigned to a herbalist, it becomes view-only to protect the integrity of your consultation.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How do I message my herbalist?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Log into your Client Portal and use the Messages section on your dashboard. Your herbalist will be notified and typically responds within one business day.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What is the daily symptom diary?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">The symptom diary lets you log how you are feeling each day — mood, energy, sleep quality, pain levels, and any relevant notes. This data helps your herbalist track your progress and adjust your protocol over time.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Is there a mobile app?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">The portal is fully mobile-optimised and works on all smartphones and tablets through your browser — no app download required. For the best experience on iOS, you can add it to your home screen via Safari's Share → Add to Home Screen option.</div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="faq-category" data-cat="pricing">
+    <div class="faq-cat-title">Pricing</div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How much does a consultation cost?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Initial consultations start from $85. Follow-up sessions are from $55. Your first 15-minute introductory call is always free. All prices are in US dollars with no hidden fees.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What payment methods do you accept?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">We accept all major credit and debit cards (Visa, Mastercard, American Express), PayPal, and bank transfer. Payment is processed securely — we never store your card details.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Is there a cancellation policy?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">You may cancel or reschedule your appointment up to 24 hours before your session at no charge. Cancellations within 24 hours of the appointment are charged 50% of the session fee. No-shows are charged in full.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Do you offer packages or subscription plans?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes. We offer a 3-month wellness package that includes an initial consultation, two follow-ups, protocol preparation, and unlimited portal messaging — starting at $220. Ask your herbalist about the right plan for your goals.</div>
+    </div>
+  </div>
+
+  <!-- SAFETY & PRIVACY -->
+  <div class="faq-category" data-cat="safety">
+    <div class="faq-cat-title">Safety &amp; Privacy</div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Is herbal consultation safe alongside conventional medicine?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes — all our herbalists are trained to screen for herb-drug interactions and will always review your current medications before making any recommendations. Herbal medicine complements, but never replaces, your medical team.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How is my personal health data protected?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">All data is encrypted at rest and in transit. We operate HIPAA-aligned infrastructure with role-based access controls — your data is only visible to you and your assigned herbalist. We never sell your data and you may request full deletion at any time.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Are herbal protocols safe during pregnancy?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Some herbs are contraindicated during pregnancy or breastfeeding. Always inform your herbalist if you are pregnant, trying to conceive, or nursing. We have practitioners who specialise in prenatal and postnatal herbal care and can recommend safe, evidence-based options.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Do your herbalists hold recognised qualifications?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes. All practitioners are certified by nationally or internationally recognised herbal medicine bodies, hold professional liability insurance, and complete ongoing professional development. Their credentials are reviewed annually by our clinical director.</div>
+    </div>
+  </div>
+
+  <!-- HERBALISTS -->
+  <div class="faq-category" data-cat="herbalists">
+    <div class="faq-cat-title">Our Herbalists</div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">Can I choose my herbalist?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Yes. When you submit your health assessment, you can indicate a preferred tradition or practitioner. We will do our best to match you accordingly. You may also request a change of herbalist at any time through the portal.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">What traditions do your herbalists specialise in?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">Our team covers Ayurveda (Dr. Priya Sharma, Dr. Amara Osei), Traditional Chinese Medicine (Liang Wei PhD), Western Phytotherapy (Sofia Navarro, Jerome Miller), and African Botanical Medicine (Dr. Amara Osei). Each brings 8–20+ years of clinical experience.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" tabindex="0" role="button" aria-expanded="false" onclick="toggleFaq(this)">How quickly will my herbalist respond?<span class="faq-chev">▾</span></div>
+      <div class="faq-a">New client inquiries are acknowledged within 24 hours. Portal messages from existing clients are typically answered within one business day. Consultations are usually scheduled within 3–5 business days of your health assessment being reviewed.</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Contact CTA -->
+<div style="padding:0 5%">
+  <div class="faq-cta">
+    <h3>Still have questions?</h3>
+    <p>Our team is happy to help. Send us a message and we will get back to you within 24 hours.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="index.html#booking" class="btn-teal">Book a Free Call →</a>
+      <a href="mailto:hello@trueformbotanical.com" class="btn-outline">Email Us</a>
+    </div>
+  </div>
+</div>
+
+<footer role="contentinfo">
+  <p>© 2025 TrueForm Botanical Inc. · <a href="index.html">Home</a> · <a href="index.html#booking">Book a Consultation</a> · Herbal consultations are complementary care and do not replace medical advice.</p>
+</footer>
+
+<script>
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(function(i){
+    i.classList.remove('open');
+    i.querySelector('.faq-q').setAttribute('aria-expanded','false');
+  });
+  // Open clicked if it was closed
+  if(!wasOpen){
+    item.classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+  }
+}
+
+// Keyboard support
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleFaq(this); }
+  });
+});
+
+// Category filter
+function filterCat(cat){
+  // Update tabs
+  document.querySelectorAll('.faq-tab').forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  event.target.classList.add('active');
+  event.target.setAttribute('aria-selected','true');
+
+  // Show/hide categories
+  document.querySelectorAll('.faq-category').forEach(function(div){
+    if(cat==='all' || div.dataset.cat===cat){
+      div.style.display='block';
+    } else {
+      div.style.display='none';
+    }
+  });
+}
+</script>
+</body>
+</html>
