@@ -3,508 +3,526 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
-<title>TrueForm Botanical — Client Self-Assessment</title>
+<meta name="description" content="TrueForm Botanical — Client Health Assessment"/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<title>TrueForm Botanical — Client Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  /* Core palette — richer, more vibrant */
-  --teal-deepest:#051715;--teal-deep:#0a2e2b;--teal:#0e5248;--teal-mid:#0f7b72;--teal-bright:#12a99e;--teal-light:#3dc9bf;--teal-pale:#b8ede9;
+  --teal-deepest:#040f0e;--teal-deep:#082820;--teal:#0a4a3a;--teal-mid:#0c8a7a;--teal-bright:#12c4b0;--teal-light:#3de0ce;--teal-pale:#c0f0ea;
   --saffron:#f07b00;--saffron-bright:#ffaa2b;--saffron-light:#ffd08a;--saffron-pale:#fff5e0;
-  --spice:#c0390c;--spice-light:#e05a2b;
-  --violet:#6b3fa0;--violet-light:#9b6dcf;--violet-pale:#f0e8ff;
-  --emerald:#0a7c52;--emerald-pale:#e0f5ed;
-  --rose:#c0274a;--rose-pale:#fde8ee;
-  --amber:#d97706;--amber-pale:#fffbeb;
-  --text-dark:#081f1d;--text-strong:#0f2e2b;--text-mid:#1e4e4a;--text-soft:#3a6e69;--text-light:#7ab8b2;
-  --surface:#fff;--surface-alt:#f0faf9;--surface-teal:#e0f5f3;--border:#b8e0dc;--border-mid:#7ecdc6;
-  --shadow-sm:0 2px 12px rgba(10,40,38,.10);--shadow-md:0 8px 28px rgba(10,40,38,.15);--shadow-lg:0 20px 60px rgba(10,40,38,.2);
+  --spice:#c0390c;--spice-dark:#8b1f00;
+  --violet:#5c2d9e;--violet-mid:#7c4ac0;--violet-pale:#f0e8ff;
+  --emerald:#0a6e48;--emerald-pale:#e0f5ed;
+  --amber:#c86400;--amber-pale:#fffbeb;
+  --navy:#1a1a2e;--navy-mid:#16213e;
+  --rose:#b01f45;--rose-pale:#fde8ee;
+  --text-dark:#070f0e;--text-mid:#184038;--text-soft:#336660;--text-light:#7abfb8;
+  --surface:#fff;--surface-alt:#f0faf9;--surface-teal:#ddf5f2;--border:#b0dcd8;--border-mid:#6ecec5;
+  --shadow-sm:0 2px 12px rgba(8,40,32,.10);--shadow-md:0 8px 32px rgba(8,40,32,.15);--shadow-lg:0 20px 60px rgba(8,40,32,.20);
   --r:8px;--r-lg:14px;--r-xl:20px;
   --serif:'Playfair Display',Georgia,serif;--sans:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
-body{background:linear-gradient(180deg,#f0faf9 0%,#f8fffe 100%);background-attachment:fixed;font-family:var(--sans);color:var(--text-dark);font-weight:400;line-height:1.7}
-@keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+body{background:linear-gradient(160deg,#e8faf8 0%,#f5fffe 40%,#fff8f0 100%);background-attachment:fixed;font-family:var(--sans);color:var(--text-dark);line-height:1.7;font-size:15px;min-height:100vh}
+
+@keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes checkPop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
 
 /* ── TOPBAR ── */
-.topbar{background:linear-gradient(135deg,#051715,#0a2e2b);height:62px;border-bottom:2px solid rgba(18,169,158,.2);display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid rgba(94,196,188,.15)}
-.topbar-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.topbar-mark{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:.85rem}
-.topbar-name{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:#fff}.topbar-name em{color:var(--saffron-bright);font-style:italic}
+.topbar{background:linear-gradient(135deg,var(--teal-deepest),var(--teal-deep));height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(4,15,14,.4)}
+.topbar-logo{display:flex;align-items:center;gap:10px;text-decoration:none;background:none;border:none;cursor:pointer}
+.topbar-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 3px 10px rgba(192,57,12,.4)}
+.topbar-name{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:#fff}.topbar-name em{color:var(--saffron-bright);font-style:italic}
 .topbar-right{display:flex;align-items:center;gap:.8rem}
-.topbar-tag{background:rgba(94,196,188,.15);border:1px solid rgba(94,196,188,.3);border-radius:20px;padding:3px 12px;font-size:.68rem;font-weight:700;color:var(--teal-pale);letter-spacing:.1em;text-transform:uppercase}
-.topbar-save-status{font-size:.7rem;color:rgba(255,255,255,.45);font-weight:600}
+.topbar-tag{background:rgba(18,196,176,.15);border:1px solid rgba(18,196,176,.35);border-radius:20px;padding:4px 14px;font-size:.65rem;font-weight:700;color:var(--teal-light);letter-spacing:.12em;text-transform:uppercase}
+.topbar-save{font-size:.7rem;color:rgba(255,255,255,.4);font-weight:600;display:flex;align-items:center;gap:.35rem}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright);animation:pulse 2s infinite;flex-shrink:0}
 
 /* ── LAYOUT ── */
-.page-wrap{max-width:820px;margin:0 auto;padding:40px 5% 80px}
-.page-hero{text-align:center;margin-bottom:2.8rem;animation:riseIn .6s both;background:linear-gradient(135deg,#051715 0%,#0a2e2b 50%,#0e5248 100%);border-radius:var(--r-xl);padding:3rem 2rem;margin-top:0}
-.page-hero .eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-light);font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:.7rem}
-.page-hero .eyebrow::before,.page-hero .eyebrow::after{content:'';width:22px;height:2px;background:var(--teal-light);display:block}
-.page-hero h1{font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:#fff;margin-bottom:.6rem}
-.page-hero h1 em{font-style:italic;color:var(--saffron-bright)}
-.page-hero p{color:rgba(255,255,255,.65);font-size:.94rem;max-width:540px;margin:0 auto}
+.page-wrap{max-width:840px;margin:0 auto;padding:36px 5% 100px}
+
+/* ── HERO ── */
+.page-hero{background:linear-gradient(145deg,var(--teal-deepest) 0%,var(--teal-deep) 45%,#0c4a38 100%);border-radius:var(--r-xl);padding:3rem 2.5rem 2.5rem;margin-bottom:2rem;text-align:center;position:relative;overflow:hidden;animation:riseIn .6s both;box-shadow:0 12px 48px rgba(4,15,14,.35)}
+.hero-blob1{position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(18,196,176,.15) 0%,transparent 70%);pointer-events:none}
+.hero-blob2{position:absolute;bottom:-80px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(240,123,0,.12) 0%,transparent 70%);pointer-events:none}
+.hero-logo-ring{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(18,196,176,.25),rgba(18,196,176,.08));border:2px solid rgba(18,196,176,.4);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 1.2rem}
+.hero-eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-light);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.7rem}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:20px;height:2px;background:rgba(18,196,176,.5);display:block;border-radius:1px}
+.page-hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:#fff;margin-bottom:.7rem;line-height:1.15}
+.page-hero h1 em{color:var(--saffron-bright);font-style:italic}
+.page-hero p{color:rgba(255,255,255,.62);font-size:.92rem;max-width:520px;margin:0 auto 1.4rem;line-height:1.75}
+.hero-badges{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.hero-badge{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:rgba(255,255,255,.5);font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 12px}
+.hero-badge span{color:var(--teal-light)}
 
 /* ── PROGRESS ── */
-.progress-bar-wrap{margin-bottom:2.5rem;background:#fff;border-radius:var(--r-xl);padding:1.2rem 1.6rem;box-shadow:0 2px 12px rgba(10,40,38,.08)}
-.progress-steps{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:.7rem}
-.progress-steps::before{content:'';position:absolute;top:14px;left:0;right:0;height:2px;background:var(--border);z-index:0}
-.prog-fill{position:absolute;top:14px;left:0;height:3px;background:linear-gradient(90deg,var(--teal-mid),var(--saffron-bright));z-index:1;transition:width .4s ease;border-radius:2px}
-.pstep{display:flex;flex-direction:column;align-items:center;gap:.35rem;position:relative;z-index:2;cursor:pointer}
-.pstep-num{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--text-light);transition:all .3s}
-.pstep.done .pstep-num{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff}
-.pstep.active .pstep-num{background:linear-gradient(135deg,var(--saffron),var(--spice));border-color:var(--saffron);color:#fff;box-shadow:0 0 0 5px rgba(240,123,0,.2)}
-.pstep-label{font-size:.62rem;color:var(--text-light);font-weight:600;letter-spacing:.06em;text-align:center;white-space:nowrap}
+.progress-wrap{background:#fff;border-radius:var(--r-xl);padding:1.4rem 1.8rem 1.2rem;margin-bottom:2rem;box-shadow:var(--shadow-sm);border:1px solid rgba(176,220,216,.5);animation:riseIn .5s .1s both}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.progress-label{font-size:.72rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.08em}
+.progress-pct{font-size:.72rem;font-weight:700;color:var(--teal-mid)}
+.progress-track{height:6px;background:var(--surface-alt);border-radius:10px;position:relative;overflow:hidden;margin-bottom:1.2rem}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--teal-mid),var(--teal-bright),var(--saffron-bright));background-size:200% 100%;animation:shimmer 2s linear infinite;transition:width .5s ease;width:0%}
+.progress-steps{display:flex;justify-content:space-between;position:relative}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:.3rem;cursor:pointer;position:relative;z-index:1}
+.pstep-num{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--text-light);transition:all .3s}
+.pstep.done .pstep-num{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;box-shadow:0 3px 10px rgba(12,138,122,.3)}
+.pstep.active .pstep-num{background:linear-gradient(135deg,var(--saffron),var(--spice));border-color:var(--saffron);color:#fff;box-shadow:0 4px 14px rgba(192,57,12,.4);transform:scale(1.15)}
+.pstep-label{font-size:.6rem;color:var(--text-light);font-weight:600;letter-spacing:.04em;text-align:center;white-space:nowrap;transition:color .3s}
 .pstep.done .pstep-label,.pstep.active .pstep-label{color:var(--text-mid)}
+.pstep.active .pstep-label{color:var(--spice);font-weight:700}
 
-/* ── SECTION CARD ── */
-.section-card{background:var(--surface);border:none;border-radius:var(--r-xl);margin-bottom:1.6rem;overflow:hidden;box-shadow:0 4px 24px rgba(10,40,38,.10);animation:riseIn .4s both}
+/* ── SECTION CARDS ── */
+.section-card{background:var(--surface);border-radius:var(--r-xl);margin-bottom:1.6rem;overflow:hidden;box-shadow:0 6px 28px rgba(8,40,32,.10);border:1px solid rgba(176,220,216,.4);animation:riseIn .4s both;transition:box-shadow .25s}
+.section-card:hover{box-shadow:0 10px 40px rgba(8,40,32,.14)}
 .section-card.hidden{display:none}
-.sc-header{padding:1.3rem 1.6rem;border-bottom:2px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:.9rem}
-.sc-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1.5px solid var(--border-mid)}
-.sc-header h3{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--text-dark)}
-.sc-header p{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:.08rem}
-.sc-body{padding:1.4rem 1.6rem}
+.sc-header{padding:1.4rem 1.8rem;display:flex;align-items:center;gap:1rem}
+.sc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15)}
+.sc-header h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:.15rem}
+.sc-header p{font-size:.75rem;color:rgba(255,255,255,.62);line-height:1.45}
+.sc-body{padding:1.8rem}
+.sc-body-alt{padding:1.8rem;background:linear-gradient(180deg,var(--surface) 0%,#f5fffe 100%)}
+
+/* Step header colors */
+.hdr-navy{background:linear-gradient(135deg,#0a0f1e,#162040)}
+.hdr-spice{background:linear-gradient(135deg,#5c1000,var(--spice))}
+.hdr-violet{background:linear-gradient(135deg,#2d1060,var(--violet-mid))}
+.hdr-emerald{background:linear-gradient(135deg,#042818,var(--emerald))}
+.hdr-amber{background:linear-gradient(135deg,#4a2000,var(--amber))}
+.hdr-saffron{background:linear-gradient(135deg,#7a2c00,var(--saffron))}
+.hdr-teal{background:linear-gradient(135deg,var(--teal-deep),var(--teal-mid))}
+.hdr-rose{background:linear-gradient(135deg,#5c0820,var(--rose))}
 
 /* ── FORM ELEMENTS ── */
-.fgrp{margin-bottom:1rem}
-.fgrp label{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-strong);font-weight:700;margin-bottom:.32rem}
-.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:10px 13px;background:var(--surface-alt);border:2px solid var(--border);border-radius:var(--r);color:var(--text-dark);font-family:var(--sans);font-size:.88rem;font-weight:400;transition:border-color .25s;outline:none;appearance:none}
-.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--teal-bright);box-shadow:0 0 0 3px rgba(34,168,159,.1);background:#fff}
+.fgrp{margin-bottom:1.2rem;position:relative}
+.fgrp label{display:flex;align-items:center;gap:.4rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-deep);font-weight:700;margin-bottom:.45rem}
+.fgrp label::before{content:'';width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));flex-shrink:0}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:11px 14px;background:#f8fffe;border:2px solid var(--border);border-radius:var(--r-lg);color:var(--text-dark);font-family:var(--sans);font-size:.88rem;font-weight:400;transition:all .25s;outline:none;appearance:none}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--teal-bright);box-shadow:0 0 0 4px rgba(18,196,176,.12),inset 3px 0 0 var(--teal-bright);background:#fff}
 .fgrp input::placeholder,.fgrp textarea::placeholder{color:var(--text-light)}
-.fgrp select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2322a89f' fill='none' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
-.fgrp textarea{resize:vertical;min-height:80px;line-height:1.65}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
-.frow-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem}
-.required-star{color:var(--spice)}
+.fgrp select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2312c4b0' fill='none' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:#f8fffe;padding-right:36px}
+.fgrp textarea{resize:vertical;min-height:85px;line-height:1.65}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.required-star{color:var(--spice);font-size:.9em;margin-left:1px}
 
 /* ── CHIPS ── */
-.chip-group{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
-.chip{padding:7px 14px;border-radius:20px;border:2px solid var(--border);background:var(--surface);color:var(--text-mid);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--sans);user-select:none}
-.chip:hover{border-color:var(--teal-light);background:var(--surface-teal);color:var(--teal-deep)}
-.chip.sel{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;box-shadow:0 2px 8px rgba(15,123,114,.3)}
-.chip.sel-saffron{background:linear-gradient(135deg,var(--saffron),var(--spice));border-color:var(--saffron);color:#fff}
-.chip.sel-spice{background:var(--spice);border-color:var(--spice);color:#fff}
+.chip-group{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.3rem}
+.chip{padding:8px 16px;border-radius:24px;border:2px solid var(--border);background:var(--surface);color:var(--text-soft);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:var(--sans);user-select:none;display:inline-flex;align-items:center;gap:.35rem}
+.chip:hover{border-color:var(--teal-mid);background:var(--surface-teal);color:var(--teal-deep);transform:translateY(-2px);box-shadow:0 3px 10px rgba(12,138,122,.15)}
+.chip.sel{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;box-shadow:0 3px 12px rgba(12,138,122,.35);transform:translateY(-2px)}
+.chip.sel::before{content:'✓';font-size:.7em;font-weight:800}
+.chip.sel-spice{background:linear-gradient(135deg,var(--spice-dark),var(--spice));border-color:var(--spice);color:#fff;box-shadow:0 3px 12px rgba(192,57,12,.3)}
+.chip.sel-spice::before{content:'✓';font-size:.7em;font-weight:800}
+.chip.sel-violet{background:linear-gradient(135deg,var(--violet),var(--violet-mid));border-color:var(--violet-mid);color:#fff}
+.chip.sel-violet::before{content:'✓';font-size:.7em;font-weight:800}
 
-/* ── SCALE RATING ── */
-.scale-wrap{margin-top:.4rem}
-.scale-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--text-soft);font-weight:600;margin-bottom:.35rem}
-input[type=range].scale-input{width:100%;-webkit-appearance:none;height:5px;border-radius:3px;outline:none;cursor:pointer}
-.scale-mild{background:linear-gradient(90deg,var(--teal-pale),var(--teal-bright))}
-.scale-freq{background:linear-gradient(90deg,var(--teal-pale),var(--saffron-bright),var(--spice))}
-input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--surface);border:3px solid var(--teal-mid);box-shadow:var(--shadow-sm)}
-.scale-val{text-align:center;font-size:.78rem;font-weight:700;color:var(--teal-deep);margin-top:.35rem}
+/* ── BODY SYSTEM GROUPS ── */
+.body-system-group{margin-bottom:.7rem;border:2px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:all .2s}
+.body-system-group:hover{border-color:var(--border-mid);box-shadow:0 4px 16px rgba(8,40,32,.08)}
+.bsg-header{display:flex;align-items:center;gap:.7rem;padding:.85rem 1.1rem;background:linear-gradient(135deg,var(--surface-teal),var(--surface));cursor:pointer;user-select:none;transition:background .15s}
+.bsg-header:hover{background:linear-gradient(135deg,#c8edea,var(--surface-teal))}
+.bsg-icon{font-size:1.2rem;flex-shrink:0}
+.bsg-title{flex:1;font-weight:700;font-size:.86rem;color:var(--teal-deep)}
+.bsg-count{font-size:.68rem;font-weight:700;color:var(--teal-mid);background:var(--surface-teal);border:1px solid var(--border);border-radius:20px;padding:2px 8px;display:none}
+.bsg-count.has-sel{display:inline-flex;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));color:#fff;border-color:transparent}
+.bsg-arrow{color:var(--teal-mid);font-size:.75rem;transition:transform .25s;flex-shrink:0}
+.bsg-subs{display:none;padding:.7rem .9rem .9rem;background:#f5fffe;border-top:1.5px solid var(--border)}
+.bsg-subs.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.45rem;animation:fadeIn .2s both}
+.body-zone{padding:.7rem .6rem;border:2px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .18s;background:var(--surface);font-size:.76rem;font-weight:600;color:var(--text-soft)}
+.body-zone:hover{border-color:var(--teal-mid);background:var(--surface-teal);color:var(--teal-deep);transform:translateY(-2px);box-shadow:0 4px 12px rgba(12,138,122,.12)}
+.body-zone.selected{background:linear-gradient(135deg,var(--surface-teal),#c8ede9);border-color:var(--teal-bright);color:var(--teal-deep);font-weight:700;box-shadow:0 3px 10px rgba(18,196,176,.2)}
 
-/* ── BODY MAP ── */
-.body-map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.5rem;margin-top:.4rem}
-.body-zone{padding:.75rem .6rem;border:2px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;transition:all .22s;background:var(--surface)}
-.body-zone:hover{border-color:var(--teal-light);background:var(--surface-teal)}
-.body-zone.sel{border-color:var(--teal-bright);background:var(--surface-teal);box-shadow:0 0 0 3px rgba(18,169,158,.15)}
-.body-zone .bz-icon{font-size:1.4rem;display:block;margin-bottom:.25rem}
-.body-zone span{font-size:.7rem;color:var(--text-mid);display:block;font-weight:600;line-height:1.3}.body-zone.sel span{color:var(--teal-deep)}
-
-/* ── CHECKLIST ── */
-.checklist{display:flex;flex-direction:column;gap:.45rem;margin-top:.3rem}
-.check-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s}
-.check-item:hover{border-color:var(--border-mid);background:var(--surface-teal)}
-.check-item.sel{border-color:var(--teal-mid);background:var(--surface-teal)}
-.check-box{width:20px;height:20px;border-radius:4px;border:2px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;transition:all .2s}
-.check-item.sel .check-box{background:var(--teal-mid);border-color:var(--teal-mid);color:#fff}
-.check-label{font-size:.84rem;color:var(--text-mid);font-weight:400;flex:1}.check-item.sel .check-label{color:var(--text-dark);font-weight:600}
+/* ── CHECK ITEMS ── */
+.checklist{display:flex;flex-direction:column;gap:.45rem}
+.check-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;background:var(--surface-alt);border:2px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all .18s;user-select:none}
+.check-item:hover{border-color:var(--teal-mid);background:var(--surface-teal);transform:translateX(4px)}
+.check-item.sel{border-color:var(--teal-bright);background:linear-gradient(135deg,var(--surface-teal),#ccede9);box-shadow:0 2px 10px rgba(18,196,176,.15)}
+.check-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;transition:all .2s;background:var(--surface)}
+.check-item.sel .check-box{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;animation:checkPop .25s both}
+.check-label{font-size:.84rem;color:var(--text-soft);font-weight:500;flex:1;line-height:1.4}
+.check-item.sel .check-label{color:var(--teal-deep);font-weight:600}
 
 /* ── LIFESTYLE GRID ── */
-.lifestyle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.5rem}
-.lf-card{padding:.8rem .5rem;border:2px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;transition:all .22s;background:var(--surface)}
-.lf-card:hover{border-color:var(--teal-light);background:var(--surface-teal)}
-.lf-card.sel{border-color:var(--teal-mid);background:var(--surface-teal)}
-.lf-icon{font-size:1.4rem;display:block;margin-bottom:.25rem}
-.lf-card span{font-size:.7rem;color:var(--text-mid);display:block;font-weight:600;line-height:1.3}.lf-card.sel span{color:var(--teal-deep)}
+.lifestyle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:.55rem;margin-top:.3rem}
+.lf-card{padding:.9rem .5rem;border:2px solid var(--border);border-radius:var(--r-lg);text-align:center;cursor:pointer;transition:all .2s;background:var(--surface)}
+.lf-card:hover{border-color:var(--teal-mid);background:var(--surface-teal);transform:translateY(-3px);box-shadow:0 6px 18px rgba(12,138,122,.12)}
+.lf-card.sel{background:linear-gradient(145deg,var(--surface-teal),#c0ede8);border-color:var(--teal-bright);box-shadow:0 4px 14px rgba(18,196,176,.2)}
+.lf-icon{font-size:1.5rem;display:block;margin-bottom:.35rem;line-height:1}
+.lf-card span{font-size:.72rem;color:var(--text-soft);display:block;font-weight:600;line-height:1.35}
+.lf-card.sel span{color:var(--teal-deep);font-weight:700}
 
-/* ── STEP NAVIGATION ── */
-.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:1.5px solid var(--border)}
-.step-counter{font-size:.78rem;color:var(--text-light);font-weight:600}
+/* ── SCALES ── */
+.scale-wrap{margin-top:.4rem}
+.scale-labels{display:flex;justify-content:space-between;font-size:.66rem;color:var(--text-soft);font-weight:600;margin-bottom:.4rem;letter-spacing:.03em}
+input[type=range].scale-input{width:100%;-webkit-appearance:none;height:6px;border-radius:4px;outline:none;cursor:pointer}
+.scale-mild{background:linear-gradient(90deg,var(--teal-pale),var(--teal-bright))}
+.scale-freq{background:linear-gradient(90deg,var(--teal-pale),var(--saffron-bright),var(--spice))}
+input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--surface);border:3px solid var(--teal-mid);box-shadow:0 2px 8px rgba(12,138,122,.35)}
+.scale-val{text-align:center;font-size:.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-radius:20px;padding:5px 16px;display:inline-block;margin-top:.6rem;box-shadow:0 2px 8px rgba(12,138,122,.25)}
 
-/* ── BUTTONS ── */
-.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:linear-gradient(135deg,#12a99e,#0f7b72);color:#fff;font-family:var(--sans);font-size:.86rem;font-weight:700;letter-spacing:.04em;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .3s;text-decoration:none;box-shadow:0 4px 16px rgba(15,123,114,.35)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,123,114,.45)}
-.btn-saffron{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:linear-gradient(135deg,#f07b00,#c0390c);color:#fff;font-family:var(--sans);font-size:.86rem;font-weight:700;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(192,57,12,.35)}.btn-saffron:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(192,57,12,.45)}
-.btn-outline{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;background:transparent;color:var(--teal-mid);font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--teal-mid);border-radius:var(--r);cursor:pointer;transition:all .3s;text-decoration:none}.btn-outline:hover{background:var(--surface-teal)}
+/* ── SEVERITY BAR ── */
+.sev-bar-wrap{margin-top:.5rem}
+.sev-track{height:14px;background:#e8f5f4;border-radius:8px;position:relative;cursor:pointer;user-select:none;touch-action:none;border:2px solid var(--border)}
+.sev-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--teal-bright),var(--saffron),var(--spice));transition:width .1s}
+.sev-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal-mid);box-shadow:0 3px 12px rgba(12,138,122,.4);cursor:grab;transition:border-color .1s,box-shadow .2s}
+.sev-thumb:active{cursor:grabbing;box-shadow:0 4px 18px rgba(12,138,122,.55)}
+.sev-ticks{display:flex;justify-content:space-between;margin-top:.4rem;padding:0 1px}
+.sev-tick{font-size:.64rem;color:var(--text-light);font-weight:700;cursor:pointer;text-align:center;transition:color .15s}
+.sev-tick:hover,.sev-tick.active{color:var(--teal-mid)}
+.sev-label-box{margin-top:.7rem;padding:.7rem 1rem;background:var(--surface-teal);border-radius:var(--r-lg);border:1.5px solid var(--border);font-size:.82rem;color:var(--teal-deep);font-weight:600;text-align:center;min-height:2.4em;transition:all .25s}
 
-/* ── SUMMARY STEP ── */
+/* ── SYMPTOM SEARCH ── */
+.sym-search-wrap{position:relative;margin-bottom:.7rem}
+.sym-search{width:100%;padding:11px 14px 11px 42px;border:2px solid var(--border);border-radius:var(--r-lg);font-size:.88rem;font-family:var(--sans);outline:none;transition:all .25s;background:#f8fffe;color:var(--text-dark)}
+.sym-search:focus{border-color:var(--teal-bright);box-shadow:0 0 0 4px rgba(18,196,176,.1);background:#fff}
+.sym-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--teal-mid);font-size:1rem;pointer-events:none}
+
+/* ── TIP BOX ── */
+.tip-box{display:flex;gap:.7rem;align-items:flex-start;background:linear-gradient(135deg,var(--saffron-pale),#fffbf0);border:1.5px solid var(--saffron-light);border-radius:var(--r-lg);padding:.85rem 1rem;margin-bottom:1.1rem;font-size:.8rem;color:var(--amber);line-height:1.65}
+.tip-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+
+/* ── STEP NAV ── */
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:2px solid var(--border);gap:1rem}
+.step-counter{font-size:.78rem;color:var(--text-soft);font-weight:700;background:var(--surface-teal);border:1.5px solid var(--border);padding:6px 14px;border-radius:20px;white-space:nowrap}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:13px 28px;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));color:#fff;font-family:var(--sans);font-size:.85rem;font-weight:700;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .28s;box-shadow:0 4px 16px rgba(12,138,122,.35);text-decoration:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(12,138,122,.45)}
+.btn-saffron{display:inline-flex;align-items:center;gap:7px;padding:13px 28px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;font-family:var(--sans);font-size:.85rem;font-weight:700;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .28s;box-shadow:0 4px 16px rgba(192,57,12,.35)}
+.btn-saffron:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(192,57,12,.45)}
+.btn-outline{display:inline-flex;align-items:center;gap:7px;padding:12px 24px;background:transparent;color:var(--teal-mid);font-family:var(--sans);font-size:.83rem;font-weight:700;border:2px solid var(--teal-mid);border-radius:var(--r-lg);cursor:pointer;transition:all .25s;text-decoration:none}
+.btn-outline:hover{background:var(--surface-teal);transform:translateY(-1px)}
+
+/* ── SUMMARY STEP 6 ── */
 .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem}
-.summary-card{background:var(--surface-alt);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.2rem}
-.summary-card h4{font-family:var(--serif);font-size:.9rem;font-weight:700;color:var(--text-dark);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
-.summary-pill{display:inline-flex;align-items:center;gap:.3rem;margin:.15rem;padding:3px 9px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:20px;font-size:.7rem;color:var(--teal-deep);font-weight:600}
-.severity-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700}
-.sev-1{background:#e8f8f7;color:var(--teal-mid);border:1px solid var(--teal-pale)}
-.sev-2{background:#fef3e2;color:var(--spice);border:1px solid var(--saffron-light)}
-.sev-3{background:#fde8e0;color:var(--spice);border:1px solid #f5b8a0}
+.summary-card{background:var(--surface-alt);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.2rem;transition:box-shadow .2s}
+.summary-card:hover{box-shadow:0 4px 16px rgba(8,40,32,.08)}
+.summary-card h4{font-family:var(--serif);font-size:.92rem;font-weight:700;color:var(--teal-deep);margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;border-bottom:1.5px solid var(--border);padding-bottom:.5rem}
+.summary-pill{display:inline-flex;align-items:center;margin:.15rem;padding:3px 10px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:20px;font-size:.72rem;color:var(--teal-deep);font-weight:600}
+.summary-empty{font-size:.78rem;color:var(--text-light);font-style:italic}
+
+/* ── CONSENT SECTION ── */
+.consent-card{background:linear-gradient(135deg,#fff8f0,var(--surface));border:2px solid var(--saffron-light);border-radius:var(--r-xl);padding:1.5rem;margin-top:1.2rem}
+.privacy-notice{background:linear-gradient(135deg,var(--surface-teal),#f0fffe);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.2rem;margin-top:1.2rem;font-size:.79rem;color:var(--text-soft);line-height:1.65}
+
+/* ── PHOTO UPLOAD ── */
+.photo-upload-wrap{display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap}
+.photo-circle{width:120px;height:120px;border-radius:50%;border:3px dashed var(--border-mid);background:var(--surface-alt);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;overflow:hidden;position:relative;flex-shrink:0}
+.photo-circle:hover{border-color:var(--teal-bright);background:var(--surface-teal);border-style:solid}
+.photo-circle img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;display:none}
+.photo-prompt{text-align:center;pointer-events:none}
+.photo-prompt .photo-icon{font-size:2.2rem;line-height:1;margin-bottom:.3rem}
+.photo-prompt span{font-size:.65rem;color:var(--text-light);font-weight:600;line-height:1.3}
 
 /* ── SUBMIT CONFIRMATION ── */
-.submit-confirm{text-align:center;padding:3rem 2rem;display:none;animation:riseIn .5s both}
-.confirm-icon{font-size:4rem;margin-bottom:1rem}
-.confirm-title{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--teal-mid);margin-bottom:.5rem}
-.confirm-msg{color:var(--text-mid);font-size:.94rem;max-width:460px;margin:0 auto 1.6rem;line-height:1.7}
-.ref-code{display:inline-flex;align-items:center;gap:.7rem;background:var(--surface-teal);border:2px solid var(--teal-bright);border-radius:8px;padding:.7rem 1.2rem;font-family:monospace;font-size:1rem;color:var(--teal-deep);font-weight:700;letter-spacing:.1em;margin-bottom:1.4rem}
+.submit-confirm{display:none;text-align:center;padding:4rem 2rem;animation:riseIn .6s both}
+.confirm-icon{font-size:5rem;margin-bottom:1rem;animation:riseIn .5s both}
+.confirm-title{font-family:var(--serif);font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.6rem}
+.confirm-msg{color:var(--text-soft);font-size:.94rem;max-width:460px;margin:0 auto 1.8rem;line-height:1.75}
+.ref-code{display:inline-flex;align-items:center;gap:.7rem;background:var(--surface-teal);border:2px solid var(--teal-bright);border-radius:var(--r-lg);padding:.8rem 1.4rem;font-family:monospace;font-size:1rem;color:var(--teal-deep);font-weight:700;letter-spacing:.12em;margin-bottom:1.6rem;box-shadow:0 4px 16px rgba(12,138,122,.2)}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);z-index:5000;background:var(--teal-deep);color:#fff;padding:.75rem 1.5rem;border-radius:var(--r);font-size:.84rem;font-weight:600;box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.22,1,.36,1);white-space:nowrap;border:1px solid var(--teal-light)}.toast.show{transform:translateX(-50%) translateY(0)}
-
-/* ── AUTO-SAVE INDICATOR ── */
-.autosave{position:fixed;bottom:1.5rem;right:1.5rem;display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:.7rem;color:var(--text-light);font-weight:600;box-shadow:var(--shadow-sm);opacity:0;transition:opacity .4s}
+/* ── TOAST & AUTOSAVE ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);z-index:5000;background:linear-gradient(135deg,var(--teal-deep),var(--teal));color:#fff;padding:.8rem 1.6rem;border-radius:var(--r-lg);font-size:.84rem;font-weight:600;box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.22,1,.36,1);white-space:nowrap;border:1px solid var(--teal-light)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.autosave{position:fixed;bottom:1.5rem;right:1.5rem;display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:.68rem;color:var(--text-soft);font-weight:600;box-shadow:var(--shadow-sm);opacity:0;transition:opacity .4s;z-index:100}
 .autosave.show{opacity:1}
-.autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright)}
+.autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright);animation:pulse 2s infinite}
 
+/* ── BOOKING BANNER ── */
+#bookingContextBanner{background:linear-gradient(135deg,var(--surface-teal),#ddfaf7);border:1.5px solid var(--border-mid);border-radius:var(--r-lg);padding:1rem 1.2rem;margin-bottom:1.4rem;font-size:.83rem;color:var(--teal-deep);line-height:1.6;display:flex;align-items:flex-start;gap:.7rem}
 
-/* ══ TABLET ══ */
+/* ── MOBILE ── */
 @media(max-width:768px){
-  .step-pills{display:none}
-  .form-card{padding:1.5rem}
   .frow{grid-template-columns:1fr!important}
-  h2{font-size:1.6rem}
-  .step-nav{flex-direction:column;gap:.6rem}
-  .step-nav button{width:100%;justify-content:center}
+  .summary-grid{grid-template-columns:1fr!important}
+  .lifestyle-grid{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}
+  .step-nav{flex-direction:column;gap:.8rem}
+  .step-nav button,.step-nav .btn-outline,.step-nav .btn-primary,.step-nav .btn-saffron{width:100%;justify-content:center}
+  .step-counter{text-align:center}
+  .bsg-subs.open{grid-template-columns:1fr 1fr}
+  .progress-wrap{padding:1rem 1.2rem}
+  .pstep-label{display:none}
+  .photo-upload-wrap{flex-direction:column;align-items:center}
 }
-
-/* ══ MOBILE ══ */
-@media(max-width:600px){
-  body{font-size:15px}
-  .form-header{padding:1rem}
-  .form-header h1{font-size:1.3rem}
-  .form-card{padding:1rem;border-radius:8px}
-  .frow{grid-template-columns:1fr!important}
-  .checkbox-grid,.radio-grid{grid-template-columns:1fr 1fr!important}
-  .step-indicator{gap:.3rem}
-  .step-dot{width:28px;height:28px;font-size:.7rem}
-  .body-map-grid{grid-template-columns:1fr 1fr!important}
-  select,input,textarea{font-size:16px}
+@media(max-width:480px){
+  .page-wrap{padding:20px 4% 80px}
+  .page-hero{padding:2rem 1.4rem}
+  .sc-body{padding:1.2rem}
+  .progress-steps .pstep-label{display:none}
 }
-
-/* ══ SMALL MOBILE ══ */
-@media(max-width:380px){
-  .form-card{padding:.8rem}
-  .checkbox-grid,.radio-grid{grid-template-columns:1fr!important}
-  .body-map-grid{grid-template-columns:1fr!important}
-}
-
-
-/* ── TOUCH / MOBILE BASE ── */
-*{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-button,a,[role="button"]{min-height:44px}
-input,select,textarea{font-size:max(16px,1em)}
-@media(hover:none){button:hover{opacity:1}}
-
-/* ══ CUSTOM SEVERITY DRAG BAR ══ */
-.sev-bar-wrap{margin-top:.5rem;user-select:none}
-.sev-track{position:relative;height:14px;background:var(--border);border-radius:7px;cursor:pointer;margin-bottom:2rem;touch-action:none}
-.sev-track:focus{outline:2px solid var(--teal-mid);outline-offset:3px}
-.sev-fill{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:linear-gradient(90deg,var(--teal-mid),var(--saffron),var(--spice));transition:width .05s;pointer-events:none}
-.sev-thumb{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal-mid);box-shadow:0 2px 8px rgba(0,0,0,.18);transform:translate(-50%,-50%);transition:left .05s,border-color .15s;pointer-events:none;z-index:2}
-.sev-ticks{position:absolute;top:18px;left:0;right:0;display:flex;justify-content:space-between}
-.sev-tick{font-size:.65rem;color:var(--text-soft);font-weight:600;cursor:pointer;padding-top:2px;text-align:center;flex:1}
-.sev-tick.active{color:var(--teal-mid);font-weight:700}
-.sev-label{font-size:.84rem;font-weight:600;color:var(--teal-deepest);margin-top:.3rem;min-height:1.2em}
-/* Colour thumb by severity */
-.sev-track[data-v="1"] .sev-thumb{border-color:#64b5a8}
-.sev-track[data-v="2"] .sev-thumb{border-color:#8dcfc7}
-.sev-track[data-v="3"] .sev-thumb{border-color:var(--saffron)}
-.sev-track[data-v="4"] .sev-thumb{border-color:#e07030}
-.sev-track[data-v="5"] .sev-thumb{border-color:var(--spice)}
-
-/* ══ BODY SYSTEMS ══ */
-.body-system-group{margin-bottom:.6rem;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
-.bsg-header{display:flex;align-items:center;gap:.6rem;padding:.65rem .9rem;background:var(--surface);cursor:pointer;user-select:none;transition:background .15s}
-.bsg-header:hover{background:var(--surface-teal)}
-.bsg-icon{font-size:1.1rem;flex-shrink:0}
-.bsg-title{flex:1;font-weight:700;font-size:.85rem;color:var(--text-dark)}
-.bsg-arrow{font-size:.7rem;color:var(--text-soft);transition:transform .2s}
-.bsg-subs{display:none;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem;padding:.6rem .75rem;background:var(--bg)}
-.bsg-subs.open{display:grid}
-.sub-zone{font-size:.78rem;padding:.45rem .6rem}
-.body-zone{display:flex;align-items:center;gap:.4rem;padding:.55rem .7rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);transition:all .15s;font-size:.82rem;font-weight:500;color:var(--text-dark)}
-.body-zone:hover{border-color:var(--teal-mid);background:var(--surface-teal)}
-.body-zone.selected{border-color:var(--teal-mid);background:var(--surface-teal);color:var(--teal-deep);font-weight:700}
-.bz-icon{flex-shrink:0}
 </style>
-
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-});
-
-// ── SAFE STORAGE: replaces window.storage with localStorage ──
-const safeStorage = {
-  get: async function(key, shared){
-    try { const v = localStorage.getItem(key); return v ? {key, value:v} : null; } catch(e){ return null; }
-  },
-  set: async function(key, value, shared){
-    try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key, value}; } catch(e){ return null; }
-  },
-  delete: async function(key, shared){
-    try { localStorage.removeItem(key); return {key, deleted:true}; } catch(e){ return null; }
-  },
-  list: async function(prefix, shared){
-    try {
-      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
-      return {keys};
-    } catch(e){ return {keys:[]}; }
-  }
-};
-// Polyfill window.storage if not available
-if(typeof window.storage === 'undefined' || typeof window.storage.get !== 'function'){
-  window.storage = safeStorage;
-}
-
-
-// ── AUTH HELPERS ──
-async function sbSignUp(email, password, meta={}) {
-  return await sb.auth.signUp({ email, password, options: { data: meta } });
-}
-async function sbSignIn(email, password) {
-  return await sb.auth.signInWithPassword({ email, password });
-}
-async function sbSignOut() {
-  return await sb.auth.signOut();
-}
-async function sbUser() {
-  const { data: { user } } = await sb.auth.getUser();
-  return user;
-}
-async function sbSession() {
-  const { data: { session } } = await sb.auth.getSession();
-  return session;
-}
-
-// ── DATA HELPERS ──
-async function dbGet(table, filters={}) {
-  let q = sb.from(table).select('*');
-  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
-  const { data, error } = await q;
-  if (error) console.error('dbGet', table, error);
-  return data || [];
-}
-async function dbGetOne(table, filters={}) {
-  const rows = await dbGet(table, filters);
-  return rows[0] || null;
-}
-async function dbInsert(table, row) {
-  const { data, error } = await sb.from(table).insert(row).select().single();
-  if (error) console.error('dbInsert', table, error);
-  return data;
-}
-async function dbUpsert(table, row, onConflict) {
-  const q = onConflict
-    ? sb.from(table).upsert(row, { onConflict }).select().single()
-    : sb.from(table).upsert(row).select().single();
-  const { data, error } = await q;
-  if (error) console.error('dbUpsert', table, error);
-  return data;
-}
-async function dbUpdate(table, filters, updates) {
-  let q = sb.from(table).update(updates);
-  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
-  const { data, error } = await q.select();
-  if (error) console.error('dbUpdate', table, error);
-  return data;
-}
-async function dbDelete(table, filters) {
-  let q = sb.from(table).delete();
-  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
-  const { error } = await q;
-  if (error) console.error('dbDelete', table, error);
-  return !error;
-}
-</script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
-<div class="autosave" id="autosave"><span class="autosave-dot"></span>Progress saved</div>
+<div class="autosave" id="autosave"><span class="autosave-dot"></span> Progress saved</div>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <button onclick="window.location.href='index.html'" class="topbar-logo" style="background:none;border:none;cursor:pointer">
+  <button onclick="window.location.href='index.html'" class="topbar-logo">
     <div class="topbar-mark">🌿</div>
     <span class="topbar-name">TrueForm <em>Botanical</em></span>
   </button>
   <div class="topbar-right">
-    <span class="topbar-tag">Client Assessment</span>
-    <span class="topbar-save-status" id="saveStatus">Auto-saving…</span>
+    <span class="topbar-tag">Assessment</span>
+    <div class="topbar-save"><span class="save-dot"></span><span id="saveStatus">Saving…</span></div>
   </div>
 </div>
 
 <div class="page-wrap">
+
   <!-- HERO -->
   <div class="page-hero">
-    <div class="eyebrow">Pre-Consultation Assessment</div>
+    <div class="hero-blob1"></div>
+    <div class="hero-blob2"></div>
+    <div class="hero-logo-ring">🌿</div>
+    <div class="hero-eyebrow">Pre-Consultation Health Assessment</div>
     <h1>Your Health <em>Profile</em></h1>
-    <p>Please complete this form before your appointment. Your answers help our herbalists prepare a personalised protocol for you. This takes about 8–12 minutes.</p>
+    <p>Your answers help our certified herbalists prepare a completely personalised protocol. All responses are encrypted and private.</p>
+    <div class="hero-badges">
+      <div class="hero-badge"><span>🔒</span> HIPAA Aligned</div>
+      <div class="hero-badge"><span>💾</span> Auto-saved</div>
+      <div class="hero-badge"><span>⏱</span> ~10 minutes</div>
+      <div class="hero-badge"><span>✏️</span> Edit anytime</div>
+    </div>
   </div>
 
   <!-- PROGRESS -->
-  <div class="progress-bar-wrap">
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">Your Progress</span>
+      <span class="progress-pct" id="progressPct">Step 1 of 6</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
     <div class="progress-steps" id="progressSteps">
-      <div class="prog-fill" id="progFill" style="width:0%"></div>
-      <div class="pstep active" data-step="1"><div class="pstep-num">1</div><div class="pstep-label">Personal</div></div>
-      <div class="pstep" data-step="2"><div class="pstep-num">2</div><div class="pstep-label">Symptoms</div></div>
-      <div class="pstep" data-step="3"><div class="pstep-num">3</div><div class="pstep-label">Body Areas</div></div>
-      <div class="pstep" data-step="4"><div class="pstep-num">4</div><div class="pstep-label">History</div></div>
-      <div class="pstep" data-step="5"><div class="pstep-num">5</div><div class="pstep-label">Lifestyle</div></div>
-      <div class="pstep" data-step="6"><div class="pstep-num">6</div><div class="pstep-label">Review</div></div>
+      <div class="pstep active" data-step="1" onclick="goStep(1)"><div class="pstep-num">1</div><div class="pstep-label">Personal</div></div>
+      <div class="pstep" data-step="2" onclick="goStep(2)"><div class="pstep-num">2</div><div class="pstep-label">Symptoms</div></div>
+      <div class="pstep" data-step="3" onclick="goStep(3)"><div class="pstep-num">3</div><div class="pstep-label">Body</div></div>
+      <div class="pstep" data-step="4" onclick="goStep(4)"><div class="pstep-num">4</div><div class="pstep-label">History</div></div>
+      <div class="pstep" data-step="5" onclick="goStep(5)"><div class="pstep-num">5</div><div class="pstep-label">Lifestyle</div></div>
+      <div class="pstep" data-step="6" onclick="goStep(6)"><div class="pstep-num">6</div><div class="pstep-label">Review</div></div>
     </div>
   </div>
 
-  <!-- ═══ STEP 1: PERSONAL INFO ═══ -->
-
-  <!-- ═══ STEP 0: PROFILE PHOTO UPLOAD (inside step 1) ═══ -->
+  <!-- ═══ STEP 1: PERSONAL ═══ -->
   <div id="step1">
-    <!-- Photo Upload Card -->
-    <div class="section-card" style="margin-bottom:1.6rem">
-      <div class="sc-header" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
-        <div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">📸</span></div>
-        <div>
-          <h3 style="color:#fff">Profile Photo</h3>
-          <p style="color:rgba(255,255,255,.6)">Optional — helps your herbalist personalise your care</p>
-        </div>
+
+    <!-- Photo Upload -->
+    <div class="section-card">
+      <div class="sc-header hdr-navy">
+        <div class="sc-icon">📸</div>
+        <div><h3>Profile Photo</h3><p>Optional — helps your herbalist personalise your care</p></div>
       </div>
       <div class="sc-body">
-        <div style="display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap">
-          <!-- Photo preview circle -->
-          <div style="flex-shrink:0;text-align:center">
-            <div id="photoPreview" style="width:110px;height:110px;border-radius:50%;border:3px dashed var(--border-mid);background:var(--surface-alt);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;overflow:hidden;position:relative" onclick="document.getElementById('photoInput').click()" onmouseover="this.style.borderColor='var(--teal-bright)'" onmouseout="if(!window._hasPhoto)this.style.borderColor='var(--border-mid)'">
-              <span style="font-size:2rem;line-height:1;margin-bottom:.3rem">📷</span>
-              <span style="font-size:.65rem;color:var(--text-light);font-weight:600;text-align:center;line-height:1.3;padding:0 .4rem">Tap to upload</span>
-              <img id="photoImg" src="" alt="Profile photo" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+        <div class="tip-box"><span class="tip-icon">💡</span>Uploading a photo is entirely optional. It helps your herbalist build a more personal relationship with you during video consultations.</div>
+        <div class="photo-upload-wrap">
+          <div>
+            <div class="photo-circle" id="photoPreview" onclick="document.getElementById('photoInput').click()">
+              <img id="photoImg" src="" alt="Profile photo"/>
+              <div class="photo-prompt" id="photoPrompt">
+                <div class="photo-icon">📷</div>
+                <span>Tap to upload</span>
+              </div>
             </div>
-            <button id="photoRemoveBtn" onclick="removePhoto()" style="display:none;margin-top:.5rem;font-size:.68rem;color:var(--spice);background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600">Remove photo</button>
+            <button id="photoRemoveBtn" onclick="removePhoto()" style="display:none;margin-top:.6rem;width:120px;font-size:.68rem;color:var(--spice);background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;padding:0;text-align:center">✕ Remove photo</button>
           </div>
-          <!-- Instructions + input -->
           <div style="flex:1;min-width:200px">
             <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhotoUpload(this)"/>
-            <div style="font-size:.84rem;color:var(--text-mid);line-height:1.75;margin-bottom:.8rem">
-              Uploading a photo is <strong style="color:var(--teal-mid)">completely optional</strong>. It helps your herbalist build a more personal relationship with you during consultations.
+            <div style="margin-bottom:.9rem">
+              <button onclick="document.getElementById('photoInput').click()" style="display:inline-flex;align-items:center;gap:.5rem;padding:10px 20px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:#fff;border:none;border-radius:var(--r-lg);font-size:.82rem;font-weight:600;font-family:var(--sans);cursor:pointer;margin-bottom:.5rem" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📁 Choose Photo</button>
+              <div style="font-size:.72rem;color:var(--text-light);margin-top:.3rem">JPG, PNG or WebP · Max 5 MB</div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.9rem">
-              <button onclick="document.getElementById('photoInput').click()" style="display:inline-flex;align-items:center;gap:.4rem;padding:9px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:none;border-radius:var(--r-lg);font-size:.8rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-                📁 Choose Photo
-              </button>
-              <span style="font-size:.74rem;color:var(--text-light);display:flex;align-items:center">JPG or PNG · Max 5 MB</span>
-            </div>
-            <div id="photoStatusMsg" style="font-size:.78rem;color:var(--teal-mid);font-weight:600;min-height:1.2em"></div>
+            <div id="photoStatusMsg" style="font-size:.79rem;font-weight:600;color:var(--teal-mid);min-height:1.4em"></div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Personal Info -->
     <div class="section-card">
-      <div class="sc-header" style="background:linear-gradient(135deg,#051715,#0a2e2b)"><div class="sc-icon" style="background:rgba(18,169,158,.2);border-color:rgba(18,169,158,.4)"><span style="font-size:1rem">👤</span></div><div><h3 style="color:#fff">Personal Information</h3><p>Basic details for your practitioner</p></div></div>
+      <div class="sc-header hdr-teal">
+        <div class="sc-icon">👤</div>
+        <div><h3>Personal Information</h3><p>Basic details for your practitioner</p></div>
+      </div>
       <div class="sc-body">
-        <div class="frow"><div class="fgrp"><label>First Name <span class="required-star">*</span></label><input id="firstName" type="text" placeholder="Jane" autocomplete="given-name"/></div><div class="fgrp"><label>Last Name <span class="required-star">*</span></label><input id="lastName" type="text" placeholder="Smith" autocomplete="family-name"/></div></div>
-        <div class="frow"><div class="fgrp"><label>Date of Birth <span class="required-star">*</span></label><input id="dob" type="date"/></div><div class="fgrp"><label>Biological Sex</label><select id="bioSex"><option value="">Select…</option><option>Female</option><option>Male</option><option>Intersex</option><option>Prefer not to say</option></select></div></div>
-        <div class="frow"><div class="fgrp"><label>Email <span class="required-star">*</span></label><input id="email" type="email" placeholder="your@email.com" autocomplete="email"/></div><div class="fgrp"><label>Phone</label><input id="phone" type="tel" placeholder="+1 555 000 0000"/></div></div>
-        <div class="frow"><div class="fgrp"><label>Country</label><select id="country"><option>United States</option><option>United Kingdom</option><option>Canada</option><option>Australia</option><option>India</option><option>South Africa</option><option>Nigeria</option><option>Other</option></select></div><div class="fgrp"><label>Preferred Language</label><select id="lang"><option>English</option><option>Español</option><option>Français</option><option>中文</option><option>हिन्दी</option></select></div></div>
-        <div class="fgrp"><label>Assigned Herbalist</label><select id="herbalist"><option>No preference — assign automatically</option><option>Dr. Amara Osei (African Botanicals)</option><option>Liang Wei PhD (TCM)</option><option>Sofia Navarro (Western Phytotherapy)</option><option>Dr. Priya Sharma (Ayurveda)</option></select></div>
+        <div id="bookingContextBanner" style="display:none"></div>
+        <div class="frow">
+          <div class="fgrp"><label>First Name <span class="required-star">*</span></label><input id="firstName" type="text" placeholder="Jane" autocomplete="given-name"/></div>
+          <div class="fgrp"><label>Last Name <span class="required-star">*</span></label><input id="lastName" type="text" placeholder="Smith" autocomplete="family-name"/></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label>Date of Birth <span class="required-star">*</span></label><input id="dob" type="date"/></div>
+          <div class="fgrp"><label>Biological Sex</label><select id="bioSex"><option value="">Select…</option><option>Female</option><option>Male</option><option>Intersex</option><option>Prefer not to say</option></select></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label>Email <span class="required-star">*</span></label><input id="email" type="email" placeholder="your@email.com" autocomplete="email"/></div>
+          <div class="fgrp"><label>Phone</label><input id="phone" type="tel" placeholder="+1 555 000 0000"/></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label>Country</label>
+            <select id="country">
+              <option>United States</option><option>United Kingdom</option><option>Canada</option><option>Australia</option><option>India</option><option>South Africa</option><option>Nigeria</option><option>Ghana</option><option>Jamaica</option><option>Trinidad &amp; Tobago</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fgrp"><label>Preferred Language</label>
+            <select id="lang"><option>English</option><option>Español</option><option>Français</option><option>中文</option><option>हिन्दी</option><option>Português</option></select>
+          </div>
+        </div>
+        <div class="fgrp"><label>Preferred Herbalist</label>
+          <select id="herbalist">
+            <option>No preference — assign automatically</option>
+            <option>Dr. Amara Osei (African Botanicals · Ayurveda)</option>
+            <option>Liang Wei PhD (Traditional Chinese Medicine)</option>
+            <option>Sofia Navarro (Western Phytotherapy)</option>
+            <option>Dr. Priya Sharma (Ayurveda · Panchakarma)</option>
+            <option>Jerome Miller (Western Herbal Medicine)</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="step-nav"><div class="step-counter">Step 1 of 6</div><button class="btn-primary" onclick="goStep(2)">Next: Symptoms →</button></div>
+    <div class="step-nav">
+      <div class="step-counter">Step 1 of 6</div>
+      <button class="btn-primary" onclick="goStep(2)">Next: Symptoms →</button>
+    </div>
   </div>
 
   <!-- ═══ STEP 2: SYMPTOMS ═══ -->
   <div id="step2" class="hidden">
     <div class="section-card">
-      <div class="sc-header" style="background:linear-gradient(135deg,#7a1f00,#c0390c)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">🩺</span></div><div><h3 style="color:#fff">Current Symptoms</h3><p>Select everything you are currently experiencing</p></div></div>
+      <div class="sc-header hdr-spice">
+        <div class="sc-icon">🩺</div>
+        <div><h3>Current Symptoms</h3><p>Help us understand what you are experiencing</p></div>
+      </div>
       <div class="sc-body">
+        <div class="tip-box"><span class="tip-icon">💡</span>Be as specific as you can. The more detail you provide, the more targeted your herbal protocol will be.</div>
+
         <div class="fgrp">
-          <label>Primary Complaint <span class="required-star">*</span></label>
-          <textarea id="primaryComplaint" placeholder="Describe your main reason for seeking herbal support in your own words…"></textarea>
+          <label>Primary Health Concern <span class="required-star">*</span></label>
+          <textarea id="primaryComplaint" rows="3" placeholder="Describe your main reason for seeking herbal support in your own words…"></textarea>
         </div>
-        <div class="fgrp">
-          <label>How long have you had this issue?</label>
-          <select id="duration"><option value="">Select…</option><option>Less than 2 weeks</option><option>2–4 weeks</option><option>1–3 months</option><option>3–6 months</option><option>6–12 months</option><option>1–3 years</option><option>More than 3 years</option><option>Since childhood</option></select>
+        <div class="frow">
+          <div class="fgrp"><label>How long have you had this?</label>
+            <select id="duration">
+              <option value="">Select…</option><option>Less than 2 weeks</option><option>2–4 weeks</option><option>1–3 months</option><option>3–6 months</option><option>6–12 months</option><option>1–3 years</option><option>More than 3 years</option>
+            </select>
+          </div>
+          <div class="fgrp"><label>Pattern of symptoms</label>
+            <select id="pattern">
+              <option value="">Select…</option><option>Constant — always present</option><option>Intermittent — comes and goes</option><option>Worsening gradually</option><option>Improving gradually</option><option>Triggered by specific factors</option>
+            </select>
+          </div>
         </div>
+
         <div class="fgrp">
-          <label>Symptom Severity <span class="required-star">*</span></label>
+          <label>Symptom Severity</label>
           <div class="sev-bar-wrap">
-            <div class="sev-track" id="sevTrack" role="slider" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3" aria-label="Symptom severity" tabindex="0">
-              <div class="sev-fill" id="sevFill"></div>
-              <div class="sev-thumb" id="sevThumb"></div>
-              <div class="sev-ticks">
-                <span class="sev-tick" data-v="1">None</span>
-                <span class="sev-tick" data-v="2">Mild</span>
-                <span class="sev-tick" data-v="3">Moderate</span>
-                <span class="sev-tick" data-v="4">Severe</span>
-                <span class="sev-tick" data-v="5">Debilitating</span>
-              </div>
+            <div class="sev-track" id="sevTrack" tabindex="0" role="slider" aria-label="Severity" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3">
+              <div class="sev-fill" id="sevFill" style="width:50%"></div>
+              <div class="sev-thumb" id="sevThumb" style="left:50%"></div>
             </div>
             <input type="hidden" id="severityScale" value="3"/>
-            <div class="sev-label" id="severityVal">Moderate — affects daily life occasionally</div>
+            <div class="sev-ticks">
+              <span class="sev-tick" data-v="1" onclick="setSev(1)">None</span>
+              <span class="sev-tick" data-v="2" onclick="setSev(2)">Mild</span>
+              <span class="sev-tick active" data-v="3" onclick="setSev(3)">Moderate</span>
+              <span class="sev-tick" data-v="4" onclick="setSev(4)">Severe</span>
+              <span class="sev-tick" data-v="5" onclick="setSev(5)">Debilitating</span>
+            </div>
+            <div class="sev-label-box" id="severityVal">Moderate — affects daily activities periodically</div>
           </div>
         </div>
+
         <div class="fgrp">
           <label>Select All Symptoms You Are Experiencing</label>
+          <div class="sym-search-wrap">
+            <span class="sym-search-icon">🔍</span>
+            <input type="text" class="sym-search" id="symSearch" placeholder="Search symptoms…" oninput="filterSymptoms(this.value)"/>
+          </div>
           <div class="chip-group" id="symptomChips"></div>
         </div>
+
         <div class="fgrp">
-          <label>How do your symptoms vary?</label>
-          <div class="chip-group">
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Worse in mornings</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Worse in evenings</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Worse in cold weather</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Worse in heat</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Worse with stress</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Better with rest</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Better with movement</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">Related to menstrual cycle</span>
-            <span class="chip" data-g="variation" onclick="toggleChip(this)">No clear pattern</span>
+          <label>What makes symptoms better or worse?</label>
+          <div class="chip-group" style="margin-bottom:.7rem">
+            <span class="chip sel-violet" data-g="trigger" onclick="toggleChip(this)">Better with rest</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Worse with stress</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Worse with food</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Worse at night</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Better with exercise</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Worse in cold</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Worse in heat</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Hormonal / cyclical</span>
+            <span class="chip" data-g="trigger" onclick="toggleChip(this)">Seasonal pattern</span>
           </div>
         </div>
-        <div class="fgrp"><label>Any additional symptom notes</label><textarea id="symNotes" placeholder="Any other details about your symptoms…"></textarea></div>
+
+        <div class="fgrp">
+          <label>Additional symptom notes</label>
+          <textarea id="symNotes" rows="3" placeholder="Any other symptoms, patterns or details you'd like your herbalist to know…"></textarea>
+        </div>
       </div>
     </div>
-    <div class="step-nav"><button class="btn-outline" onclick="goStep(1)">← Back</button><div class="step-counter">Step 2 of 6</div><button class="btn-primary" onclick="goStep(3)">Next: Body Areas →</button></div>
+    <div class="step-nav">
+      <button class="btn-outline" onclick="goStep(1)">← Back</button>
+      <div class="step-counter">Step 2 of 6</div>
+      <button class="btn-primary" onclick="goStep(3)">Next: Body Areas →</button>
+    </div>
   </div>
 
   <!-- ═══ STEP 3: BODY AREAS ═══ -->
   <div id="step3" class="hidden">
     <div class="section-card">
-      <div class="sc-header" style="background:linear-gradient(135deg,#3b1f6b,#6b3fa0)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">🫀</span></div><div><h3 style="color:#fff">Body Areas &amp; Systems</h3><p>Which areas of the body are most affected?</p></div></div>
+      <div class="sc-header hdr-violet">
+        <div class="sc-icon">🫀</div>
+        <div><h3>Body Areas &amp; Systems</h3><p>Which areas are most affected?</p></div>
+      </div>
       <div class="sc-body">
+        <div class="tip-box"><span class="tip-icon">💡</span>Click a body system to expand it, then select the specific areas that concern you. Select as many as apply.</div>
         <div class="fgrp">
-          <label>Affected Body Areas (select all)</label>
-          <div id="bodyMapGrid" style="margin-top:.4rem">
-            <!-- Rendered by renderBodySystems() -->
-          </div>
+          <label>Affected Body Systems (click to expand)</label>
+          <div id="bodyMapGrid" style="margin-top:.4rem"></div>
         </div>
-        <div class="fgrp">
-          <label>Pain Type (if applicable)</label>
+        <div class="fgrp" style="margin-top:1.2rem">
+          <label>Pain or Discomfort Type</label>
           <div class="chip-group">
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">Sharp / stabbing</span>
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">Dull / aching</span>
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">Burning</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">Sharp / Stabbing</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">Dull / Aching</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">Burning / Hot</span>
             <span class="chip" data-g="pain" onclick="toggleChip(this)">Throbbing</span>
             <span class="chip" data-g="pain" onclick="toggleChip(this)">Cramping</span>
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">Pressure / tightness</span>
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">Tingling / numbness</span>
-            <span class="chip" data-g="pain" onclick="toggleChip(this)">No pain</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">Tightness / Pressure</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">Tingling / Numbness</span>
+            <span class="chip" data-g="pain" onclick="toggleChip(this)">No pain — other symptoms</span>
           </div>
         </div>
         <div class="fgrp">
-          <label>Pain / Discomfort Level</label>
-          <div class="scale-wrap"><div class="scale-labels"><span>0 — None</span><span>5 — Moderate</span><span>10 — Severe</span></div>
-          <input type="range" class="scale-input scale-freq" id="painScale" min="0" max="10" value="0" oninput="updateScale(this,'painVal')"/>
-          <div class="scale-val" id="painVal">0 — No pain or discomfort</div></div>
+          <label>Pain Level (0 = none, 10 = worst)</label>
+          <div class="scale-wrap">
+            <div class="scale-labels"><span>0 — None</span><span>5 — Moderate</span><span>10 — Severe</span></div>
+            <input type="range" class="scale-input scale-freq" id="painScale" min="0" max="10" value="3" oninput="updateScale(this,'painVal')"/>
+            <div class="scale-val" id="painVal">3 — Noticeable but manageable</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="step-nav"><button class="btn-outline" onclick="goStep(2)">← Back</button><div class="step-counter">Step 3 of 6</div><button class="btn-primary" onclick="goStep(4)">Next: Medical History →</button></div>
+    <div class="step-nav">
+      <button class="btn-outline" onclick="goStep(2)">← Back</button>
+      <div class="step-counter">Step 3 of 6</div>
+      <button class="btn-primary" onclick="goStep(4)">Next: Medical History →</button>
+    </div>
   </div>
 
   <!-- ═══ STEP 4: MEDICAL HISTORY ═══ -->
   <div id="step4" class="hidden">
     <div class="section-card">
-      <div class="sc-header" style="background:linear-gradient(135deg,#04331f,#0a7c52)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">📋</span></div><div><h3 style="color:#fff">Medical History</h3><p>Current conditions, medications and previous care</p></div></div>
+      <div class="sc-header hdr-emerald">
+        <div class="sc-icon">📋</div>
+        <div><h3>Medical History</h3><p>Current conditions, medications and previous care</p></div>
+      </div>
       <div class="sc-body">
+        <div class="tip-box"><span class="tip-icon">🔒</span>This information is only visible to your assigned herbalist and is never shared with third parties.</div>
         <div class="fgrp">
           <label>Diagnosed Medical Conditions</label>
           <div class="checklist">
@@ -512,16 +530,18 @@ async function dbDelete(table, filters) {
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Hypertension (High blood pressure)</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Hypothyroidism / Hyperthyroidism</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Autoimmune condition (lupus, MS, RA, etc.)</span></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Cardiovascular disease / Heart conditions</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Cardiovascular disease / Heart condition</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Liver disease / Hepatitis</span></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Kidney disease / Renal conditions</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Kidney disease / Renal condition</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Cancer (current or history)</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Mental health diagnosis (depression, anxiety, PTSD)</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">IBS / Crohn's / Ulcerative Colitis</span></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Hormonal conditions (PCOS, endometriosis, fibroids)</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Hormonal condition (PCOS, endometriosis, fibroids)</span></div>
             <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Allergies (food, environmental, drug)</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Chronic pain condition</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Respiratory condition (asthma, COPD)</span></div>
           </div>
-          <textarea id="otherConditions" style="margin-top:.7rem" placeholder="Any other diagnosed conditions not listed above…"></textarea>
+          <textarea id="otherConditions" style="margin-top:.8rem" placeholder="Any other diagnosed conditions not listed above…"></textarea>
         </div>
         <div class="fgrp">
           <label>Current Prescription Medications</label>
@@ -536,19 +556,41 @@ async function dbDelete(table, filters) {
           <textarea id="allergies" placeholder="List any known allergies or sensitivities…"></textarea>
         </div>
         <div class="frow">
-          <div class="fgrp"><label>Previous herbal or naturopathic treatment?</label><select id="prevHerbal"><option>No — this is my first time</option><option>Yes — with positive results</option><option>Yes — with mixed results</option><option>Yes — no improvement</option></select></div>
-          <div class="fgrp"><label>Currently pregnant or breastfeeding?</label><select id="pregnant"><option>No</option><option>Yes — pregnant</option><option>Yes — breastfeeding</option><option>Trying to conceive</option><option>Not applicable</option></select></div>
+          <div class="fgrp"><label>Previous herbal or naturopathic treatment?</label>
+            <select id="prevHerbal">
+              <option>No — this is my first time</option>
+              <option>Yes — with positive results</option>
+              <option>Yes — with mixed results</option>
+              <option>Yes — no improvement</option>
+            </select>
+          </div>
+          <div class="fgrp"><label>Currently pregnant or breastfeeding?</label>
+            <select id="pregnant">
+              <option>No</option>
+              <option>Yes — pregnant</option>
+              <option>Yes — breastfeeding</option>
+              <option>Trying to conceive</option>
+              <option>Not applicable</option>
+            </select>
+          </div>
         </div>
-        <div class="fgrp"><label>Family Medical History (relevant conditions)</label><textarea id="familyHistory" placeholder="Heart disease, diabetes, cancer, mental health conditions in immediate family…"></textarea></div>
+        <div class="fgrp"><label>Relevant Family Medical History</label><textarea id="familyHistory" placeholder="Heart disease, diabetes, cancer, mental health conditions in immediate family…"></textarea></div>
       </div>
     </div>
-    <div class="step-nav"><button class="btn-outline" onclick="goStep(3)">← Back</button><div class="step-counter">Step 4 of 6</div><button class="btn-primary" onclick="goStep(5)">Next: Lifestyle →</button></div>
+    <div class="step-nav">
+      <button class="btn-outline" onclick="goStep(3)">← Back</button>
+      <div class="step-counter">Step 4 of 6</div>
+      <button class="btn-primary" onclick="goStep(5)">Next: Lifestyle →</button>
+    </div>
   </div>
 
   <!-- ═══ STEP 5: LIFESTYLE ═══ -->
   <div id="step5" class="hidden">
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#eaf5f4">🌱</div><div><h3>Lifestyle & Wellness</h3><p>Daily habits and wellbeing factors</p></div></div>
+      <div class="sc-header hdr-amber">
+        <div class="sc-icon">🌱</div>
+        <div><h3>Lifestyle &amp; Wellbeing</h3><p>Daily habits, energy and emotional health</p></div>
+      </div>
       <div class="sc-body">
         <div class="fgrp">
           <label>Diet / Eating Pattern</label>
@@ -561,32 +603,42 @@ async function dbDelete(table, filters) {
             <span class="chip" data-g="diet" onclick="toggleChip(this)">Low-carb / Keto</span>
             <span class="chip" data-g="diet" onclick="toggleChip(this)">Paleo</span>
             <span class="chip" data-g="diet" onclick="toggleChip(this)">Mediterranean</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Ayurvedic diet</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Irregular / No fixed pattern</span>
+            <span class="chip" data-g="diet" onclick="toggleChip(this)">Ayurvedic</span>
+            <span class="chip" data-g="diet" onclick="toggleChip(this)">Irregular / no fixed pattern</span>
           </div>
         </div>
         <div class="fgrp">
-          <label>Exercise & Movement</label>
+          <label>Exercise &amp; Movement</label>
           <div class="lifestyle-grid">
             <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🛋️</span><span>Sedentary</span></div>
-            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🚶</span><span>Light (1-2x/wk)</span></div>
-            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🏃</span><span>Moderate (3-4x/wk)</span></div>
-            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🏋️</span><span>Active (5+x/wk)</span></div>
+            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🚶</span><span>Light (1-2×/wk)</span></div>
+            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🏃</span><span>Moderate (3-4×/wk)</span></div>
+            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🏋️</span><span>Active (5+×/wk)</span></div>
             <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🧘</span><span>Yoga / Pilates</span></div>
+            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🚴</span><span>Cycling</span></div>
+            <div class="lf-card" data-l="exercise" onclick="toggleLF(this,'exercise')"><span class="lf-icon">🏊</span><span>Swimming</span></div>
           </div>
         </div>
         <div class="fgrp">
           <label>Sleep Quality</label>
-          <div class="scale-wrap"><div class="scale-labels"><span>Very poor</span><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
-          <input type="range" class="scale-input scale-mild" id="sleepScale" min="1" max="5" value="3" oninput="updateScale(this,'sleepVal')"/>
-          <div class="scale-val" id="sleepVal">Fair — some nights are restful, some are not</div></div>
+          <div class="scale-wrap">
+            <div class="scale-labels"><span>Very poor</span><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
+            <input type="range" class="scale-input scale-mild" id="sleepScale" min="1" max="5" value="3" oninput="updateScale(this,'sleepVal')"/>
+            <div class="scale-val" id="sleepVal">Fair — some nights restful, some are not</div>
+          </div>
         </div>
         <div class="frow">
-          <div class="fgrp"><label>Average sleep duration</label><select id="sleepHrs"><option>Less than 5 hours</option><option>5–6 hours</option><option>6–7 hours</option><option>7–8 hours</option><option>8–9 hours</option><option>More than 9 hours</option></select></div>
-          <div class="fgrp"><label>Stress Level (daily average)</label>
-            <div class="scale-wrap" style="margin-top:.1rem"><div class="scale-labels"><span>Low</span><span>Moderate</span><span>High</span><span>Extreme</span></div>
-            <input type="range" class="scale-input scale-freq" id="stressScale" min="1" max="4" value="2" oninput="updateScale(this,'stressVal')"/>
-            <div class="scale-val" id="stressVal">Moderate — manageable most days</div></div>
+          <div class="fgrp"><label>Average sleep duration</label>
+            <select id="sleepHrs">
+              <option>Less than 5 hours</option><option>5–6 hours</option><option>6–7 hours</option><option>7–8 hours</option><option>8–9 hours</option><option>More than 9 hours</option>
+            </select>
+          </div>
+          <div class="fgrp"><label>Stress level (daily average)</label>
+            <div class="scale-wrap">
+              <div class="scale-labels"><span>Low</span><span>Moderate</span><span>High</span><span>Extreme</span></div>
+              <input type="range" class="scale-input scale-freq" id="stressScale" min="1" max="4" value="2" oninput="updateScale(this,'stressVal')"/>
+              <div class="scale-val" id="stressVal">Moderate — manageable most days</div>
+            </div>
           </div>
         </div>
         <div class="fgrp">
@@ -599,41 +651,64 @@ async function dbDelete(table, filters) {
             <span class="chip" data-g="substance" onclick="toggleChip(this)">Caffeine (3+ cups/day)</span>
             <span class="chip" data-g="substance" onclick="toggleChip(this)">Tobacco / Smoking</span>
             <span class="chip" data-g="substance" onclick="toggleChip(this)">Cannabis</span>
+            <span class="chip" data-g="substance" onclick="toggleChip(this)">Recreational drugs</span>
           </div>
         </div>
-        <div class="fgrp">
-          <label>Water intake (daily)</label>
-          <select id="water"><option>Less than 1 litre</option><option>1–1.5 litres</option><option>1.5–2 litres</option><option>2–2.5 litres</option><option>More than 2.5 litres</option></select>
+        <div class="frow">
+          <div class="fgrp"><label>Daily water intake</label>
+            <select id="water"><option>Less than 1 litre</option><option>1–1.5 litres</option><option>1.5–2 litres</option><option>2–2.5 litres</option><option>More than 2.5 litres</option></select>
+          </div>
+          <div class="fgrp"><label>Occupation / Work environment</label>
+            <input id="occupation" type="text" placeholder="e.g. Office worker, teacher, manual labour, retired…"/>
+          </div>
         </div>
-        <div class="fgrp"><label>Occupation / Work Environment</label><input id="occupation" type="text" placeholder="e.g. Office worker, teacher, manual labour, retired…"/></div>
-        <div class="fgrp"><label>Emotional Wellbeing — anything you'd like to share</label><textarea id="emotional" placeholder="How are you feeling emotionally? Any recent major life changes, grief, relationship stress…"></textarea></div>
-        <div class="fgrp"><label>Health Goals — what does success look like for you?</label><textarea id="healthGoals" placeholder="What would you like to achieve through herbal support?"></textarea></div>
-        <div class="fgrp"><label>How did you hear about TrueForm Botanical?</label><select id="referral"><option>Google / Search</option><option>Friend or family</option><option>Social media</option><option>Existing client</option><option>Healthcare provider referral</option><option>Other</option></select></div>
+        <div class="fgrp"><label>Emotional Wellbeing</label><textarea id="emotional" placeholder="How are you feeling emotionally? Any recent major life changes, grief, relationship stress…"></textarea></div>
+        <div class="fgrp"><label>Health Goals — what does success look like?</label><textarea id="healthGoals" placeholder="What would you like to achieve through herbal support?"></textarea></div>
+        <div class="fgrp"><label>How did you hear about TrueForm Botanical?</label>
+          <select id="referral"><option>Google / Search</option><option>Friend or family</option><option>Social media</option><option>Existing client</option><option>Healthcare provider referral</option><option>Podcast or blog</option><option>Other</option></select>
+        </div>
       </div>
     </div>
-    <div class="step-nav"><button class="btn-outline" onclick="goStep(4)">← Back</button><div class="step-counter">Step 5 of 6</div><button class="btn-primary" onclick="goStep(6)">Review & Submit →</button></div>
+    <div class="step-nav">
+      <button class="btn-outline" onclick="goStep(4)">← Back</button>
+      <div class="step-counter">Step 5 of 6</div>
+      <button class="btn-primary" onclick="goStep(6)">Review &amp; Submit →</button>
+    </div>
   </div>
 
   <!-- ═══ STEP 6: REVIEW & SUBMIT ═══ -->
   <div id="step6" class="hidden">
     <div class="section-card" id="reviewCard">
-      <div class="sc-header"><div class="sc-icon" style="background:#fef3e2">✅</div><div><h3>Review Your Assessment</h3><p>Check your information before submitting to your herbalist</p></div></div>
+      <div class="sc-header hdr-saffron">
+        <div class="sc-icon">✅</div>
+        <div><h3>Review Your Assessment</h3><p>Check everything before sending to your herbalist</p></div>
+      </div>
       <div class="sc-body" id="reviewBody"></div>
     </div>
+
+    <!-- Consent -->
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#eaf5f4">🔒</div><div><h3>Consent & Submission</h3><p>Please read and agree before submitting</p></div></div>
+      <div class="sc-header hdr-rose">
+        <div class="sc-icon">🔒</div>
+        <div><h3>Consent &amp; Declaration</h3><p>Please read and agree before submitting</p></div>
+      </div>
       <div class="sc-body">
         <div class="checklist">
-          <div class="check-item" id="consent1" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I consent to my health information being securely stored and shared with my assigned TrueForm Botanical practitioner for the purpose of consultation. <strong>*</strong></span></div>
-          <div class="check-item" id="consent2" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I understand that herbal consultation is complementary care and does not replace conventional medical diagnosis or treatment. <strong>*</strong></span></div>
-          <div class="check-item" id="consent3" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I confirm that all information I have provided is accurate and complete to the best of my knowledge. <strong>*</strong></span></div>
+          <div class="check-item" id="consent1" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I consent to my health information being securely stored and shared with my assigned TrueForm Botanical practitioner for the purpose of consultation. <strong style="color:var(--spice)">*</strong></span></div>
+          <div class="check-item" id="consent2" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I understand that herbal consultation is complementary care and does not replace conventional medical diagnosis or treatment. <strong style="color:var(--spice)">*</strong></span></div>
+          <div class="check-item" id="consent3" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I confirm all information provided is accurate and complete to the best of my knowledge. <strong style="color:var(--spice)">*</strong></span></div>
         </div>
-        <div style="margin-top:1.4rem;padding:1rem;background:var(--surface-teal);border-radius:8px;border:1px solid var(--border-mid)">
-          <p style="font-size:.8rem;color:var(--text-mid);line-height:1.65">🔐 <strong>Privacy:</strong> Your data is encrypted with AES-256, stored on HIPAA-aligned infrastructure, and is only accessible to your assigned practitioner. You may request deletion at any time.</p>
+        <div class="privacy-notice">
+          🔐 <strong>Privacy guarantee:</strong> Your data is encrypted with AES-256, stored on HIPAA-aligned infrastructure, and only accessible to your assigned practitioner. You may request full deletion at any time by emailing <em>privacy@trueformbotanical.com</em>.
         </div>
       </div>
     </div>
-    <div class="step-nav"><button class="btn-outline" onclick="goStep(5)">← Back</button><div class="step-counter">Step 6 of 6</div><button class="btn-saffron" onclick="submitAssessment()">Submit to Herbalist 🌿</button></div>
+
+    <div class="step-nav">
+      <button class="btn-outline" onclick="goStep(5)">← Back</button>
+      <div class="step-counter">Step 6 of 6</div>
+      <button class="btn-saffron" id="submitBtn" onclick="submitAssessment()">Submit to Herbalist 🌿</button>
+    </div>
   </div>
 
   <!-- ═══ CONFIRMATION ═══ -->
@@ -641,628 +716,547 @@ async function dbDelete(table, filters) {
     <div class="confirm-icon">🌿</div>
     <div class="confirm-title">Assessment Submitted!</div>
     <p class="confirm-msg">Thank you. Your herbalist has been notified and will review your assessment before your appointment. You'll receive a confirmation email within 15 minutes.</p>
-    <div class="ref-code" id="refCode">REF: <span id="refNum"></span></div>
-    <button onclick="window.location.href='index.html'" class="btn-primary">← Back to TrueForm Botanical</button>
+    <div class="ref-code">REF: <span id="refNum"></span></div>
+    <button onclick="window.location.href='index.html'" class="btn-primary" style="margin:0 auto">← Return to TrueForm Botanical</button>
   </div>
-</div>
 
+</div><!-- /page-wrap -->
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── SYMPTOM LIST ──
+const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+});
+
+// Safe localStorage storage shim
+const safeStorage = {
+  get: async function(key){ try { const v=localStorage.getItem(key); return v?{key,value:v}:null; } catch(e){ return null; } },
+  set: async function(key, value){ try { localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key,value}; } catch(e){ return null; } },
+  delete: async function(key){ try { localStorage.removeItem(key); return {key,deleted:true}; } catch(e){ return null; } },
+  list: async function(prefix){ try { const keys=Object.keys(localStorage).filter(k=>!prefix||k.startsWith(prefix)); return {keys}; } catch(e){ return {keys:[]}; } }
+};
+if(typeof window.storage==='undefined'||typeof window.storage.get!=='function'){ window.storage=safeStorage; }
+</script>
+<script>
+// ════════════════════════════════════════════════
+// SYMPTOM DATA
+// ════════════════════════════════════════════════
 const SYMPTOMS_CLIENT=[
   {label:'Anxiety',value:'anxiety'},{label:'Insomnia',value:'insomnia'},{label:'Fatigue',value:'fatigue'},
   {label:'Digestive Issues',value:'digestion'},{label:'Inflammation',value:'inflammation'},{label:'Hormonal Imbalance',value:'hormones'},
   {label:'Chronic Stress',value:'stress'},{label:'Low Immunity',value:'immunity'},{label:'Skin Problems',value:'skin'},
-  {label:'Joint / Muscle Pain',value:'joints'},{label:'Brain Fog / Memory',value:'memory'},{label:'Low Mood',value:'mood'},
+  {label:'Joint / Muscle Pain',value:'joints'},{label:'Brain Fog / Memory',value:'memory'},{label:'Low Mood / Depression',value:'mood'},
   {label:'Liver / Detox',value:'liver'},{label:'Respiratory / Cough',value:'respiratory'},{label:'Poor Circulation',value:'circulation'},
-  {label:'Weight / Metabolism',value:'weight'},{label:'Nerve Pain',value:'nerve-pain'},{label:'Headaches',value:'headaches'},
+  {label:'Weight / Metabolism',value:'weight'},{label:'Nerve Pain',value:'nerve-pain'},{label:'Headaches / Migraines',value:'headaches'},
   {label:'High Blood Pressure',value:'hypertension'},{label:'Bloating',value:'bloating'},{label:'Constipation',value:'constipation'},
-  {label:'Cold & Flu',value:'cold-flu'},{label:'Allergies',value:'allergies'},{label:'Acne',value:'acne'},
+  {label:'Cold & Flu',value:'cold-flu'},{label:'Allergies / Hayfever',value:'allergies'},{label:'Acne',value:'acne'},
   {label:'Eczema / Psoriasis',value:'eczema'},{label:'Hair Loss',value:'hair-loss'},{label:'Menstrual Pain',value:'menstrual'},
   {label:'Menopause Symptoms',value:'menopause'},{label:'Low Libido',value:'libido'},{label:'Back Pain',value:'back-pain'},
+  {label:'Thyroid Issues',value:'thyroid'},{label:'Blood Sugar Issues',value:'blood-sugar'},{label:'Nausea',value:'nausea'},
+  {label:'Dizziness / Vertigo',value:'dizziness'},{label:'Palpitations',value:'palpitations'},{label:'Urinary Issues',value:'urinary'},
 ];
 
-// Render symptom chips
-async function renderSymptomChips(){
-  try{
-    const res=await window.storage.get('tfb_symptoms',true);
-    if(res&&res.value){
-      const extra=JSON.parse(res.value);
-      extra.forEach(s=>{if(!SYMPTOMS_CLIENT.find(x=>x.value===s.value))SYMPTOMS_CLIENT.push(s);});
-    }
-  }catch(e){}
-  const unique=[...new Map(SYMPTOMS_CLIENT.map(s=>[s.value,s])).values()];
-  (document.getElementById('symptomChips')||{}).innerHTML=unique.map(s=>`<span class="chip" data-g="symptom" data-v="${s.value}" onclick="toggleChip(this)">${s.label}</span>`).join('');
-}
-renderSymptomChips();
+// ════════════════════════════════════════════════
+// BODY SYSTEMS DATA
+// ════════════════════════════════════════════════
+const BODY_SYSTEMS=[
+  {system:'Nervous System',icon:'🧠',id:'nervous',sub:['Brain','Spinal Cord','Peripheral Nerves','Autonomic Nervous System','Central Nervous System','Cranial Nerves','Sensory Nerves','Motor Nerves','Neurotransmitters']},
+  {system:'Cardiovascular System',icon:'❤️',id:'cardiovascular',sub:['Heart','Arteries','Veins','Capillaries','Coronary Vessels','Aorta','Pulmonary Circulation','Lymphatic Vessels','Blood Pressure']},
+  {system:'Respiratory System',icon:'🫁',id:'respiratory',sub:['Lungs','Bronchi','Bronchioles','Alveoli','Trachea','Larynx','Diaphragm','Pleura','Upper Airways','Lower Airways']},
+  {system:'Digestive System',icon:'🫃',id:'digestive',sub:['Mouth & Salivary Glands','Oesophagus','Stomach','Small Intestine','Large Intestine / Colon','Rectum & Anus','Liver','Gallbladder','Pancreas','Gut Microbiome']},
+  {system:'Musculoskeletal System',icon:'🦴',id:'musculoskeletal',sub:['Bones','Joints','Cartilage','Ligaments','Tendons','Skeletal Muscles','Spine & Vertebrae','Pelvis','Shoulders & Arms','Hips, Legs & Feet']},
+  {system:'Endocrine System',icon:'⚗️',id:'endocrine',sub:['Thyroid Gland','Parathyroid Gland','Adrenal Glands','Pituitary Gland','Pineal Gland','Pancreas (Hormonal)','Ovaries / Testes','Hypothalamus','Thymus']},
+  {system:'Immune & Lymphatic System',icon:'🛡️',id:'immune',sub:['White Blood Cells','Lymph Nodes','Spleen','Thymus','Bone Marrow','Tonsils','Mucous Membranes','Inflammatory Response','Autoimmune Response']},
+  {system:'Urinary System',icon:'🫧',id:'urinary',sub:['Kidneys','Ureters','Bladder','Urethra','Renal Cortex','Nephrons','Fluid & Electrolyte Balance']},
+  {system:'Reproductive System',icon:'🌸',id:'reproductive',sub:['Uterus','Ovaries','Fallopian Tubes','Vagina','Cervix','Testes','Prostate Gland','Menstrual Cycle','Fertility','Pregnancy / Postpartum']},
+  {system:'Integumentary System',icon:'🤚',id:'integumentary',sub:['Skin (Epidermis)','Skin (Dermis)','Subcutaneous Tissue','Hair & Follicles','Nails','Sebaceous Glands','Sweat Glands','Wound Healing']},
+  {system:'Head, Eyes, Ears, Nose & Throat',icon:'👁️',id:'heent',sub:['Eyes & Vision','Ears & Hearing','Nose & Nasal Passages','Sinuses','Mouth & Oral Cavity','Teeth & Gums','Throat & Pharynx','Neck & Lymph Nodes']},
+  {system:'Mental & Emotional Health',icon:'💭',id:'mental',sub:['Anxiety','Depression','Stress & Burnout','Sleep & Insomnia','Mood Regulation','Cognitive Function','ADHD / Focus','Trauma & PTSD','Grief & Loss']},
+  {system:'Haematological System',icon:'🩸',id:'haematological',sub:['Red Blood Cells','White Blood Cells','Platelets','Haemoglobin','Blood Clotting','Iron Levels','Anaemia','Blood Sugar']},
+  {system:'Sensory Systems',icon:'🫀',id:'sensory',sub:['Vision','Hearing & Balance','Taste & Smell','Touch & Proprioception','Pain Perception','Vestibular System']},
+];
 
-// ── STEP NAVIGATION ──
-let currentStep=1;
-const TOTAL_STEPS=6;
+// ════════════════════════════════════════════════
+// SCALE LABELS
+// ════════════════════════════════════════════════
 const scaleLbls={
-  severityScale:['','None — no noticeable impact','Mild — occasionally bothersome','Moderate — affects daily life occasionally','Severe — significantly impacts daily life','Debilitating — unable to function normally'],
-  painScale:['0 — No pain or discomfort','1 — Barely noticeable','2 — Minor discomfort','3 — Noticeable but manageable','4 — Distracting pain','5 — Moderate pain','6 — Strong pain','7 — Severe pain','8 — Very severe pain','9 — Intense / unbearable','10 — Worst possible pain'],
-  sleepScale:['','Very poor — rarely restful','Poor — most nights are difficult','Fair — some nights are restful, some are not','Good — mostly restful sleep','Excellent — consistently restful'],
+  severityScale:['','None — no noticeable impact','Mild — occasionally bothersome','Moderate — affects daily activities periodically','Severe — significantly impacts daily life','Debilitating — unable to function normally'],
+  painScale:['0 — No pain','1 — Barely noticeable','2 — Minor discomfort','3 — Noticeable but manageable','4 — Distracting pain','5 — Moderate pain','6 — Strong pain','7 — Severe pain','8 — Very severe pain','9 — Intense, near-unbearable','10 — Worst possible pain'],
+  sleepScale:['','Very poor — rarely restful','Poor — most nights difficult','Fair — some nights restful, some are not','Good — mostly restful','Excellent — consistently restful'],
   stressScale:['','Low — rarely stressed','Moderate — manageable most days','High — frequently overwhelmed','Extreme — constant significant stress'],
 };
-function updateScale(el,valId){document.getElementById(valId).textContent=scaleLbls[el.id]?scaleLbls[el.id][el.value]||el.value:el.value;}
+function updateScale(el,valId){
+  var lbl=scaleLbls[el.id];
+  var el2=document.getElementById(valId);
+  if(el2) el2.textContent=lbl?lbl[el.value]||el.value:el.value;
+}
 
-// ══════════════════════════════════════════════════
-// CUSTOM SEVERITY DRAG BAR
-// ══════════════════════════════════════════════════
-const SEV_LABELS = {
-  1: 'None — no noticeable impact on daily life',
-  2: 'Mild — occasionally bothersome, manageable',
-  3: 'Moderate — affects daily activities periodically',
-  4: 'Severe — significantly impacts daily functioning',
-  5: 'Debilitating — unable to perform normal activities'
-};
-const SEV_COLORS = {1:'#64b5a8',2:'#3ab5a8',3:'#e8920c',4:'#e07030',5:'#b54a1e'};
+// ════════════════════════════════════════════════
+// SEVERITY BAR (custom drag)
+// ════════════════════════════════════════════════
+const SEV_LABELS={1:'None — no noticeable impact on daily life',2:'Mild — occasionally bothersome, manageable',3:'Moderate — affects daily activities periodically',4:'Severe — significantly impacts daily functioning',5:'Debilitating — unable to perform normal activities'};
+const SEV_COLORS={1:'#12c4b0',2:'#3ab59a',3:'#e8920c',4:'#e06030',5:'#b54a1e'};
 
 function initSeverityBar(){
-  const track = document.getElementById('sevTrack');
-  const fill  = document.getElementById('sevFill');
-  const thumb = document.getElementById('sevThumb');
-  const input = document.getElementById('severityScale');
-  const label = document.getElementById('severityVal');
+  var track=document.getElementById('sevTrack');
+  var fill=document.getElementById('sevFill');
+  var thumb=document.getElementById('sevThumb');
+  var input=document.getElementById('severityScale');
+  var labelBox=document.getElementById('severityVal');
   if(!track) return;
+  var isDragging=false;
 
-  let isDragging = false;
-
-  function pct(val){ return ((val-1)/4)*100; }
+  function pct(v){ return ((v-1)/4)*100; }
+  function valFromX(x){ var r=track.getBoundingClientRect(); var p=Math.max(0,Math.min(1,(x-r.left)/r.width)); return Math.round(p*4)+1; }
 
   function setSev(val){
-    val = Math.min(5, Math.max(1, Math.round(val)));
-    input.value = val;
-    track.setAttribute('data-v', val);
-    track.setAttribute('aria-valuenow', val);
-    const p = pct(val);
-    fill.style.width  = p + '%';
-    thumb.style.left  = p + '%';
-    thumb.style.borderColor = SEV_COLORS[val];
-    fill.style.opacity = 0.85 + val * 0.03;
-    label.textContent = SEV_LABELS[val];
-    // Update tick highlights
-    track.querySelectorAll('.sev-tick').forEach(function(t){
-      t.classList.toggle('active', parseInt(t.dataset.v) === val);
-    });
+    val=Math.min(5,Math.max(1,Math.round(val)));
+    input.value=val;
+    track.setAttribute('aria-valuenow',val);
+    var p=pct(val);
+    fill.style.width=p+'%';
+    thumb.style.left=p+'%';
+    thumb.style.borderColor=SEV_COLORS[val];
+    if(labelBox) labelBox.textContent=SEV_LABELS[val];
+    // Update tick active state
+    track.querySelectorAll('.sev-tick').forEach(function(t){ t.classList.toggle('active',parseInt(t.dataset.v)===val); });
   }
+  window.setSev=setSev;
 
-  function valFromX(clientX){
-    const rect = track.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    return Math.round(1 + ratio * 4);
-  }
-
-  // Mouse events
-  track.addEventListener('mousedown', function(e){
-    isDragging = true;
-    setSev(valFromX(e.clientX));
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove', function(e){
-    if(isDragging) setSev(valFromX(e.clientX));
-  });
-  document.addEventListener('mouseup', function(){ isDragging = false; });
-
-  // Touch events
-  track.addEventListener('touchstart', function(e){
-    isDragging = true;
-    setSev(valFromX(e.touches[0].clientX));
-    e.preventDefault();
-  }, {passive:false});
-  document.addEventListener('touchmove', function(e){
-    if(isDragging) setSev(valFromX(e.touches[0].clientX));
-  }, {passive:true});
-  document.addEventListener('touchend', function(){ isDragging = false; });
-
-  // Keyboard accessibility
-  track.addEventListener('keydown', function(e){
-    const cur = parseInt(input.value)||3;
+  track.addEventListener('mousedown',function(e){ isDragging=true; setSev(valFromX(e.clientX)); e.preventDefault(); });
+  document.addEventListener('mousemove',function(e){ if(isDragging) setSev(valFromX(e.clientX)); });
+  document.addEventListener('mouseup',function(){ isDragging=false; });
+  track.addEventListener('touchstart',function(e){ isDragging=true; setSev(valFromX(e.touches[0].clientX)); e.preventDefault(); },{passive:false});
+  document.addEventListener('touchmove',function(e){ if(isDragging) setSev(valFromX(e.touches[0].clientX)); },{passive:true});
+  document.addEventListener('touchend',function(){ isDragging=false; });
+  track.addEventListener('keydown',function(e){
+    var cur=parseInt(input.value)||3;
     if(e.key==='ArrowRight'||e.key==='ArrowUp'){ setSev(cur+1); e.preventDefault(); }
     if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ setSev(cur-1); e.preventDefault(); }
     if(e.key==='Home'){ setSev(1); e.preventDefault(); }
-    if(e.key==='End'){  setSev(5); e.preventDefault(); }
+    if(e.key==='End'){ setSev(5); e.preventDefault(); }
   });
-
-  // Click on tick labels
-  track.querySelectorAll('.sev-tick').forEach(function(t){
-    t.addEventListener('click', function(){ setSev(parseInt(t.dataset.v)); });
-  });
-
-  setSev(3); // default
+  setSev(3);
 }
 
-// ══════════════════════════════════════════════════
-// ALL HUMAN BODY SYSTEMS & SUB-SYSTEMS
-// ══════════════════════════════════════════════════
-const BODY_SYSTEMS = [
-  {
-    system: 'Nervous System', icon: '🧠', id: 'nervous',
-    sub: ['Brain','Spinal Cord','Peripheral Nerves','Autonomic Nervous System','Central Nervous System','Cranial Nerves','Sensory Nerves','Motor Nerves','Neurotransmitters']
-  },
-  {
-    system: 'Cardiovascular System', icon: '❤️', id: 'cardiovascular',
-    sub: ['Heart','Arteries','Veins','Capillaries','Coronary Vessels','Aorta','Pulmonary Circulation','Lymphatic Vessels','Blood Pressure Regulation']
-  },
-  {
-    system: 'Respiratory System', icon: '🫁', id: 'respiratory',
-    sub: ['Lungs','Bronchi','Bronchioles','Alveoli','Trachea','Larynx','Diaphragm','Pleura','Upper Airways','Lower Airways']
-  },
-  {
-    system: 'Digestive System', icon: '🫃', id: 'digestive',
-    sub: ['Mouth & Salivary Glands','Oesophagus','Stomach','Small Intestine','Large Intestine / Colon','Rectum & Anus','Liver','Gallbladder','Pancreas (Digestive)','Gut Microbiome']
-  },
-  {
-    system: 'Musculoskeletal System', icon: '🦴', id: 'musculoskeletal',
-    sub: ['Bones','Joints','Cartilage','Ligaments','Tendons','Skeletal Muscles','Spine & Vertebrae','Pelvis','Shoulders & Arms','Hips, Legs & Feet']
-  },
-  {
-    system: 'Endocrine System', icon: '⚗️', id: 'endocrine',
-    sub: ['Thyroid Gland','Parathyroid Gland','Adrenal Glands','Pituitary Gland','Pineal Gland','Pancreas (Hormonal)','Ovaries / Testes','Hypothalamus','Thymus']
-  },
-  {
-    system: 'Immune & Lymphatic System', icon: '🛡️', id: 'immune',
-    sub: ['White Blood Cells','Lymph Nodes','Spleen','Thymus','Bone Marrow','Tonsils','Appendix','Mucous Membranes','Inflammatory Response','Autoimmune Response']
-  },
-  {
-    system: 'Urinary System', icon: '🫧', id: 'urinary',
-    sub: ['Kidneys','Ureters','Bladder','Urethra','Renal Cortex','Renal Medulla','Nephrons','Fluid & Electrolyte Balance']
-  },
-  {
-    system: 'Reproductive System', icon: '🌸', id: 'reproductive',
-    sub: ['Uterus','Ovaries','Fallopian Tubes','Vagina','Cervix','Testes','Prostate Gland','Epididymis','Vas Deferens','Menstrual Cycle','Fertility','Pregnancy / Postpartum']
-  },
-  {
-    system: 'Integumentary System', icon: '🤚', id: 'integumentary',
-    sub: ['Skin (Epidermis)','Skin (Dermis)','Subcutaneous Tissue','Hair & Hair Follicles','Nails','Sebaceous Glands','Sweat Glands','Wound Healing']
-  },
-  {
-    system: 'Head, Eyes, Ears, Nose & Throat', icon: '👁️', id: 'heent',
-    sub: ['Eyes & Vision','Ears & Hearing','Nose & Nasal Passages','Sinuses','Mouth & Oral Cavity','Teeth & Gums','Throat & Pharynx','Larynx & Voice','Neck & Lymph Nodes']
-  },
-  {
-    system: 'Mental & Emotional Health', icon: '💭', id: 'mental',
-    sub: ['Anxiety','Depression','Stress & Burnout','Sleep & Insomnia','Mood Regulation','Cognitive Function / Memory','ADHD / Focus','Trauma & PTSD','Grief & Loss','Self-Esteem']
-  },
-  {
-    system: 'Haematological System', icon: '🩸', id: 'haematological',
-    sub: ['Red Blood Cells','White Blood Cells','Platelets','Haemoglobin','Blood Clotting','Iron Levels','Anaemia','Blood Sugar Regulation']
-  },
-  {
-    system: 'Sensory Systems', icon: '🫀', id: 'sensory',
-    sub: ['Vision','Hearing & Balance','Taste & Smell','Touch & Proprioception','Pain Perception','Vestibular System']
-  }
-];
+// ════════════════════════════════════════════════
+// SYMPTOM CHIPS
+// ════════════════════════════════════════════════
+async function renderSymptomChips(){
+  try{
+    var res=await window.storage.get('tfb_symptoms');
+    if(res&&res.value){
+      var extra=JSON.parse(res.value);
+      extra.forEach(function(s){ if(!SYMPTOMS_CLIENT.find(function(x){ return x.value===s.value; })) SYMPTOMS_CLIENT.push(s); });
+    }
+  }catch(e){}
+  var unique=[...new Map(SYMPTOMS_CLIENT.map(function(s){ return [s.value,s]; })).values()];
+  var el=document.getElementById('symptomChips');
+  if(el) el.innerHTML=unique.map(function(s){ return '<span class="chip" data-g="symptom" data-v="'+s.value+'" onclick="toggleChip(this)">'+s.label+'</span>'; }).join('');
+}
 
+function filterSymptoms(q){
+  var chips=document.querySelectorAll('#symptomChips .chip');
+  var lq=q.toLowerCase().trim();
+  chips.forEach(function(c){
+    c.style.display=(!lq||c.textContent.toLowerCase().includes(lq))?'':'none';
+  });
+}
+
+// ════════════════════════════════════════════════
+// BODY SYSTEMS RENDERER
+// ════════════════════════════════════════════════
 function renderBodySystems(){
-  const grid = document.getElementById('bodyMapGrid');
+  var grid=document.getElementById('bodyMapGrid');
   if(!grid) return;
-
-  let html = '';
+  var html='';
   BODY_SYSTEMS.forEach(function(sys){
-    html += '<div class="body-system-group">' +
-      '<div class="bsg-header" onclick="toggleSystemGroup(this)">' +
-        '<span class="bsg-icon">' + sys.icon + '</span>' +
-        '<span class="bsg-title">' + sys.system + '</span>' +
-        '<span class="bsg-arrow">▾</span>' +
-      '</div>' +
-      '<div class="bsg-subs">' +
-        sys.sub.map(function(sub){
-          return '<div class="body-zone sub-zone" data-z="' + sys.id + '_' + sub.toLowerCase().replace(/[^a-z0-9]/g,'_') + '" data-sys="' + sys.id + '" onclick="toggleZone(this)">' +
-            '<span class="bz-icon" style="font-size:.9rem">' + sys.icon + '</span>' +
-            '<span>' + sub + '</span>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
+    var subItems=sys.sub.map(function(s){
+      return '<div class="body-zone" data-z="'+s+'" onclick="toggleZone(this)"><span>'+s+'</span></div>';
+    }).join('');
+    html+='<div class="body-system-group" id="bsg-'+sys.id+'">'+
+      '<div class="bsg-header" onclick="toggleSystemGroup(this)">'+
+        '<span class="bsg-icon">'+sys.icon+'</span>'+
+        '<span class="bsg-title">'+sys.system+'</span>'+
+        '<span class="bsg-count" id="bsg-count-'+sys.id+'">0</span>'+
+        '<span class="bsg-arrow">▾</span>'+
+      '</div>'+
+      '<div class="bsg-subs" id="bsg-subs-'+sys.id+'">'+subItems+'</div>'+
     '</div>';
   });
-
-  grid.innerHTML = html;
+  grid.innerHTML=html;
 }
 
 function toggleSystemGroup(header){
-  const subs = header.nextElementSibling;
-  const arrow = header.querySelector('.bsg-arrow');
-  const isOpen = subs.classList.toggle('open');
-  if(arrow) arrow.textContent = isOpen ? '▴' : '▾';
+  var subs=header.nextElementSibling;
+  var arrow=header.querySelector('.bsg-arrow');
+  var isOpen=subs.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.bsg-subs.open').forEach(function(s){ s.classList.remove('open'); var a=s.previousElementSibling.querySelector('.bsg-arrow'); if(a) a.style.transform=''; });
+  if(!isOpen){ subs.classList.add('open'); if(arrow) arrow.style.transform='rotate(180deg)'; }
 }
 
-// ══════════════════════════════════════════════════
-// Init both on DOM ready
-// ══════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function(){
-  initSeverityBar();
-  renderBodySystems();
-});
+function toggleZone(el){
+  el.classList.toggle('selected');
+  // Update count badge for parent system
+  var group=el.closest('.body-system-group');
+  if(group){
+    var count=group.querySelectorAll('.body-zone.selected').length;
+    var countEl=group.querySelector('.bsg-count');
+    if(countEl){
+      countEl.textContent=count;
+      countEl.classList.toggle('has-sel',count>0);
+    }
+  }
+}
 
+// ════════════════════════════════════════════════
+// TOGGLES
+// ════════════════════════════════════════════════
+function toggleChip(el){
+  el.classList.toggle('sel');
+}
+
+function toggleCheck(el){
+  el.classList.toggle('sel');
+  var box=el.querySelector('.check-box');
+  if(box) box.textContent=el.classList.contains('sel')?'✓':'';
+}
+
+function toggleLF(el,group){
+  // Single-select per group
+  document.querySelectorAll('.lf-card[data-l="'+group+'"]').forEach(function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+// ════════════════════════════════════════════════
+// STEP NAVIGATION
+// ════════════════════════════════════════════════
+var currentStep=1;
+var TOTAL_STEPS=6;
 
 function goStep(n){
+  if(n<1||n>TOTAL_STEPS) return;
   document.getElementById('step'+currentStep).classList.add('hidden');
   document.getElementById('step'+n).classList.remove('hidden');
   currentStep=n;
   updateProgress();
-  if(n===6)buildReview();
+  if(n===6) buildReview();
   window.scrollTo({top:0,behavior:'smooth'});
   autoSave();
 }
+
 function updateProgress(){
-  const pct=((currentStep-1)/(TOTAL_STEPS-1))*100;
-  (document.getElementById('progFill')||{style:{}}).style.width=pct+'%';
-  document.querySelectorAll('.pstep').forEach(s=>{
-    const sn=parseInt(s.dataset.step);
+  var pct=((currentStep-1)/(TOTAL_STEPS-1))*100;
+  var fill=document.getElementById('progFill');
+  if(fill) fill.style.width=pct+'%';
+  var pctEl=document.getElementById('progressPct');
+  if(pctEl) pctEl.textContent='Step '+currentStep+' of '+TOTAL_STEPS;
+  document.querySelectorAll('.pstep').forEach(function(s){
+    var sn=parseInt(s.dataset.step);
     s.classList.remove('active','done');
-    if(sn===currentStep)s.classList.add('active');
-    else if(sn<currentStep)s.classList.add('done');
+    if(sn===currentStep) s.classList.add('active');
+    else if(sn<currentStep) s.classList.add('done');
   });
 }
 
-// ── CHIP TOGGLE ──
-function toggleChip(el){el.classList.toggle('sel');}
-function toggleZone(el){el.classList.toggle('selected');}
-function toggleLF(el,group){document.querySelectorAll('[data-l="'+group+'"]').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
-function toggleCheck(el){el.classList.toggle('sel');const box=el.querySelector('.check-box');if(box)box.innerHTML=el.classList.contains('sel')?'✓':'';}
+// ════════════════════════════════════════════════
+// DATA COLLECTION
+// ════════════════════════════════════════════════
+function v(id){ var el=document.getElementById(id); return el?el.value||'':''; }
 
-// ── COLLECT DATA ──
 function collectData(){
-  const getChips=g=>[...document.querySelectorAll(`.chip[data-g="${g}"].sel`)].map(c=>c.dataset.v||c.textContent);
-  const getZones=()=>[...document.querySelectorAll('.body-zone.selected')].map(z=>z.querySelector('span:last-child')?.textContent||z.dataset.z);
-  const getChecks=parent=>[...document.querySelectorAll(parent+' .check-item.sel .check-label')].map(l=>l.textContent);
-  const getExercise=()=>{const s=document.querySelector('.lf-card.sel');return s?s.querySelector('span:last-child').textContent:'Not specified';};
-  return{
-    photo_base64: window._photoBase64 || null,
-    personal:{firstName:v('firstName'),lastName:v('lastName'),dob:v('dob'),bioSex:v('bioSex'),email:v('email'),phone:v('phone'),country:v('country'),lang:v('lang'),herbalist:v('herbalist')},
-    symptoms:{primaryComplaint:v('primaryComplaint'),duration:v('duration'),severity:document.getElementById('severityScale').value,severityLabel:document.getElementById('severityVal').textContent,selected:getChips('symptom'),variation:getChips('variation'),notes:v('symNotes')},
-    bodyAreas:{zones:getZones(),painType:getChips('pain'),painLevel:document.getElementById('painScale').value,painLabel:document.getElementById('painVal').textContent},
-    history:{conditions:getChecks('#step4'),otherConditions:v('otherConditions'),medications:v('medications'),supplements:v('supplements'),allergies:v('allergies'),prevHerbal:v('prevHerbal'),pregnant:v('pregnant'),familyHistory:v('familyHistory')},
-    lifestyle:{diet:getChips('diet'),exercise:getExercise(),sleepQuality:document.getElementById('sleepVal').textContent,sleepHrs:v('sleepHrs'),stressLevel:document.getElementById('stressVal').textContent,substances:getChips('substance'),water:v('water'),occupation:v('occupation'),emotional:v('emotional'),healthGoals:v('healthGoals'),referral:v('referral')},
-    meta:{submittedAt:new Date().toISOString(),refCode:'TFB-'+Date.now().toString(36).toUpperCase()}
+  var getChips=function(g){ return [...document.querySelectorAll('.chip[data-g="'+g+'"].sel')].map(function(c){ return c.dataset.v||c.textContent.trim(); }); };
+  var getZones=function(){ return [...document.querySelectorAll('.body-zone.selected')].map(function(z){ return z.dataset.z||z.querySelector('span')?.textContent||''; }); };
+  var getChecks=function(container){ return [...document.querySelectorAll(container+' .check-item.sel .check-label')].map(function(l){ return l.textContent.replace(/\*/g,'').trim(); }); };
+
+  return {
+    photo_base64: window._photoBase64||null,
+    personal:{
+      firstName:v('firstName'), lastName:v('lastName'), dob:v('dob'), bioSex:v('bioSex'),
+      email:v('email'), phone:v('phone'), country:v('country'), lang:v('lang'), herbalist:v('herbalist'),
+    },
+    symptoms:{
+      primaryComplaint:v('primaryComplaint'), duration:v('duration'), pattern:v('pattern'),
+      severity:v('severityScale'), chips:getChips('symptom'), triggers:getChips('trigger'), notes:v('symNotes'),
+    },
+    body:{
+      zones:getZones(), painTypes:getChips('pain'), painLevel:v('painScale'),
+    },
+    history:{
+      conditions:getChecks('#step4'), otherConditions:v('otherConditions'),
+      medications:v('medications'), supplements:v('supplements'), allergies:v('allergies'),
+      prevHerbal:v('prevHerbal'), pregnant:v('pregnant'), familyHistory:v('familyHistory'),
+    },
+    lifestyle:{
+      diet:getChips('diet'), exercise:(document.querySelector('.lf-card.sel')||{textContent:''}).textContent.trim(),
+      sleepQuality:v('sleepScale'), sleepHrs:v('sleepHrs'), stressLevel:v('stressScale'),
+      substances:getChips('substance'), water:v('water'), occupation:v('occupation'),
+      emotional:v('emotional'), healthGoals:v('healthGoals'), referral:v('referral'),
+    },
   };
 }
-function v(id){const el=document.getElementById(id);return el?el.value:'';}
 
-// ── REVIEW ──
+// ════════════════════════════════════════════════
+// REVIEW BUILD (Step 6)
+// ════════════════════════════════════════════════
 function buildReview(){
-  const d=collectData();
-  const p=d.personal;
-  const pill=txt=>`<span class="summary-pill">${txt}</span>`;
-  const sevBadge=(n)=>{const cls=n<=2?'sev-1':n<=3?'sev-2':'sev-3';const labels=['','Mild','Mild','Moderate','Severe','Debilitating'];return`<span class="severity-badge ${cls}">${labels[n]||n}/5</span>`};
-  (document.getElementById('reviewBody')||{}).innerHTML=`
-    <div class="summary-grid">
-      <div class="summary-card"><h4>👤 Personal</h4><p style="font-size:.88rem;color:var(--text-dark);font-weight:700">${p.firstName} ${p.lastName}</p><p style="font-size:.8rem;color:var(--text-mid)">${p.email}</p><p style="font-size:.8rem;color:var(--text-mid)">${p.dob||'–'} · ${p.bioSex||'–'}</p><p style="font-size:.78rem;color:var(--text-soft);margin-top:.4rem">${p.herbalist}</p></div>
-      <div class="summary-card"><h4>🩺 Severity</h4>${sevBadge(parseInt(d.symptoms.severity))}<p style="font-size:.78rem;color:var(--text-mid);margin-top:.4rem">${d.symptoms.duration||'Duration not specified'}</p><p style="font-size:.78rem;color:var(--text-soft);margin-top:.2rem">Pain: ${d.bodyAreas.painLevel}/10</p></div>
-    </div>
-    <div class="summary-card" style="margin-bottom:1rem">
-      <h4>📝 Primary Complaint</h4>
-      <p style="font-size:.86rem;color:var(--text-mid);line-height:1.65">${d.symptoms.primaryComplaint||'<em>Not provided</em>'}</p>
-    </div>
-    <div class="summary-grid">
-      <div class="summary-card"><h4>🔴 Symptoms (${d.symptoms.selected.length})</h4><div>${d.symptoms.selected.map(pill).join('')||'<em style="font-size:.8rem;color:var(--text-light)">None selected</em>'}</div></div>
-      <div class="summary-card"><h4>🫀 Body Areas (${d.bodyAreas.zones.length})</h4><div>${d.bodyAreas.zones.map(pill).join('')||'<em style="font-size:.8rem;color:var(--text-light)">None selected</em>'}</div></div>
-    </div>
-    <div class="summary-grid" style="margin-top:1rem">
-      <div class="summary-card"><h4>📋 Conditions</h4><div>${d.history.conditions.map(c=>`<p style="font-size:.76rem;color:var(--text-mid);padding:.2rem 0;border-bottom:1px solid var(--border)">${c}</p>`).join('')||'<em style="font-size:.8rem;color:var(--text-light)">None reported</em>'}</div></div>
-      <div class="summary-card"><h4>🌱 Lifestyle</h4><div>${d.lifestyle.diet.map(pill).join('')}<p style="font-size:.76rem;color:var(--text-mid);margin-top:.4rem">Exercise: ${d.lifestyle.exercise}</p><p style="font-size:.76rem;color:var(--text-mid)">Sleep: ${d.lifestyle.sleepHrs}</p><p style="font-size:.76rem;color:var(--text-mid)">Stress: ${d.lifestyle.stressLevel}</p></div></div>
-    </div>
-    ${d.lifestyle.healthGoals?`<div class="summary-card" style="margin-top:1rem"><h4>🎯 Health Goals</h4><p style="font-size:.86rem;color:var(--text-mid);line-height:1.65">${d.lifestyle.healthGoals}</p></div>`:''}
-    <p style="font-size:.72rem;color:var(--text-light);text-align:center;margin-top:1rem">Click ← Back to edit any section</p>
-  `;
-}
+  var d=collectData();
+  var p=d.personal; var s=d.symptoms; var b=d.body; var h=d.history; var l=d.lifestyle;
 
-// ── SUBMIT ──
-async function submitAssessment(){
-  const data = collectData();
-  if(!data.personal.firstName || !data.personal.email){
-    showToast('⚠️ First name and email are required.');
-    return;
+  function pills(arr){ return arr&&arr.length?arr.map(function(x){ return '<span class="summary-pill">'+x+'</span>'; }).join(''):'<span class="summary-empty">Not specified</span>'; }
+  function field(label,val){ return val?'<div style="margin-bottom:.45rem"><span style="font-size:.68rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.08em">'+label+'</span><br/><span style="font-size:.84rem;color:var(--text-dark)">'+val+'</span></div>':''; }
+
+  var photoSnippet='';
+  if(window._photoBase64){
+    photoSnippet='<div style="margin-bottom:1rem"><img src="'+window._photoBase64+'" alt="Profile photo" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid var(--teal-bright)"/><span style="font-size:.75rem;color:var(--teal-mid);margin-left:.7rem;font-weight:600">✓ Photo attached</span></div>';
   }
 
-  // Check if this is an EDIT of existing assessment
-  let existingRef = null;
-  let isEdit = false;
-  try {
-    const raw = sessionStorage.getItem('tfb_client_session');
-    if(raw){
-      const sess = JSON.parse(raw);
-      if(sess.assessmentRef){ existingRef = sess.assessmentRef; isEdit = true; }
-    }
-  } catch(e){}
+  var html='<div style="padding:1.4rem 1.8rem">'+photoSnippet+'<div class="summary-grid">'+
+    '<div class="summary-card"><h4>👤 Personal</h4>'+field('Name',(p.firstName+' '+p.lastName).trim())+field('Email',p.email)+field('Phone',p.phone||'—')+field('Country',p.country)+field('Herbalist',p.herbalist)+'</div>'+
+    '<div class="summary-card"><h4>🩺 Main Concern</h4>'+field('Complaint',s.primaryComplaint)+field('Duration',s.duration)+field('Pattern',s.pattern)+field('Severity',SEV_LABELS[s.severity]||s.severity)+'</div>'+
+    '<div class="summary-card"><h4>🔴 Symptoms</h4>'+pills(s.chips)+'</div>'+
+    '<div class="summary-card"><h4>🫀 Body Areas</h4>'+pills(b.zones)+field('Pain Level',b.painLevel+'/10')+'</div>'+
+    '<div class="summary-card"><h4>📋 Conditions</h4>'+pills(h.conditions)+(h.otherConditions?field('Other',h.otherConditions):'')+'</div>'+
+    '<div class="summary-card"><h4>💊 Medications</h4>'+field('Prescriptions',h.medications||'None')+field('Supplements',h.supplements||'None')+field('Allergies',h.allergies||'None')+'</div>'+
+    '<div class="summary-card"><h4>🌱 Lifestyle</h4>'+pills(l.diet)+field('Exercise',l.exercise)+field('Sleep',scaleLbls.sleepScale[l.sleepQuality]||l.sleepQuality)+field('Stress',scaleLbls.stressScale[l.stressLevel]||l.stressLevel)+'</div>'+
+    '<div class="summary-card"><h4>🎯 Goals</h4>'+field('Health Goals',l.healthGoals)+field('Emotional',l.emotional)+'</div>'+
+  '</div></div>';
 
-  // Also check Supabase for existing assessment for this email (prevent duplicates)
-  if(!isEdit){
-    try {
-      const { data: existing } = await sb.from('assessments')
-        .select('ref_code, reviewed, assigned_herbalist')
-        .eq('client_email', data.personal.email)
-        .single();
-      if(existing){
-        // If already reviewed or assigned — block submission
-        if(existing.reviewed || existing.assigned_herbalist){
-          showToast('⚠️ Your assessment is currently being reviewed and cannot be replaced.');
-          return;
-        }
-        // Has existing unreviewed — treat as edit
-        existingRef = existing.ref_code;
-        isEdit = true;
-      }
-    } catch(e){}
-  }
-
-  const refCode = existingRef || ('TFB-' + Date.now().toString(36).toUpperCase());
-  const now = new Date().toISOString();
-  data.meta = { refCode, submittedAt: now };
-
-  // Get current Supabase user if signed in
-  const user = await sbUser();
-
-  const row = {
-    ref_code:           refCode,
-    client_id:          user?.id || null,
-    client_email:       data.personal.email,
-    client_name:        (data.personal.firstName + ' ' + data.personal.lastName).trim(),
-    personal:           data.personal,
-    symptoms:           data.symptoms,
-    body_areas:         data.bodyAreas,
-    history:            data.history,
-    lifestyle:          data.lifestyle,
-    assigned_herbalist: data.personal.herbalist || null,
-    client_photo:      data.photo_base64 ? '[photo attached]' : null,
-    submitted_at:       isEdit ? undefined : now,
-    updated_at:         now,
-    reviewed:           false,
-  };
-  if(isEdit) delete row.submitted_at; // keep original submission date
-
-  // Save to Supabase — upsert handles both insert and edit
-  let saved = false;
-  try {
-    const { error } = isEdit
-      ? await sb.from('assessments').update(row).eq('ref_code', refCode)
-      : await sb.from('assessments').insert({...row, submitted_at: now});
-    if(!error) saved = true;
-    else console.error('Supabase assessment save:', error);
-  } catch(e) { console.error(e); }
-
-  // Also save to localStorage as backup
-  try {
-    const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
-    if(!refs.includes(refCode)) refs.push(refCode);
-    localStorage.setItem('tfb_refs', JSON.stringify(refs));
-    localStorage.setItem('tfb_assessment_'+refCode, JSON.stringify({...data, meta:{...data.meta}}));
-  } catch(e){}
-
-  const action = isEdit ? 'updated' : 'submitted';
-  if(saved){
-    showToast('✅ Assessment ' + action + '! Reference: ' + refCode);
-  } else {
-    showToast('✅ Assessment ' + action + ' locally. Ref: ' + refCode);
-  }
-
-  // Redirect back to portal dashboard after brief confirmation
-  document.querySelectorAll('.step-content').forEach(s=>s.style.display='none');
-  const conf = document.getElementById('step7') || document.createElement('div');
-
-  // Check if client came from the portal (has a session)
-  let cameFromPortal = false;
-  try {
-    const raw = sessionStorage.getItem('tfb_client_session');
-    if(raw){
-      const sess = JSON.parse(raw);
-      if(sess.email && Date.now() - sess.ts < 1800000) cameFromPortal = true;
-    }
-  } catch(e){}
-
-  conf.innerHTML = `
-    <div style="text-align:center;padding:2rem 1rem">
-      <div style="font-size:3.5rem;margin-bottom:1rem">🌿</div>
-      <h2 style="font-family:var(--serif);color:var(--teal-deep);margin-bottom:.6rem">${isEdit ? 'Assessment Updated!' : 'Assessment Submitted!'}</h2>
-      <p style="color:var(--text-mid);margin-bottom:.5rem;font-size:.9rem">Your reference number is</p>
-      <div style="font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--teal-mid);background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.6rem 1rem;display:inline-block;margin-bottom:1rem">${refCode}</div>
-      <p style="font-size:.86rem;color:var(--text-soft);margin-bottom:1.8rem;line-height:1.65">Your herbalist will review your assessment and prepare a personalised protocol.<br/>You can track the status in your Client Portal.</p>
-      <button onclick="returnToPortal()" class="btn-primary" style="justify-content:center;padding:13px 32px;font-size:.95rem">
-        ${cameFromPortal ? '← Return to My Portal Dashboard' : '← Back to TrueForm Botanical'}
-      </button>
-    </div>`;
-  conf.style.display='block';
-  if(!conf.parentNode) document.querySelector('.form-body, .step-wrapper, main, .form-container')?.appendChild(conf);
-
-  // Auto-redirect after 8 seconds
-  let countdown = 8;
-  const countEl = document.createElement('p');
-  countEl.style.cssText = 'font-size:.75rem;color:var(--text-light);margin-top:.8rem';
-  countEl.textContent = 'Redirecting in ' + countdown + 's…';
-  conf.querySelector('div').appendChild(countEl);
-  const tick = setInterval(function(){
-    countdown--;
-    countEl.textContent = 'Redirecting in ' + countdown + 's…';
-    if(countdown <= 0){ clearInterval(tick); returnToPortal(); }
-  }, 1000);
+  var rb=document.getElementById('reviewBody');
+  if(rb) rb.innerHTML=html;
 }
 
-function returnToPortal(){
-  // Check if came from portal — go back to portal with dashboard open
-  try {
-    const raw = sessionStorage.getItem('tfb_client_session');
-    if(raw){
-      const sess = JSON.parse(raw);
-      if(sess.email && Date.now() - sess.ts < 1800000){
-        // Pass a flag so index.html auto-opens the portal dashboard
-        sessionStorage.setItem('tfb_return_to_portal', JSON.stringify({
-          email: sess.email,
-          ts: Date.now()
-        }));
-        window.location.href = 'index.html#portal';
-        return;
-      }
-    }
-  } catch(e){}
-  window.location.href = 'index.html';
-}
-
-// ── AUTO-SAVE ──
+// ════════════════════════════════════════════════
+// AUTOSAVE
+// ════════════════════════════════════════════════
+var _saveTimer=null;
 async function autoSave(){
   try{
-    const d=collectData();
-    const email=d.personal.email||'anonymous';
-    await window.storage.set('tfb_draft_'+email,JSON.stringify(d),false);
-    const s=document.getElementById('autosave');
-    s.classList.add('show');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('show'),2200);
-    (document.getElementById('saveStatus')||{}).textContent='Saved '+new Date().toLocaleTimeString();
-  }catch(e){
-    try{localStorage.setItem('tfb_draft',JSON.stringify(collectData()));}catch(e2){}
-  }
+    var d=collectData();
+    await window.storage.set('tfb_draft_assessment',JSON.stringify(d));
+    var dot=document.getElementById('autosave');
+    var status=document.getElementById('saveStatus');
+    if(dot){ dot.classList.add('show'); setTimeout(function(){ dot.classList.remove('show'); },2000); }
+    if(status) status.textContent='Saved';
+    setTimeout(function(){ var s=document.getElementById('saveStatus'); if(s) s.textContent='Auto-saving…'; },3000);
+  }catch(e){}
 }
-// ── Pre-fill from portal login session ──
-(function prefillFromPortalSession(){
+
+async function loadDraft(){
   try{
-    const raw = sessionStorage.getItem('tfb_client_session');
-    if(!raw) return;
-    const session = JSON.parse(raw);
-    if(!session || Date.now() - session.ts > 300000) return;
-    const fields = {
-      firstName: session.firstName || (session.name||'').split(' ')[0] || '',
-      lastName:  session.lastName  || (session.name||'').split(' ').slice(1).join(' ') || '',
-      email:     session.email || ''
-    };
-    Object.entries(fields).forEach(function(pair){
-      const el = document.getElementById(pair[0]);
-      if(el && pair[1]) el.value = pair[1];
-    });
-    if(session.firstName){
-      showToast('👋 Welcome, ' + session.firstName + '! Your details have been pre-filled.');
+    var raw=await window.storage.get('tfb_draft_assessment');
+    if(!raw||!raw.value) return;
+    var d=JSON.parse(raw.value);
+    if(!d||!d.personal) return;
+    var setV=function(id,val){ var el=document.getElementById(id); if(el&&val) el.value=val; };
+    var p=d.personal||{};
+    setV('firstName',p.firstName); setV('lastName',p.lastName); setV('dob',p.dob);
+    setV('bioSex',p.bioSex); setV('email',p.email); setV('phone',p.phone);
+    setV('country',p.country); setV('lang',p.lang); setV('herbalist',p.herbalist);
+    if(d.symptoms){
+      setV('primaryComplaint',d.symptoms.primaryComplaint);
+      setV('duration',d.symptoms.duration); setV('pattern',d.symptoms.pattern);
+      setV('symNotes',d.symptoms.notes);
+    }
+    if(d.history){
+      setV('otherConditions',d.history.otherConditions);
+      setV('medications',d.history.medications); setV('supplements',d.history.supplements);
+      setV('allergies',d.history.allergies); setV('prevHerbal',d.history.prevHerbal);
+      setV('pregnant',d.history.pregnant); setV('familyHistory',d.history.familyHistory);
+    }
+    if(d.lifestyle){
+      setV('occupation',d.lifestyle.occupation); setV('emotional',d.lifestyle.emotional);
+      setV('healthGoals',d.lifestyle.healthGoals); setV('referral',d.lifestyle.referral);
+      setV('water',d.lifestyle.water); setV('sleepHrs',d.lifestyle.sleepHrs);
     }
   }catch(e){}
+}
 
-  // Also read booking context (came from Request a Consultation form)
-  try{
-    const bRaw = sessionStorage.getItem('tfb_booking_context');
-    if(!bRaw) return;
-    const bCtx = JSON.parse(bRaw);
-    if(!bCtx || Date.now() - bCtx.ts > 3600000) return;
-
-    // Pre-fill phone if present
-    if(bCtx.phone){
-      const phoneEl = document.getElementById('phone');
-      if(phoneEl && !phoneEl.value) phoneEl.value = bCtx.phone;
-    }
-
-    // Pre-fill primary concern (Step 2 field)
-    if(bCtx.healthConcern){
-      const concernEl = document.getElementById('primaryComplaint');
-      if(concernEl && !concernEl.value) concernEl.value = bCtx.healthConcern;
-      // Also fill the notes field on step 2
-      const notesEl = document.getElementById('symNotes');
-      if(notesEl && !notesEl.value) notesEl.value = bCtx.healthConcern;
-    }
-
-    // Show a banner at top of form if came from booking
-    const formTop = document.querySelector('.form-container, .step-wrapper, main, .form-body');
-    if(formTop && !document.getElementById('bookingContextBanner')){
-      const banner = document.createElement('div');
-      banner.id = 'bookingContextBanner';
-      banner.style.cssText = 'background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:10px;padding:.9rem 1.2rem;margin-bottom:1.2rem;font-size:.84rem;color:var(--teal-deep);line-height:1.6;display:flex;align-items:flex-start;gap:.7rem';
-      banner.innerHTML = '<span style="font-size:1.2rem;flex-shrink:0">🌿</span><div><strong>Your consultation request is saved.</strong><br/>Complete this health assessment so your herbalist can prepare a personalised protocol for you. Your name, email and health concern have been pre-filled.</div>';
-      formTop.insertBefore(banner, formTop.firstChild);
-    }
-
-    // Clear booking context after reading so it doesn't re-apply
-    sessionStorage.removeItem('tfb_booking_context');
-    showToast('✅ Your consultation request details have been pre-filled. Complete the assessment to continue.');
-  }catch(e){}
-})();
-
-// Load draft on page load
-(async function loadDraft(){
-  try{
-    // Try URL param for email-based draft restore
-    const params=new URLSearchParams(window.location.search);
-    const emailParam=params.get('email');
-    if(emailParam){
-      const r=await window.storage.get('tfb_draft_'+emailParam,false);
-      if(r&&r.value){
-        const p=JSON.parse(r.value).personal||{};
-        ['firstName','lastName','dob','bioSex','email','phone','country','lang','herbalist'].forEach(k=>{
-          const el=document.getElementById(k);if(el&&p[k])el.value=p[k];
-        });
-        showToast('📋 Draft restored for '+emailParam);
-        return;
-      }
-    }
-    // Also check sessionStorage for portal user email
-    try{
-      const raw = sessionStorage.getItem('tfb_client_session');
-      if(raw){
-        const session = JSON.parse(raw);
-        if(session?.email && Date.now()-session.ts < 300000){
-          const r = await window.storage.get('tfb_draft_'+session.email, false);
-          if(r&&r.value){
-            const p=JSON.parse(r.value).personal||{};
-            ['firstName','lastName','dob','bioSex','email','phone','country','lang','herbalist'].forEach(k=>{
-              const el=document.getElementById(k);if(el&&p[k])el.value=p[k];
-            });
-          }
-        }
-      }
-    }catch(e2){}
-  }catch(e){
-    try{const d=localStorage.getItem('tfb_draft');if(!d)return;const p=JSON.parse(d).personal||{};['firstName','lastName','dob','bioSex','email','phone','country','lang','herbalist'].forEach(k=>{const el=document.getElementById(k);if(el&&p[k])el.value=p[k];});}catch(e2){}
+// ════════════════════════════════════════════════
+// SUBMIT ASSESSMENT
+// ════════════════════════════════════════════════
+async function submitAssessment(){
+  var d=collectData();
+  if(!d.personal.firstName||!d.personal.email){
+    showToast('⚠️ First name and email are required.');
+    goStep(1); return;
   }
-})();
-// Auto-save every 30s
-setInterval(autoSave,30000);
+  if(!document.getElementById('consent1').classList.contains('sel')||
+     !document.getElementById('consent2').classList.contains('sel')||
+     !document.getElementById('consent3').classList.contains('sel')){
+    showToast('⚠️ Please agree to all three consent statements.'); return;
+  }
 
-// ── TOAST ──
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),4000);}
+  var btn=document.getElementById('submitBtn');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting… 🌿'; }
 
-// ════════════════════════════════
-// PROFILE PHOTO UPLOAD
-// ════════════════════════════════
-window._hasPhoto = false;
-window._photoBase64 = null;
+  // Check for existing assessment (prevent duplicates)
+  var existingRef=null; var isEdit=false;
+  try{
+    var raw=sessionStorage.getItem('tfb_client_session');
+    if(raw){ var sess=JSON.parse(raw); if(sess.assessmentRef){ existingRef=sess.assessmentRef; isEdit=true; } }
+  }catch(e){}
+
+  if(!existingRef){
+    try{
+      var existing=await sb.from('assessments').select('ref_code').eq('client_email',d.personal.email).single();
+      if(existing.data&&existing.data.ref_code){ existingRef=existing.data.ref_code; isEdit=true; }
+    }catch(e){}
+  }
+
+  var refCode=existingRef||('TFB-'+Date.now().toString(36).toUpperCase());
+  var row={
+    ref_code:refCode, client_name:d.personal.firstName+' '+d.personal.lastName,
+    client_email:d.personal.email, client_phone:d.personal.phone||null,
+    assigned_herbalist:d.personal.herbalist||null,
+    client_photo:d.photo_base64?'[photo attached]':null,
+    personal_info:JSON.stringify(d.personal),
+    symptoms:JSON.stringify(d.symptoms), body_areas:JSON.stringify(d.body),
+    medical_history:JSON.stringify(d.history), lifestyle:JSON.stringify(d.lifestyle),
+    status:'pending', reviewed:false,
+    submitted_at:new Date().toISOString(),
+  };
+
+  try{
+    var res;
+    if(isEdit){
+      res=await sb.from('assessments').update(row).eq('ref_code',refCode).select().single();
+    } else {
+      res=await sb.from('assessments').insert(row).select().single();
+    }
+    if(res.error) throw res.error;
+    // Update session
+    try{
+      var sesRaw=sessionStorage.getItem('tfb_client_session');
+      if(sesRaw){ var ses=JSON.parse(sesRaw); ses.assessmentRef=refCode; ses.hasAssessment=true; sessionStorage.setItem('tfb_client_session',JSON.stringify(ses)); }
+    }catch(e){}
+  }catch(e){
+    // Save locally as fallback
+    try{ await window.storage.set('tfb_local_assessment_'+refCode,JSON.stringify(row)); }catch(e2){}
+    console.warn('Supabase submit error, saved locally:', e);
+  }
+
+  // Show confirmation
+  var refEl=document.getElementById('refNum');
+  if(refEl) refEl.textContent=refCode;
+  document.querySelectorAll('#step1,#step2,#step3,#step4,#step5,#step6').forEach(function(s){ s.classList.add('hidden'); });
+  var conf=document.getElementById('submitConfirm');
+  if(conf){ conf.style.display='block'; }
+  try{ await window.storage.delete('tfb_draft_assessment'); }catch(e){}
+  showToast('✅ Assessment submitted successfully!');
+}
+
+// ════════════════════════════════════════════════
+// PHOTO UPLOAD
+// ════════════════════════════════════════════════
+window._hasPhoto=false;
+window._photoBase64=null;
 
 function handlePhotoUpload(input){
-  const file = input.files[0];
+  var file=input.files[0];
   if(!file) return;
-  if(file.size > 5 * 1024 * 1024){
-    (document.getElementById('photoStatusMsg')||{}).textContent = '⚠️ File too large. Max 5 MB.';
-    input.value = '';
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const b64 = e.target.result;
-    window._photoBase64 = b64;
-    window._hasPhoto = true;
-    // Show preview
-    const img = document.getElementById('photoImg');
-    const preview = document.getElementById('photoPreview');
-    const removeBtn = document.getElementById('photoRemoveBtn');
-    const statusMsg = document.getElementById('photoStatusMsg');
-    if(img){ img.src = b64; img.style.display = 'block'; }
-    if(preview){ preview.style.borderColor = 'var(--teal-bright)'; preview.style.borderStyle = 'solid'; }
-    if(removeBtn) removeBtn.style.display = 'block';
-    if(statusMsg) statusMsg.textContent = '✅ Photo ready — will be shared with your herbalist.';
-    // Store in sessionStorage for submission
-    try { sessionStorage.setItem('tfb_client_photo', b64); } catch(e){}
+  if(file.size>5*1024*1024){ showToast('⚠️ Photo must be under 5 MB.'); input.value=''; return; }
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var b64=e.target.result;
+    window._photoBase64=b64; window._hasPhoto=true;
+    var img=document.getElementById('photoImg');
+    var prompt=document.getElementById('photoPrompt');
+    var preview=document.getElementById('photoPreview');
+    var removeBtn=document.getElementById('photoRemoveBtn');
+    var statusMsg=document.getElementById('photoStatusMsg');
+    if(img){ img.src=b64; img.style.display='block'; }
+    if(prompt) prompt.style.display='none';
+    if(preview){ preview.style.borderStyle='solid'; preview.style.borderColor='var(--teal-bright)'; }
+    if(removeBtn) removeBtn.style.display='block';
+    if(statusMsg) statusMsg.innerHTML='<span style="color:var(--teal-mid)">✅ Photo ready — visible to your herbalist</span>';
+    try{ sessionStorage.setItem('tfb_client_photo',b64); }catch(e){}
   };
   reader.readAsDataURL(file);
 }
 
 function removePhoto(){
-  window._photoBase64 = null;
-  window._hasPhoto = false;
-  const img = document.getElementById('photoImg');
-  const preview = document.getElementById('photoPreview');
-  const removeBtn = document.getElementById('photoRemoveBtn');
-  const statusMsg = document.getElementById('photoStatusMsg');
-  const input = document.getElementById('photoInput');
-  if(img){ img.src = ''; img.style.display = 'none'; }
-  if(preview){ preview.style.borderColor = 'var(--border-mid)'; preview.style.borderStyle = 'dashed'; }
-  if(removeBtn) removeBtn.style.display = 'none';
-  if(statusMsg) statusMsg.textContent = '';
-  if(input) input.value = '';
-  try { sessionStorage.removeItem('tfb_client_photo'); } catch(e){}
+  window._photoBase64=null; window._hasPhoto=false;
+  var img=document.getElementById('photoImg');
+  var prompt=document.getElementById('photoPrompt');
+  var preview=document.getElementById('photoPreview');
+  var removeBtn=document.getElementById('photoRemoveBtn');
+  var statusMsg=document.getElementById('photoStatusMsg');
+  var input=document.getElementById('photoInput');
+  if(img){ img.src=''; img.style.display='none'; }
+  if(prompt) prompt.style.display='block';
+  if(preview){ preview.style.borderStyle='dashed'; preview.style.borderColor='var(--border-mid)'; }
+  if(removeBtn) removeBtn.style.display='none';
+  if(statusMsg) statusMsg.textContent='';
+  if(input) input.value='';
+  try{ sessionStorage.removeItem('tfb_client_photo'); }catch(e){}
 }
 
+// ════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════
+function showToast(msg){
+  var t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('show'); },4000);
+}
+
+// ════════════════════════════════════════════════
+// PRE-FILL FROM PORTAL SESSION / BOOKING CONTEXT
+// ════════════════════════════════════════════════
+(function prefillFromPortalSession(){
+  try{
+    var raw=sessionStorage.getItem('tfb_client_session');
+    if(raw){
+      var sess=JSON.parse(raw);
+      if(sess&&Date.now()-sess.ts<300000){
+        var setV=function(id,val){ var el=document.getElementById(id); if(el&&val) el.value=val; };
+        setV('firstName',sess.firstName||(sess.name||'').split(' ')[0]||'');
+        setV('lastName',sess.lastName||(sess.name||'').split(' ').slice(1).join(' ')||'');
+        setV('email',sess.email||'');
+        if(sess.firstName) showToast('👋 Welcome back, '+sess.firstName+'! Your details are pre-filled.');
+      }
+    }
+  }catch(e){}
+
+  try{
+    var bRaw=sessionStorage.getItem('tfb_booking_context');
+    if(!bRaw) return;
+    var bCtx=JSON.parse(bRaw);
+    if(!bCtx||Date.now()-bCtx.ts>3600000) return;
+    var setV=function(id,val){ var el=document.getElementById(id); if(el&&val&&!el.value) el.value=val; };
+    if(bCtx.phone) setV('phone',bCtx.phone);
+    if(bCtx.healthConcern){ setV('primaryComplaint',bCtx.healthConcern); setV('symNotes',bCtx.healthConcern); }
+    var banner=document.getElementById('bookingContextBanner');
+    if(banner){
+      banner.style.display='flex';
+      banner.innerHTML='<span style="font-size:1.2rem;flex-shrink:0">🌿</span><div><strong>Your consultation request is saved.</strong><br/>Complete this assessment so your herbalist can prepare your personalised protocol. Your details have been pre-filled.</div>';
+    }
+    sessionStorage.removeItem('tfb_booking_context');
+    showToast('✅ Your booking details have been pre-filled. Complete the assessment to continue.');
+  }catch(e){}
+})();
+
+// ════════════════════════════════════════════════
+// INITIALISE
+// ════════════════════════════════════════════════
+renderSymptomChips();
+renderBodySystems();
+initSeverityBar();
+loadDraft();
+updateProgress();
+
+// Auto-save on any input change
+document.addEventListener('change',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
+document.addEventListener('input',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
+
+// ESC closes nothing on this page, but prevents errors
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') e.preventDefault(); });
 </script>
 </body>
 </html>
