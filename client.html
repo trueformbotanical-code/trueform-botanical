@@ -4,24 +4,30 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <title>TrueForm Botanical — Client Self-Assessment</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --teal-deepest:#071e1c;--teal-deep:#0d3d3a;--teal:#115c57;--teal-mid:#1a7a74;--teal-bright:#22a89f;--teal-light:#5ec4bc;--teal-pale:#c0eae7;
-  --saffron:#e8820c;--saffron-bright:#f59d2e;--saffron-light:#fbc97a;--saffron-pale:#fef3e2;
-  --spice:#b54a1e;--spice-light:#d96b3e;
-  --text-dark:#0f2421;--text-strong:#1a3532;--text-mid:#2e5450;--text-soft:#4a7570;--text-light:#9ec5c1;
-  --surface:#fff;--surface-alt:#f4fbfa;--surface-teal:#eaf5f4;--border:#cce8e6;--border-mid:#99d0cb;
-  --shadow-sm:0 2px 8px rgba(13,61,58,.10);--shadow-md:0 6px 24px rgba(13,61,58,.14);--shadow-lg:0 16px 50px rgba(13,61,58,.18);
-  --r:5px;--r-lg:10px;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Nunito Sans',sans-serif;
+  /* Core palette — richer, more vibrant */
+  --teal-deepest:#051715;--teal-deep:#0a2e2b;--teal:#0e5248;--teal-mid:#0f7b72;--teal-bright:#12a99e;--teal-light:#3dc9bf;--teal-pale:#b8ede9;
+  --saffron:#f07b00;--saffron-bright:#ffaa2b;--saffron-light:#ffd08a;--saffron-pale:#fff5e0;
+  --spice:#c0390c;--spice-light:#e05a2b;
+  --violet:#6b3fa0;--violet-light:#9b6dcf;--violet-pale:#f0e8ff;
+  --emerald:#0a7c52;--emerald-pale:#e0f5ed;
+  --rose:#c0274a;--rose-pale:#fde8ee;
+  --amber:#d97706;--amber-pale:#fffbeb;
+  --text-dark:#081f1d;--text-strong:#0f2e2b;--text-mid:#1e4e4a;--text-soft:#3a6e69;--text-light:#7ab8b2;
+  --surface:#fff;--surface-alt:#f0faf9;--surface-teal:#e0f5f3;--border:#b8e0dc;--border-mid:#7ecdc6;
+  --shadow-sm:0 2px 12px rgba(10,40,38,.10);--shadow-md:0 8px 28px rgba(10,40,38,.15);--shadow-lg:0 20px 60px rgba(10,40,38,.2);
+  --r:8px;--r-lg:14px;--r-xl:20px;
+  --serif:'Playfair Display',Georgia,serif;--sans:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
-body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark);font-weight:400;line-height:1.7}
+body{background:linear-gradient(180deg,#f0faf9 0%,#f8fffe 100%);background-attachment:fixed;font-family:var(--sans);color:var(--text-dark);font-weight:400;line-height:1.7}
 @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--teal-deep);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid rgba(94,196,188,.15)}
+.topbar{background:linear-gradient(135deg,#051715,#0a2e2b);height:62px;border-bottom:2px solid rgba(18,169,158,.2);display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid rgba(94,196,188,.15)}
 .topbar-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
 .topbar-mark{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:.85rem}
 .topbar-name{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:#fff}.topbar-name em{color:var(--saffron-bright);font-style:italic}
@@ -31,32 +37,32 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 
 /* ── LAYOUT ── */
 .page-wrap{max-width:820px;margin:0 auto;padding:40px 5% 80px}
-.page-hero{text-align:center;margin-bottom:2.8rem;animation:riseIn .6s both}
-.page-hero .eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-bright);font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:.7rem}
-.page-hero .eyebrow::before,.page-hero .eyebrow::after{content:'';width:22px;height:2px;background:var(--saffron);display:block}
-.page-hero h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--text-dark);margin-bottom:.6rem}
-.page-hero h1 em{font-style:italic;color:var(--teal-mid)}
-.page-hero p{color:var(--text-mid);font-size:.94rem;max-width:540px;margin:0 auto}
+.page-hero{text-align:center;margin-bottom:2.8rem;animation:riseIn .6s both;background:linear-gradient(135deg,#051715 0%,#0a2e2b 50%,#0e5248 100%);border-radius:var(--r-xl);padding:3rem 2rem;margin-top:0}
+.page-hero .eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-light);font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:.7rem}
+.page-hero .eyebrow::before,.page-hero .eyebrow::after{content:'';width:22px;height:2px;background:var(--teal-light);display:block}
+.page-hero h1{font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);font-weight:700;color:#fff;margin-bottom:.6rem}
+.page-hero h1 em{font-style:italic;color:var(--saffron-bright)}
+.page-hero p{color:rgba(255,255,255,.65);font-size:.94rem;max-width:540px;margin:0 auto}
 
 /* ── PROGRESS ── */
-.progress-bar-wrap{margin-bottom:2.5rem}
+.progress-bar-wrap{margin-bottom:2.5rem;background:#fff;border-radius:var(--r-xl);padding:1.2rem 1.6rem;box-shadow:0 2px 12px rgba(10,40,38,.08)}
 .progress-steps{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:.7rem}
 .progress-steps::before{content:'';position:absolute;top:14px;left:0;right:0;height:2px;background:var(--border);z-index:0}
-.prog-fill{position:absolute;top:14px;left:0;height:2px;background:linear-gradient(90deg,var(--teal-mid),var(--teal-bright));z-index:1;transition:width .4s ease}
+.prog-fill{position:absolute;top:14px;left:0;height:3px;background:linear-gradient(90deg,var(--teal-mid),var(--saffron-bright));z-index:1;transition:width .4s ease;border-radius:2px}
 .pstep{display:flex;flex-direction:column;align-items:center;gap:.35rem;position:relative;z-index:2;cursor:pointer}
 .pstep-num{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--text-light);transition:all .3s}
-.pstep.done .pstep-num{background:var(--teal-mid);border-color:var(--teal-mid);color:#fff}
-.pstep.active .pstep-num{background:var(--saffron);border-color:var(--saffron);color:#fff;box-shadow:0 0 0 4px rgba(232,130,12,.2)}
+.pstep.done .pstep-num{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff}
+.pstep.active .pstep-num{background:linear-gradient(135deg,var(--saffron),var(--spice));border-color:var(--saffron);color:#fff;box-shadow:0 0 0 5px rgba(240,123,0,.2)}
 .pstep-label{font-size:.62rem;color:var(--text-light);font-weight:600;letter-spacing:.06em;text-align:center;white-space:nowrap}
 .pstep.done .pstep-label,.pstep.active .pstep-label{color:var(--text-mid)}
 
 /* ── SECTION CARD ── */
-.section-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);margin-bottom:1.4rem;overflow:hidden;box-shadow:var(--shadow-sm);animation:riseIn .4s both}
+.section-card{background:var(--surface);border:none;border-radius:var(--r-xl);margin-bottom:1.6rem;overflow:hidden;box-shadow:0 4px 24px rgba(10,40,38,.10);animation:riseIn .4s both}
 .section-card.hidden{display:none}
-.sc-header{padding:1.2rem 1.6rem;background:linear-gradient(135deg,var(--surface-teal),var(--surface));border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.9rem}
+.sc-header{padding:1.3rem 1.6rem;border-bottom:2px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:.9rem}
 .sc-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1.5px solid var(--border-mid)}
 .sc-header h3{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--text-dark)}
-.sc-header p{font-size:.75rem;color:var(--text-soft);margin-top:.08rem}
+.sc-header p{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:.08rem}
 .sc-body{padding:1.4rem 1.6rem}
 
 /* ── FORM ELEMENTS ── */
@@ -75,8 +81,8 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 .chip-group{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
 .chip{padding:7px 14px;border-radius:20px;border:2px solid var(--border);background:var(--surface);color:var(--text-mid);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--sans);user-select:none}
 .chip:hover{border-color:var(--teal-light);background:var(--surface-teal);color:var(--teal-deep)}
-.chip.sel{background:var(--teal-mid);border-color:var(--teal-mid);color:#fff}
-.chip.sel-saffron{background:var(--saffron);border-color:var(--saffron);color:#fff}
+.chip.sel{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;box-shadow:0 2px 8px rgba(15,123,114,.3)}
+.chip.sel-saffron{background:linear-gradient(135deg,var(--saffron),var(--spice));border-color:var(--saffron);color:#fff}
 .chip.sel-spice{background:var(--spice);border-color:var(--spice);color:#fff}
 
 /* ── SCALE RATING ── */
@@ -92,7 +98,7 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
 .body-map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.5rem;margin-top:.4rem}
 .body-zone{padding:.75rem .6rem;border:2px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;transition:all .22s;background:var(--surface)}
 .body-zone:hover{border-color:var(--teal-light);background:var(--surface-teal)}
-.body-zone.sel{border-color:var(--teal-mid);background:var(--surface-teal)}
+.body-zone.sel{border-color:var(--teal-bright);background:var(--surface-teal);box-shadow:0 0 0 3px rgba(18,169,158,.15)}
 .body-zone .bz-icon{font-size:1.4rem;display:block;margin-bottom:.25rem}
 .body-zone span{font-size:.7rem;color:var(--text-mid);display:block;font-weight:600;line-height:1.3}.body-zone.sel span{color:var(--teal-deep)}
 
@@ -118,8 +124,8 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
 .step-counter{font-size:.78rem;color:var(--text-light);font-weight:600}
 
 /* ── BUTTONS ── */
-.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:12px 26px;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff;font-family:var(--sans);font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:all .3s;text-decoration:none}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:var(--shadow-md)}
-.btn-saffron{display:inline-flex;align-items:center;gap:7px;padding:12px 26px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;font-family:var(--sans);font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:all .3s}.btn-saffron:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:linear-gradient(135deg,#12a99e,#0f7b72);color:#fff;font-family:var(--sans);font-size:.86rem;font-weight:700;letter-spacing:.04em;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .3s;text-decoration:none;box-shadow:0 4px 16px rgba(15,123,114,.35)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,123,114,.45)}
+.btn-saffron{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:linear-gradient(135deg,#f07b00,#c0390c);color:#fff;font-family:var(--sans);font-size:.86rem;font-weight:700;border:none;border-radius:var(--r-lg);cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(192,57,12,.35)}.btn-saffron:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(192,57,12,.45)}
 .btn-outline{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;background:transparent;color:var(--teal-mid);font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--teal-mid);border-radius:var(--r);cursor:pointer;transition:all .3s;text-decoration:none}.btn-outline:hover{background:var(--surface-teal)}
 
 /* ── SUMMARY STEP ── */
@@ -350,9 +356,49 @@ async function dbDelete(table, filters) {
   </div>
 
   <!-- ═══ STEP 1: PERSONAL INFO ═══ -->
+
+  <!-- ═══ STEP 0: PROFILE PHOTO UPLOAD (inside step 1) ═══ -->
   <div id="step1">
+    <!-- Photo Upload Card -->
+    <div class="section-card" style="margin-bottom:1.6rem">
+      <div class="sc-header" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+        <div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">📸</span></div>
+        <div>
+          <h3 style="color:#fff">Profile Photo</h3>
+          <p style="color:rgba(255,255,255,.6)">Optional — helps your herbalist personalise your care</p>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div style="display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap">
+          <!-- Photo preview circle -->
+          <div style="flex-shrink:0;text-align:center">
+            <div id="photoPreview" style="width:110px;height:110px;border-radius:50%;border:3px dashed var(--border-mid);background:var(--surface-alt);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;overflow:hidden;position:relative" onclick="document.getElementById('photoInput').click()" onmouseover="this.style.borderColor='var(--teal-bright)'" onmouseout="if(!window._hasPhoto)this.style.borderColor='var(--border-mid)'">
+              <span style="font-size:2rem;line-height:1;margin-bottom:.3rem">📷</span>
+              <span style="font-size:.65rem;color:var(--text-light);font-weight:600;text-align:center;line-height:1.3;padding:0 .4rem">Tap to upload</span>
+              <img id="photoImg" src="" alt="Profile photo" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+            </div>
+            <button id="photoRemoveBtn" onclick="removePhoto()" style="display:none;margin-top:.5rem;font-size:.68rem;color:var(--spice);background:none;border:none;cursor:pointer;font-family:var(--sans);font-weight:600">Remove photo</button>
+          </div>
+          <!-- Instructions + input -->
+          <div style="flex:1;min-width:200px">
+            <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhotoUpload(this)"/>
+            <div style="font-size:.84rem;color:var(--text-mid);line-height:1.75;margin-bottom:.8rem">
+              Uploading a photo is <strong style="color:var(--teal-mid)">completely optional</strong>. It helps your herbalist build a more personal relationship with you during consultations.
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.9rem">
+              <button onclick="document.getElementById('photoInput').click()" style="display:inline-flex;align-items:center;gap:.4rem;padding:9px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:none;border-radius:var(--r-lg);font-size:.8rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                📁 Choose Photo
+              </button>
+              <span style="font-size:.74rem;color:var(--text-light);display:flex;align-items:center">JPG or PNG · Max 5 MB</span>
+            </div>
+            <div id="photoStatusMsg" style="font-size:.78rem;color:var(--teal-mid);font-weight:600;min-height:1.2em"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#eaf5f4">👤</div><div><h3>Personal Information</h3><p>Basic details for your practitioner</p></div></div>
+      <div class="sc-header" style="background:linear-gradient(135deg,#051715,#0a2e2b)"><div class="sc-icon" style="background:rgba(18,169,158,.2);border-color:rgba(18,169,158,.4)"><span style="font-size:1rem">👤</span></div><div><h3 style="color:#fff">Personal Information</h3><p>Basic details for your practitioner</p></div></div>
       <div class="sc-body">
         <div class="frow"><div class="fgrp"><label>First Name <span class="required-star">*</span></label><input id="firstName" type="text" placeholder="Jane" autocomplete="given-name"/></div><div class="fgrp"><label>Last Name <span class="required-star">*</span></label><input id="lastName" type="text" placeholder="Smith" autocomplete="family-name"/></div></div>
         <div class="frow"><div class="fgrp"><label>Date of Birth <span class="required-star">*</span></label><input id="dob" type="date"/></div><div class="fgrp"><label>Biological Sex</label><select id="bioSex"><option value="">Select…</option><option>Female</option><option>Male</option><option>Intersex</option><option>Prefer not to say</option></select></div></div>
@@ -367,7 +413,7 @@ async function dbDelete(table, filters) {
   <!-- ═══ STEP 2: SYMPTOMS ═══ -->
   <div id="step2" class="hidden">
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#fef3e2">🩺</div><div><h3>Current Symptoms</h3><p>Select everything you are currently experiencing</p></div></div>
+      <div class="sc-header" style="background:linear-gradient(135deg,#7a1f00,#c0390c)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">🩺</span></div><div><h3 style="color:#fff">Current Symptoms</h3><p>Select everything you are currently experiencing</p></div></div>
       <div class="sc-body">
         <div class="fgrp">
           <label>Primary Complaint <span class="required-star">*</span></label>
@@ -422,7 +468,7 @@ async function dbDelete(table, filters) {
   <!-- ═══ STEP 3: BODY AREAS ═══ -->
   <div id="step3" class="hidden">
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#eaf5f4">🫀</div><div><h3>Body Areas & Systems</h3><p>Which areas of the body are most affected?</p></div></div>
+      <div class="sc-header" style="background:linear-gradient(135deg,#3b1f6b,#6b3fa0)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">🫀</span></div><div><h3 style="color:#fff">Body Areas &amp; Systems</h3><p>Which areas of the body are most affected?</p></div></div>
       <div class="sc-body">
         <div class="fgrp">
           <label>Affected Body Areas (select all)</label>
@@ -457,7 +503,7 @@ async function dbDelete(table, filters) {
   <!-- ═══ STEP 4: MEDICAL HISTORY ═══ -->
   <div id="step4" class="hidden">
     <div class="section-card">
-      <div class="sc-header"><div class="sc-icon" style="background:#fef3e2">📋</div><div><h3>Medical History</h3><p>Current conditions, medications and previous care</p></div></div>
+      <div class="sc-header" style="background:linear-gradient(135deg,#04331f,#0a7c52)"><div class="sc-icon" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)"><span style="font-size:1rem">📋</span></div><div><h3 style="color:#fff">Medical History</h3><p>Current conditions, medications and previous care</p></div></div>
       <div class="sc-body">
         <div class="fgrp">
           <label>Diagnosed Medical Conditions</label>
@@ -863,6 +909,7 @@ function collectData(){
   const getChecks=parent=>[...document.querySelectorAll(parent+' .check-item.sel .check-label')].map(l=>l.textContent);
   const getExercise=()=>{const s=document.querySelector('.lf-card.sel');return s?s.querySelector('span:last-child').textContent:'Not specified';};
   return{
+    photo_base64: window._photoBase64 || null,
     personal:{firstName:v('firstName'),lastName:v('lastName'),dob:v('dob'),bioSex:v('bioSex'),email:v('email'),phone:v('phone'),country:v('country'),lang:v('lang'),herbalist:v('herbalist')},
     symptoms:{primaryComplaint:v('primaryComplaint'),duration:v('duration'),severity:document.getElementById('severityScale').value,severityLabel:document.getElementById('severityVal').textContent,selected:getChips('symptom'),variation:getChips('variation'),notes:v('symNotes')},
     bodyAreas:{zones:getZones(),painType:getChips('pain'),painLevel:document.getElementById('painScale').value,painLabel:document.getElementById('painVal').textContent},
@@ -958,6 +1005,7 @@ async function submitAssessment(){
     history:            data.history,
     lifestyle:          data.lifestyle,
     assigned_herbalist: data.personal.herbalist || null,
+    client_photo:      data.photo_base64 ? '[photo attached]' : null,
     submitted_at:       isEdit ? undefined : now,
     updated_at:         now,
     reviewed:           false,
@@ -1164,6 +1212,57 @@ setInterval(autoSave,30000);
 
 // ── TOAST ──
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),4000);}
+
+// ════════════════════════════════
+// PROFILE PHOTO UPLOAD
+// ════════════════════════════════
+window._hasPhoto = false;
+window._photoBase64 = null;
+
+function handlePhotoUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){
+    (document.getElementById('photoStatusMsg')||{}).textContent = '⚠️ File too large. Max 5 MB.';
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const b64 = e.target.result;
+    window._photoBase64 = b64;
+    window._hasPhoto = true;
+    // Show preview
+    const img = document.getElementById('photoImg');
+    const preview = document.getElementById('photoPreview');
+    const removeBtn = document.getElementById('photoRemoveBtn');
+    const statusMsg = document.getElementById('photoStatusMsg');
+    if(img){ img.src = b64; img.style.display = 'block'; }
+    if(preview){ preview.style.borderColor = 'var(--teal-bright)'; preview.style.borderStyle = 'solid'; }
+    if(removeBtn) removeBtn.style.display = 'block';
+    if(statusMsg) statusMsg.textContent = '✅ Photo ready — will be shared with your herbalist.';
+    // Store in sessionStorage for submission
+    try { sessionStorage.setItem('tfb_client_photo', b64); } catch(e){}
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(){
+  window._photoBase64 = null;
+  window._hasPhoto = false;
+  const img = document.getElementById('photoImg');
+  const preview = document.getElementById('photoPreview');
+  const removeBtn = document.getElementById('photoRemoveBtn');
+  const statusMsg = document.getElementById('photoStatusMsg');
+  const input = document.getElementById('photoInput');
+  if(img){ img.src = ''; img.style.display = 'none'; }
+  if(preview){ preview.style.borderColor = 'var(--border-mid)'; preview.style.borderStyle = 'dashed'; }
+  if(removeBtn) removeBtn.style.display = 'none';
+  if(statusMsg) statusMsg.textContent = '';
+  if(input) input.value = '';
+  try { sessionStorage.removeItem('tfb_client_photo'); } catch(e){}
+}
+
 </script>
 </body>
 </html>
