@@ -1870,7 +1870,7 @@ function renderRecentTable(){
   (document.getElementById('recentTable')||{}).innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Submitted</th><th>Severity</th><th>Top Symptoms</th><th>Actions</th></tr></thead><tbody>${pending.map(c=>{
     const sev=parseInt(c.symptoms?.severity)||3;
     const syms=(c.symptoms.chips||c.symptoms.selected||[]).slice(0,3).join(', ');
-    return`<tr><td><span class="client-name">${c.personal?.firstName||''} ${c.personal?.lastName||''}</span><br/><small style="color:var(--text-light)">${c.personal.email}</small></td><td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td><td>${sevBadge(sev)}</td><td style="font-size:.78rem;color:var(--text-mid);max-width:180px">${syms||'—'}</td><td><button class="btn btn-primary" style="padding:6px 12px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Review →</button></td></tr>`;
+    return`<tr><td><span class="client-name">${c.personal?.firstName||''} ${c.personal?.lastName||''}</span><br/><small style="color:var(--text-light)">${c.personal?.email||''}</small></td><td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td><td>${sevBadge(sev)}</td><td style="font-size:.78rem;color:var(--text-mid);max-width:180px">${syms||'—'}</td><td><button class="btn btn-primary" style="padding:6px 12px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Review →</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
 
@@ -1931,33 +1931,22 @@ function filterByUrgency(u){renderClientsTable(u?ALL_CLIENTS.filter(cl=>{const s
 // ══ CLIENT DETAIL ══
 // ── Mark assessment as reviewed ──
 function markReviewed(ref){
-  const cl = ALL_CLIENTS.find(x => (x.meta?.refCode||x.ref_code) === ref);
-  if(!cl){ showToast('⚠️ Client not found.'); return; }
-
+  const cl = ALL_CLIENTS.find(x=>(x.meta?.refCode||x.ref_code)===ref);
+  if(!cl) return;
   cl._reviewed = true;
-
-  // Save to localStorage
+  // Persist locally
   try{
     const state = JSON.parse(localStorage.getItem('tfb_state_'+ref)||'{}');
     state._reviewed = true;
-    state.reviewedAt = new Date().toISOString();
-    state.reviewedBy = currentHerbalist?.name||'Herbalist';
     localStorage.setItem('tfb_state_'+ref, JSON.stringify(state));
   }catch(e){}
-
   // Sync to Supabase
   sb.from('assessments')
-    .update({ reviewed: true, reviewed_at: new Date().toISOString(), status: 'reviewed' })
+    .update({reviewed: true, reviewed_at: new Date().toISOString()})
     .eq('ref_code', ref)
     .then(()=>{ showToast('✅ Assessment marked as reviewed.'); })
-    .catch(()=>{ showToast('✅ Marked as reviewed (saved locally).'); });
-
-  // Update stat counters
-  const newCount = ALL_CLIENTS.filter(x=>!x._reviewed).length;
-  (document.getElementById('statNew')||{}).textContent  = newCount;
-  (document.getElementById('nbNew')||{}).textContent    = newCount;
-
-  // Re-render the client detail to show the "Reviewed" badge
+    .catch(()=>{ showToast('✅ Marked reviewed locally.'); });
+  // Re-render the client detail to show reviewed badge
   openClient(ref);
 }
 
@@ -1976,7 +1965,7 @@ function openClient(ref){
   const maxSc=scored[0]?.score||1;
   scored.forEach(h=>{h.pct=Math.round(Math.min(97,(h.score/maxSc)*92)+5);});
   // Constitution
-  const quiz=c.personal._quiz||{};
+  const quiz=c.personal?._quiz||{};
   const allText=JSON.stringify(c.symptoms).toLowerCase();
   const vataSig=allText.includes('anxiety')||allText.includes('insomnia')||allText.includes('fatigue')||allText.includes('irregular');
   const pittaSig=allText.includes('inflammation')||allText.includes('liver')||allText.includes('skin')||allText.includes('stress');
@@ -1987,13 +1976,13 @@ function openClient(ref){
   // Flags
   const flags=[];
   if(c.history?.medications&&c.history.medications.toLowerCase().includes('warfarin'))flags.push({type:'danger',icon:'⚠️',text:'Client is on Warfarin',sub:'Avoid: Turmeric (high dose), Ginger, St. John\'s Wort, Dong Quai, Garlic (therapeutic)'});
-  if(c.history.medications&&(c.history.medications.toLowerCase().includes('sertraline')||c.history.medications.toLowerCase().includes('ssri')||c.history.medications.toLowerCase().includes('antidepressant')))flags.push({type:'danger',icon:'⚠️',text:'Client is on SSRI medication',sub:"Contraindicated: St. John's Wort (serotonin syndrome risk). Use Saffron, Lavender, Rhodiola instead."});
-  if(c.history.medications&&(c.history.medications.toLowerCase().includes('omeprazole')||c.history.medications.toLowerCase().includes('ppi')))flags.push({type:'warn',icon:'💊',text:'PPI medication detected',sub:'Monitor: High-tannin herbs (black walnut, oak bark) may interfere with absorption. Space dosing by 2+ hours.'});
+  if(c.history?.medications&&(c.history.medications.toLowerCase().includes('sertraline')||c.history.medications.toLowerCase().includes('ssri')||c.history.medications.toLowerCase().includes('antidepressant')))flags.push({type:'danger',icon:'⚠️',text:'Client is on SSRI medication',sub:"Contraindicated: St. John's Wort (serotonin syndrome risk). Use Saffron, Lavender, Rhodiola instead."});
+  if(c.history?.medications&&(c.history.medications.toLowerCase().includes('omeprazole')||c.history.medications.toLowerCase().includes('ppi')))flags.push({type:'warn',icon:'💊',text:'PPI medication detected',sub:'Monitor: High-tannin herbs (black walnut, oak bark) may interfere with absorption. Space dosing by 2+ hours.'});
   if(c.history?.pregnant&&c.history.pregnant.includes('pregnant'))flags.push({type:'danger',icon:'🤰',text:'Client is pregnant',sub:'Contraindicated: Valerian, Black Cohosh, Blue Cohosh, Dong Quai, Pennyroyal, Wormwood, Senna (high dose).'});
   if((c.history.conditions||[]).some(cc=>cc.includes('autoimmune')))flags.push({type:'warn',icon:'🔬',text:'Autoimmune condition reported',sub:'Caution: Echinacea, Astragalus (immune stimulants). May exacerbate flares. Consider adaptogens instead.'});
   if((c.history.conditions||[]).some(cc=>cc.includes('Liver')))flags.push({type:'warn',icon:'🫀',text:'Liver condition reported',sub:'Avoid: Comfrey, Kava, Pyrrolizidine alkaloid herbs. Use: Milk Thistle, Dandelion Root, Artichoke Leaf.'});
   if((c.lifestyle?.substances||[]).includes('Alcohol (regular)'))flags.push({type:'warn',icon:'🍷',text:'Regular alcohol use',sub:'Caution: Valerian, Kava potentiate sedative effects. Advise reduced intake for full protocol efficacy.'});
-  if(parseInt(c.symptoms.severity)>=4)flags.push({type:'warn',icon:'🔴',text:'High severity — consider GP referral',sub:'Symptoms rated 4–5/5. Recommend concurrent conventional medical assessment alongside herbal support.'});
+  if(parseInt(c.symptoms?.severity||0)>=4)flags.push({type:'warn',icon:'🔴',text:'High severity — consider GP referral',sub:'Symptoms rated 4–5/5. Recommend concurrent conventional medical assessment alongside herbal support.'});
   // Protocol lines
   if(!protocolLines[ref])protocolLines[ref]=[{herb:'',dose:'',frequency:'',duration:'',notes:''}];
   // Build HTML
@@ -2037,7 +2026,7 @@ function openClient(ref){
           <p style="font-size:.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:.8rem">"${c.symptoms?.primaryComplaint||'Not provided'}"</p>
           <div class="detail-row"><span class="dr-label">Duration</span><span class="dr-val">${c.symptoms?.duration||'—'}</span></div>
           <div class="detail-row"><span class="dr-label">Severity</span><span class="dr-val">
-            <div class="sev-meter"><div class="sev-track"><div class="sev-fill sev${c.symptoms.severity}"></div></div><span class="sev-num" style="color:${parseInt(c.symptoms.severity)>=4?'var(--spice)':'var(--teal-mid)'}">${c.symptoms.severity}/5</span></div>
+            <div class="sev-meter"><div class="sev-track"><div class="sev-fill sev${c.symptoms.severity}"></div></div><span class="sev-num" style="color:${parseInt(c.symptoms?.severity||0)>=4?'var(--spice)':'var(--teal-mid)'}">${c.symptoms.severity}/5</span></div>
           </span></div>
           <div class="detail-row"><span class="dr-label">Pain Level</span><span class="dr-val">${c.bodyAreas?.painLevel||0}/10 — ${(c.bodyAreas?.painTypes||c.bodyAreas?.painType||[]).join(', ')||'None reported'}</span></div>
           <div class="detail-row"><span class="dr-label">Variation</span><span class="dr-val" style="text-align:right;max-width:200px">${(c.symptoms.triggers||c.symptoms.variation||[]).join('; ')||'None noted'}</span></div>
@@ -2068,13 +2057,13 @@ function openClient(ref){
       <div class="detail-card">
         <div class="dc-head"><span class="dc-title">🌱 Lifestyle Profile</span></div>
         <div class="dc-body">
-          <div class="detail-row"><span class="dr-label">Diet</span><span class="dr-val">${c.lifestyle.diet.join(', ')||'—'}</span></div>
-          <div class="detail-row"><span class="dr-label">Exercise</span><span class="dr-val">${c.lifestyle.exercise}</span></div>
-          <div class="detail-row"><span class="dr-label">Sleep Quality</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle.sleepQuality}</span></div>
-          <div class="detail-row"><span class="dr-label">Sleep Hours</span><span class="dr-val">${c.lifestyle.sleepHrs}</span></div>
-          <div class="detail-row"><span class="dr-label">Stress Level</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle.stressLevel}</span></div>
-          <div class="detail-row"><span class="dr-label">Substances</span><span class="dr-val">${c.lifestyle.substances.join(', ')||'None'}</span></div>
-          <div class="detail-row"><span class="dr-label">Water Intake</span><span class="dr-val">${c.lifestyle.water}</span></div>
+          <div class="detail-row"><span class="dr-label">Diet</span><span class="dr-val">${(Array.isArray(c.lifestyle?.diet)?c.lifestyle.diet.join(', '):(c.lifestyle?.diet||'—'))}</span></div>
+          <div class="detail-row"><span class="dr-label">Exercise</span><span class="dr-val">${c.lifestyle?.exercise||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Sleep Quality</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle?.sleepQuality||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Sleep Hours</span><span class="dr-val">${c.lifestyle?.sleepHrs||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Stress Level</span><span class="dr-val" style="font-size:.78rem">${c.lifestyle?.stressLevel||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Substances</span><span class="dr-val">${(Array.isArray(c.lifestyle?.substances)?c.lifestyle.substances.join(', '):(c.lifestyle?.substances||'None reported'))}</span></div>
+          <div class="detail-row"><span class="dr-label">Water Intake</span><span class="dr-val">${c.lifestyle?.water||'—'}</span></div>
           <div class="detail-row"><span class="dr-label">Occupation</span><span class="dr-val">${c.lifestyle?.occupation||'—'}</span></div>
           ${c.lifestyle?.emotional?`<div style="margin-top:.7rem;padding:.7rem;background:var(--surface-teal);border-radius:6px;font-size:.78rem;color:var(--text-mid);font-style:italic">"${c.lifestyle.emotional}"</div>`:''}
         </div>
@@ -2100,10 +2089,10 @@ function openClient(ref){
         <div class="dc-body">
           <p style="font-size:.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:1rem">${c.lifestyle?.healthGoals||'Not provided'}</p>
           <div class="dc-title" style="font-size:.82rem;margin-bottom:.5rem">📞 Contact</div>
-          <div class="detail-row"><span class="dr-label">Email</span><span class="dr-val"><a href="mailto:${c.personal.email}" style="color:var(--teal-mid)">${c.personal.email}</a></span></div>
-          ${c.personal.phone?`<div class="detail-row"><span class="dr-label">Phone</span><span class="dr-val">${c.personal.phone}</span></div>`:''}
-          <div class="detail-row"><span class="dr-label">Language</span><span class="dr-val">${c.personal.lang||'English'}</span></div>
-          <div class="detail-row"><span class="dr-label">Referral</span><span class="dr-val">${c.lifestyle.referral||'—'}</span></div>
+          <div class="detail-row"><span class="dr-label">Email</span><span class="dr-val"><a href="mailto:${c.personal?.email||''}" style="color:var(--teal-mid)">${c.personal.email}</a></span></div>
+          ${c.personal?.phone?`<div class="detail-row"><span class="dr-label">Phone</span><span class="dr-val">${c.personal.phone}</span></div>`:''}
+          <div class="detail-row"><span class="dr-label">Language</span><span class="dr-val">${c.personal?.lang||'English'}</span></div>
+          <div class="detail-row"><span class="dr-label">Referral</span><span class="dr-val">${c.lifestyle?.referral||'—'}</span></div>
         </div>
       </div>
     </div>
