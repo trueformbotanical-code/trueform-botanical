@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,viewport-fit=cover"/>
 <meta name="description" content="TrueForm Botanical — Premium herb shop & botanical consultation. Ayurvedic, TCM, Western & African traditions."/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://images.unsplash.com https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://*.supabase.co;"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://images.unsplash.com https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co; connect-src 'self' https://*.supabase.co https://api.anthropic.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none';"/>
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"/>
 <meta http-equiv="X-Frame-Options" content="DENY"/>
@@ -1406,16 +1406,16 @@ async function dbDelete(table, filters) {
 
 <!-- ═══ TRUST STRIP ═══ -->
 <div id="trust" style="background:linear-gradient(90deg,#071e1c 0%,#0d3d3a 50%,#071e1c 100%);border-top:1px solid rgba(34,168,159,.2);border-bottom:1px solid rgba(34,168,159,.2)">
-  <div style="max-width:1200px;margin:0 auto;padding:.9rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem">
-    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">✓</span> Certified Practitioners</div>
+  <div style="max-width:1200px;margin:0 auto;padding:1rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem">
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.65);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">✓</span> Certified Practitioners</div>
     <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
-    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🔒</span> HIPAA Aligned</div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.65);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🔒</span> HIPAA Aligned</div>
     <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
-    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🌍</span> 48+ Countries Served</div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.65);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">🌍</span> 48+ Countries Served</div>
     <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
-    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">📋</span> Personalised Protocols</div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.65);font-size:.78rem;font-weight:500"><span style="color:var(--teal-bright)">📋</span> Personalised Protocols</div>
     <div style="width:1px;height:16px;background:rgba(255,255,255,.12)"></div>
-    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500"><span style="color:var(--saffron-bright)">⭐</span> 4.9 / 5 — 1,200+ Reviews</div>
+    <div style="display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.65);font-size:.78rem;font-weight:500"><span style="color:var(--saffron-bright)">⭐</span> 4.9 / 5 · 1,200+ Reviews</div>
   </div>
 </div>
 
@@ -2418,6 +2418,7 @@ async function practSignIn() {
   const usernameRaw = (document.getElementById('pract-user')?.value || '').trim();
   const pw          = (document.getElementById('pract-pw')?.value  || '');
   const btn         = document.getElementById('practBtn');
+  if(!btn) return;
 
   if (!usernameRaw) { showPlainError('practError','Please enter your username.'); return; }
   if (!pw)          { showPlainError('practError','Please enter your password.');  return; }
@@ -2482,6 +2483,7 @@ async function practSignIn() {
 
 function showPractForgot() {
   const hint = document.getElementById('practForgotHint');
+  if(!hint) return;
   if (hint) hint.style.display = (hint.style.display === 'none' || !hint.style.display) ? 'block' : 'none';
 }
 
@@ -3157,11 +3159,13 @@ function filterSymDropdown(q){
   const filtered=query?SYMPTOMS.filter(s=>s.label.toLowerCase().includes(query)||s.value.toLowerCase().includes(query)):SYMPTOMS;
   renderSymDropdown(filtered);
   const noRes=document.getElementById('symDropNoResult');
+  if(!noRes) return;
   const inner=document.getElementById('symDropInner');
+  if(!inner) return;
   if(filtered.length===0&&query){
     inner.style.display='none';
     noRes.style.display='block';
-    (document.getElementById('symAddCustomLabel')||{}).textContent==q.trim();
+    (document.getElementById('symAddCustomLabel')||{}).textContent=q.trim();
     document.getElementById('symAddCustomBtn').dataset.label=q.trim();
     document.getElementById('symAddCustomBtn').dataset.value=q.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
   }else{
@@ -3172,7 +3176,8 @@ function filterSymDropdown(q){
 }
 function renderSymDropdown(list){
   const inner=document.getElementById('symDropInner');
-  inner.inner.innerHTML=list.map(s=>{
+  if(!inner) return;
+  inner.innerHTML=list.map(s=>{
     const isSel=FS.syms.includes(s.value);
     return`<div class="sym-drop-item${isSel?' selected':''}" onclick="toggleSymFromDrop('${s.value}','${s.label}')">
       <span>${s.label}</span>
@@ -3194,11 +3199,13 @@ function toggleSymFromDrop(val,label){
 }
 function renderSymChips(){
   const container=document.getElementById('symChips');
+  if(!container) return;
   const lbl=document.getElementById('symSelectedLabel');
+  if(!lbl) return;
   if(!FS.syms.length){container.innerHTML='';lbl.style.display='none';return;}
   lbl.style.display='flex';
-  (document.getElementById('symSelectedCount')||{}).textContent==FS.syms.length;
-  container.container.innerHTML=FS.syms.map(v=>{
+  (document.getElementById('symSelectedCount')||{}).textContent=FS.syms.length;
+  container.innerHTML=FS.syms.map(v=>{
     const sym=SYMPTOMS.find(s=>s.value===v)||{label:v,value:v};
     return`<span class="fchip sel-teal" style="display:inline-flex;align-items:center;gap:5px">${sym.label}<span class="chip-x" onclick="removeSymChip('${v}')" title="Remove">✕</span></span>`;
   }).join('');
@@ -3219,12 +3226,14 @@ function clearSymSearch(){
   closeSymDropdown();
 }
 function updateSymCount(){
-  (document.getElementById('finderCount')||{}).textContent==FS.syms.length+' symptom'+(FS.syms.length!==1?'s':'')+' selected';
+  (document.getElementById('finderCount')||{}).textContent=FS.syms.length+' symptom'+(FS.syms.length!==1?'s':'')+' selected';
 }
 function toggleSymBrowse(){
   symBrowseOpen=!symBrowseOpen;
   const grid=document.getElementById('symBrowseGrid');
+  if(!grid) return;
   const btn=document.getElementById('symBrowseBtn');
+  if(!btn) return;
   grid.style.display=symBrowseOpen?'flex':'none';
   btn.textContent=symBrowseOpen?'✕ Close browse':'☰ Browse all symptoms';
   if(symBrowseOpen)renderSymBrowse();
@@ -3271,7 +3280,9 @@ function gotoFinderStep(n){
 }
 function updateFinderFooter(n){
   const cnt=document.getElementById("finderCount");
+  if(!cnt) return;
   const btns=document.getElementById("finderFooterBtns");
+  if(!btns) return;
   if(n===1){cnt.textContent=Object.keys(FS.quiz).length+" / 3 answered";btns.innerHTML=`<button class="btn-outline" onclick="gotoFinderStep(2)" style="padding:9px 20px;font-size:.78rem">Skip quiz →</button><button class="btn-primary" onclick="gotoFinderStep(2)" style="padding:9px 20px;font-size:.78rem">Continue →</button>`;}
   else if(n===2){cnt.textContent=FS.syms.length+" symptoms selected";btns.innerHTML=`<button class="btn-outline" data-action="finderStep1" style="padding:9px 20px;font-size:.78rem">← Back</button><button class="btn-saffron" onclick="runFinder()" style="padding:9px 20px;font-size:.78rem">Find My Herbs →</button>`;}
   else if(n===3){cnt.textContent="";btns.innerHTML=`<button class="btn-outline" onclick="gotoFinderStep(2)" style="padding:9px 20px;font-size:.78rem">← Refine Filters</button><button class="btn-saffron" onclick="openRegistrationPortal()" style="padding:9px 20px;font-size:.78rem">📅 Book Consult</button>`;}
@@ -3279,14 +3290,14 @@ function updateFinderFooter(n){
 
 // QUIZ
 let quizA={};
-function selectQuiz(el){const q=el.dataset.q;document.querySelectorAll(`.quiz-opt[data-q="${q}"]`).forEach(b=>b.classList.remove("sel"));el.classList.add("sel");quizA[q]=el.dataset.v;FS.quiz=quizA;(document.getElementById('finderCount')||{}).textContent==Object.keys(quizA).length+" / 3 answered";const vals=Object.values(quizA);const vata=vals.filter(v=>["vata","irregular","anxiety","varies"].includes(v)).length;const pitta=vals.filter(v=>["pitta","strong","irritability"].includes(v)).length;const kapha=vals.filter(v=>["kapha","slow","lethargy"].includes(v)).length;FS.constitution=vata>=pitta&&vata>=kapha?"vata":pitta>=kapha?"pitta":"kapha";}
+function selectQuiz(el){const q=el.dataset.q;document.querySelectorAll(`.quiz-opt[data-q="${q}"]`).forEach(b=>b.classList.remove("sel"));el.classList.add("sel");quizA[q]=el.dataset.v;FS.quiz=quizA;(document.getElementById('finderCount')||{}).textContent=Object.keys(quizA).length+" / 3 answered";const vals=Object.values(quizA);const vata=vals.filter(v=>["vata","irregular","anxiety","varies"].includes(v)).length;const pitta=vals.filter(v=>["pitta","strong","irritability"].includes(v)).length;const kapha=vals.filter(v=>["kapha","slow","lethargy"].includes(v)).length;FS.constitution=vata>=pitta&&vata>=kapha?"vata":pitta>=kapha?"pitta":"kapha";}
 
 // CHIPS & FILTERS
-function toggleFChip(el,cls){const was=el.classList.contains(cls);el.classList.toggle(cls);const t=el.dataset.t,v=el.dataset.v;const arr=t==="sym"?FS.syms:t==="trad"?FS.trads:FS.sys;if(was)arr.splice(arr.indexOf(v),1);else arr.push(v);if(FS.step===2)(document.getElementById('finderCount')||{}).textContent==FS.syms.length+" symptoms selected";}
+function toggleFChip(el,cls){const was=el.classList.contains(cls);el.classList.toggle(cls);const t=el.dataset.t,v=el.dataset.v;const arr=t==="sym"?FS.syms:t==="trad"?FS.trads:FS.sys;if(was)arr.splice(arr.indexOf(v),1);else arr.push(v);if(FS.step===2)(document.getElementById('finderCount')||{}).textContent=FS.syms.length+" symptoms selected";}
 function toggleDose(el){el.classList.toggle("sel");const f=el.dataset.form;if(el.classList.contains("sel"))FS.forms.push(f);else FS.forms=FS.forms.filter(x=>x!==f);}
 function toggleSafety(el){el.classList.toggle("sel");const s=el.dataset.sf;if(el.classList.contains("sel"))FS.safetyF.push(s);else FS.safetyF=FS.safetyF.filter(x=>x!==s);}
 const sevLbls=["","Mild — gentle, food-safe herbs","Moderate — standard-strength herbs","Chronic/Severe — high-potency formulas"];
-function updateSev(el){FS.severity=parseInt(el.value);(document.getElementById('sevVal')||{}).textContent==sevLbls[el.value];}
+function updateSev(el){FS.severity=parseInt(el.value);(document.getElementById('sevVal')||{}).textContent=sevLbls[el.value];}
 
 // RUN FINDER
 function runFinder(){
@@ -3319,10 +3330,11 @@ function renderResults(herbs){
   chips.push(sevLbls[FS.severity].split(" — ")[0]);
   if(FS.constitution!=="mixed")chips.push("Constitution: "+FS.constitution);
   if(af){af.innerHTML=chips.map(c=>`<span class="af-chip">${c}</span>`).join("");}
-  (document.getElementById('resTitle')||{}).textContent==herbs.length?herbs.length+" herb"+(herbs.length>1?"s":"")+" matched your profile":"No herbs matched";
+  (document.getElementById('resTitle')||{}).textContent=herbs.length?herbs.length+" herb"+(herbs.length>1?"s":"")+" matched your profile":"No herbs matched";
   const grid=document.getElementById("herbResultsGrid");
+  if(!grid) return;
   if(!herbs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-soft)"><div style="font-size:3rem;margin-bottom:.8rem">🌿</div><h4 style="font-family:var(--serif);color:var(--text-dark);margin-bottom:.4rem">No herbs matched</h4><p style="font-size:.86rem">Try removing safety filters or selecting fewer traditions.</p></div>`;return;}
-  grid.grid.innerHTML=herbs.map(h=>{
+  grid.innerHTML=herbs.map(h=>{
     const shopBtn=h.shopId?`<button class="btn-saffron" style="font-size:.72rem;padding:7px 14px" onclick="addToCart(${h.shopId});closeFinder()">🛒 Add to Cart</button>`:`<button class="btn-outline" style="font-size:.72rem;padding:7px 14px;border-color:var(--teal-mid);color:var(--teal-mid)" onclick="openRegistrationPortal()">📅 Ask Herbalist</button>`;
     const safe=h.safeFor.map(s=>`<span class="hrc-tag tag-safe">✓ ${s}</span>`).join("");
     const warn=h.notSafe.length?`<span class="hrc-tag tag-warn">⚠ ${h.notSafe.join(", ")}</span>`:"";
@@ -3373,7 +3385,7 @@ let calDate=new Date();
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS=["Su","Mo","Tu","We","Th","Fr","Sa"];
 const TIMES=["9:00 AM","10:00 AM","11:00 AM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM"];
-function renderCal(){const y=calDate.getFullYear(),m=calDate.getMonth();(document.getElementById('calLabel')||{}).textContent==MONTHS[m]+" "+y;const g=document.getElementById("calGrid");g.innerHTML=DAYS.map(d=>`<div class="cal-lbl">${d}</div>`).join("");const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=new Date();for(let i=0;i<first;i++)g.innerHTML+=`<div class="cal-day empty"></div>`;for(let d=1;d<=dim;d++){const dt=new Date(y,m,d);const isTod=dt.toDateString()===today.toDateString();const isPast=dt<today&&!isTod;const isWkd=dt.getDay()===0||dt.getDay()===6;g.innerHTML+=`<div class="cal-day${isPast?' past':''}${isTod?' today':''}${!isPast&&!isWkd?' avail':''}" onclick="selDay(this)">${d}</div>`;}renderTimes();}
+function renderCal(){const y=calDate.getFullYear(),m=calDate.getMonth();(document.getElementById('calLabel')||{}).textContent=MONTHS[m]+" "+y;const g=document.getElementById("calGrid");g.innerHTML=DAYS.map(d=>`<div class="cal-lbl">${d}</div>`).join("");const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=new Date();for(let i=0;i<first;i++)g.innerHTML+=`<div class="cal-day empty"></div>`;for(let d=1;d<=dim;d++){const dt=new Date(y,m,d);const isTod=dt.toDateString()===today.toDateString();const isPast=dt<today&&!isTod;const isWkd=dt.getDay()===0||dt.getDay()===6;g.innerHTML+=`<div class="cal-day${isPast?' past':''}${isTod?' today':''}${!isPast&&!isWkd?' avail':''}" onclick="selDay(this)">${d}</div>`;}renderTimes();}
 function selDay(el){if(el.classList.contains("past"))return;document.querySelectorAll(".cal-day").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
 function renderTimes(){(document.getElementById("timeGrid")||{}).innerHTML=TIMES.map(t=>`<div class="t-slot" onclick="selSlot(this)">${t}</div>`).join("");}
 function selSlot(el){document.querySelectorAll(".t-slot").forEach(s=>s.classList.remove("sel"));el.classList.add("sel");}
@@ -3580,7 +3592,7 @@ document.getElementById('adminPwInput')?.addEventListener('keydown',e=>{if(e.key
 function renderAdminList(){
   const q=(document.getElementById('adminFilter')?.value||'').toLowerCase();
   const filtered=q?SYMPTOMS.filter(s=>s.label.toLowerCase().includes(q)||s.value.toLowerCase().includes(q)):SYMPTOMS;
-  (document.getElementById('adminSymCount')||{}).textContent==SYMPTOMS.length;
+  (document.getElementById('adminSymCount')||{}).textContent=SYMPTOMS.length;
   (document.getElementById('adminList')||{}).innerHTML=filtered.length?filtered.map((s,i)=>`
     <div class="admin-list-item">
       <span class="ali-label">${s.label}</span>

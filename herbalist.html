@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://api.anthropic.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none';"/>
 <meta charset="UTF-8"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
@@ -1220,6 +1221,7 @@ function onUsernameInput(val) {
 
 function showSuggestions(list) {
   const box = document.getElementById('loginSuggestions');
+  if(!box) return;
   suggestFocusIdx = -1;
   box.innerHTML=list.map((h, i) => `
     <div class="suggest-item${h.status === 'suspended' ? ' suggest-suspended' : ''}"
@@ -1259,9 +1261,9 @@ function selectSuggest(id) {
 
 function showPreviewCard(user) {
   const card = document.getElementById('userPreviewCard');
-  (document.getElementById('previewAvatar')||{}).textContent== user.name.charAt(0);
-  (document.getElementById('previewName')||{}).textContent== user.name;
-  (document.getElementById('previewSpecialty')||{}).textContent== user.specialty || user.tradition || 'Herbalist';
+  (document.getElementById('previewAvatar')||{}).textContent= user.name.charAt(0);
+  (document.getElementById('previewName')||{}).textContent= user.name;
+  (document.getElementById('previewSpecialty')||{}).textContent= user.specialty || user.tradition || 'Herbalist';
   const statusEl = document.getElementById('previewStatus');
   if (user.status === 'active') {
     statusEl.textContent = '● Active';
@@ -1301,7 +1303,7 @@ function togglePwVis() {
 
 function showLoginError(msg) {
   const el = document.getElementById('loginError');
-  (document.getElementById('loginErrorMsg')||{}).textContent== msg;
+  (document.getElementById('loginErrorMsg')||{}).textContent= msg;
   el.style.display = 'flex';
   (document.getElementById('loginUsername')||{style:{}}).style.borderColor = 'var(--spice)';
   (document.getElementById('loginPw')||{style:{}}).style.borderColor = 'var(--spice)';
@@ -1336,7 +1338,7 @@ function openForgotPassword() {
   (document.getElementById('fpCodeError')||{style:{}}).style.display = 'none';
   (document.getElementById('fpPwError')||{style:{}}).style.display = 'none';
   (document.getElementById('fpStrengthBar')||{style:{}}).style.width = '0%';
-  (document.getElementById('fpStrengthLabel')||{}).textContent== '';
+  (document.getElementById('fpStrengthLabel')||{}).textContent= '';
   fpSetStep(1);
   (document.getElementById('forgotModal')||{style:{}}).style.display = 'flex';
   setTimeout(() => document.getElementById('fpEmail').focus(), 300);
@@ -1354,8 +1356,8 @@ function fpSetStep(n) {
     el.style.borderBottomColor = sn === n ? 'var(--teal-mid)' : 'transparent';
     el.style.fontWeight = sn === n ? '700' : '600';
   });
-  (document.getElementById('fpModalTitle')||{}).textContent== ['','Reset Your Password','Enter Verification Code','Set New Password',''][n] || 'Reset Password';
-  (document.getElementById('fpModalSub')||{}).textContent== ['','Enter your registered email address','Check your email for the reset code','Choose a strong new password',''][n] || '';
+  (document.getElementById('fpModalTitle')||{}).textContent= ['','Reset Your Password','Enter Verification Code','Set New Password',''][n] || 'Reset Password';
+  (document.getElementById('fpModalSub')||{}).textContent= ['','Enter your registered email address','Check your email for the reset code','Choose a strong new password',''][n] || '';
 }
 
 function fpBack(toStep) {
@@ -1408,9 +1410,9 @@ async function sendResetCode() {
 
   // Show found user
   fpUser = match;
-  (document.getElementById('fpFoundAvatar')||{}).textContent== match.name.charAt(0);
-  (document.getElementById('fpFoundName')||{}).textContent== match.name;
-  (document.getElementById('fpFoundSpec')||{}).textContent== match.specialty || match.tradition || 'Practitioner';
+  (document.getElementById('fpFoundAvatar')||{}).textContent= match.name.charAt(0);
+  (document.getElementById('fpFoundName')||{}).textContent= match.name;
+  (document.getElementById('fpFoundSpec')||{}).textContent= match.specialty || match.tradition || 'Practitioner';
   (document.getElementById('fpUserFound')||{style:{}}).style.display = 'flex';
   errEl.style.display = 'none';
 
@@ -1435,12 +1437,12 @@ async function sendResetCode() {
   fpSetStep(2);
 
   // Show code (in production this would be emailed — demo shows it on screen)
-  (document.getElementById('fpCodeDisplay')||{}).textContent== fpResetCode;
+  (document.getElementById('fpCodeDisplay')||{}).textContent= fpResetCode;
 
   // Populate step 3 user card
-  (document.getElementById('fpResetAvatar')||{}).textContent== match.name.charAt(0);
-  (document.getElementById('fpResetName')||{}).textContent== match.name;
-  (document.getElementById('fpResetEmail')||{}).textContent== email;
+  (document.getElementById('fpResetAvatar')||{}).textContent= match.name.charAt(0);
+  (document.getElementById('fpResetName')||{}).textContent= match.name;
+  (document.getElementById('fpResetEmail')||{}).textContent= email;
 
   // Start resend cooldown timer (60s)
   startResendTimer(60);
@@ -1573,8 +1575,8 @@ async function setNewPassword() {
   // Show success
   (document.getElementById('fpStep3')||{style:{}}).style.display = 'none';
   (document.getElementById('fpSuccess')||{style:{}}).style.display = 'block';
-  (document.getElementById('fpModalTitle')||{}).textContent== 'Password Updated!';
-  (document.getElementById('fpModalSub')||{}).textContent== 'Your new password is now active';
+  (document.getElementById('fpModalTitle')||{}).textContent= 'Password Updated!';
+  (document.getElementById('fpModalSub')||{}).textContent= 'Your new password is now active';
   clearInterval(fpResendTimerInterval);
 }
 
@@ -1633,15 +1635,15 @@ document.getElementById('loginUsername').addEventListener('keydown', e => { if (
     currentHerbalist = herbalistData;
     (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
     (document.getElementById('dashboard')||{style:{}}).style.display  = 'flex';
-    (document.getElementById('tbName')||{}).textContent== herbalistData.name;
-    (document.getElementById('tbAvatar')||{}).textContent== herbalistData.initial;
-    (document.getElementById('tbRole')||{}).textContent== herbalistData.specialty.split(' ')[0] + ' Herbalist';
-    (document.getElementById('greetName')||{}).textContent== herbalistData.greet;
-    (document.getElementById('sbName')||{}).textContent== herbalistData.name;
-    (document.getElementById('sbSpecialty')||{}).textContent== herbalistData.specialty;
+    (document.getElementById('tbName')||{}).textContent= herbalistData.name;
+    (document.getElementById('tbAvatar')||{}).textContent= herbalistData.initial;
+    (document.getElementById('tbRole')||{}).textContent= herbalistData.specialty.split(' ')[0] + ' Herbalist';
+    (document.getElementById('greetName')||{}).textContent= herbalistData.greet;
+    (document.getElementById('sbName')||{}).textContent= herbalistData.name;
+    (document.getElementById('sbSpecialty')||{}).textContent= herbalistData.specialty;
     (document.getElementById('settName')||{}).value            = herbalistData.name;
     (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
-    (document.getElementById('greetDate')||{}).textContent== new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    (document.getElementById('greetDate')||{}).textContent= new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
     showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
     ALL_CLIENTS = await loadAllClients();
@@ -1738,15 +1740,15 @@ async function doLogin() {
   currentHerbalist = herbalistData;
   (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
   (document.getElementById('dashboard')||{style:{}}).style.display  = 'flex';
-  (document.getElementById('tbName')||{}).textContent== herbalistData.name;
-  (document.getElementById('tbAvatar')||{}).textContent== herbalistData.initial;
-  (document.getElementById('tbRole')||{}).textContent== herbalistData.specialty.split(' ')[0] + ' Herbalist';
-  (document.getElementById('greetName')||{}).textContent== herbalistData.greet;
-  (document.getElementById('sbName')||{}).textContent== herbalistData.name;
-  (document.getElementById('sbSpecialty')||{}).textContent== herbalistData.specialty;
+  (document.getElementById('tbName')||{}).textContent= herbalistData.name;
+  (document.getElementById('tbAvatar')||{}).textContent= herbalistData.initial;
+  (document.getElementById('tbRole')||{}).textContent= herbalistData.specialty.split(' ')[0] + ' Herbalist';
+  (document.getElementById('greetName')||{}).textContent= herbalistData.greet;
+  (document.getElementById('sbName')||{}).textContent= herbalistData.name;
+  (document.getElementById('sbSpecialty')||{}).textContent= herbalistData.specialty;
   (document.getElementById('settName')||{}).value            = herbalistData.name;
   (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
-  (document.getElementById('greetDate')||{}).textContent== new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  (document.getElementById('greetDate')||{}).textContent= new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   showToast('🌿 Loading client assessments…');
   ALL_CLIENTS = await loadAllClients();
@@ -1754,7 +1756,7 @@ async function doLogin() {
   (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
     (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
     (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
-  (document.getElementById('nbNew')||{}).textContent== ALL_CLIENTS.filter(c=>!c._reviewed).length;
+  (document.getElementById('nbNew')||{}).textContent= ALL_CLIENTS.filter(c=>!c._reviewed).length;
   (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
   renderRecentTable(); renderClientsTable(ALL_CLIENTS);
   renderHerbDb(); renderProtocolLibrary(); loadProtocols();
@@ -1811,7 +1813,7 @@ function renderRecentTable(){
   if(!pending.length){(document.getElementById('recentTable')||{}).innerHTML='<p style="color:var(--text-light);font-size:.88rem;padding:1rem 0">✅ All assessments reviewed. No new submissions.</p>';return;}
   (document.getElementById('recentTable')||{}).innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Submitted</th><th>Severity</th><th>Top Symptoms</th><th>Actions</th></tr></thead><tbody>${pending.map(c=>{
     const sev=parseInt(c.symptoms.severity)||3;
-    const syms=c.symptoms.selected.slice(0,3).join(', ');
+    const syms=(c.symptoms.chips||c.symptoms.selected||[]).slice(0,3).join(', ');
     return`<tr><td><span class="client-name">${c.personal.firstName} ${c.personal.lastName}</span><br/><small style="color:var(--text-light)">${c.personal.email}</small></td><td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td><td>${sevBadge(sev)}</td><td style="font-size:.78rem;color:var(--text-mid);max-width:180px">${syms||'—'}</td><td><button class="btn btn-primary" style="padding:6px 12px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Review →</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
@@ -1819,24 +1821,56 @@ function renderRecentTable(){
 // ══ CLIENTS TABLE ══
 function renderClientsTable(list){
   const tbody=document.getElementById('clientsTbody');
-  tbody.tbody.innerHTML=list.map(c=>{
-    const sev=parseInt(c.symptoms.severity)||3;
-    const urg=sev>=4?'high':sev>=3?'medium':'low';
-    const status=c._reviewed?'reviewed':'new';
-    return`<tr>
-      <td><span class="client-name">${c.personal.firstName} ${c.personal.lastName}</span><br/><small style="color:var(--text-light);font-size:.72rem">${c.personal.email}</small></td>
-      <td style="font-size:.78rem;color:var(--text-soft)">${formatDate(c.meta.submittedAt)}</td>
-      <td style="font-size:.8rem;color:var(--text-mid);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.symptoms.primaryComplaint}">${c.symptoms.primaryComplaint?.substring(0,55)||'—'}${c.symptoms.primaryComplaint?.length>55?'…':''}</td>
-      <td>${sevBadge(sev)}</td>
-      <td><span class="urgency-${urg}">${urg.toUpperCase()}</span></td>
-      <td><span class="status-badge status-${status}"><span class="status-dot"></span>${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
-      <td><div class="row-actions"><button class="btn btn-primary" style="padding:5px 11px;font-size:.7rem" onclick="openClient('${c.meta.refCode}')">Open</button></div></td>
-    </tr>`;
+  if(!tbody){ console.error('clientsTbody not found'); return; }
+  if(!list || !list.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);font-size:.88rem">No assessments found. Pull to refresh or check Supabase connection.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=list.map(cl=>{
+    // Safely read nested fields with fallbacks
+    const p   = cl.personal   || {};
+    const sy  = cl.symptoms   || {};
+    const meta= cl.meta       || {};
+    const firstName  = p.firstName  || '';
+    const lastName   = p.lastName   || '';
+    const email      = p.email      || cl.client_email || '';
+    const refCode    = meta.refCode || cl.ref_code || '';
+    const submittedAt= meta.submittedAt || cl.submitted_at || '';
+    const complaint  = sy.primaryComplaint || cl.primary_complaint || '—';
+    const sev        = parseInt(sy.severity)||3;
+    const urg        = sev>=4?'high':sev>=3?'medium':'low';
+    const status     = cl._reviewed?'reviewed':'new';
+    const name       = (firstName+' '+lastName).trim() || email || 'Unknown Client';
+    const shortRef   = refCode ? refCode.slice(-6) : '—';
+
+    return '<tr data-ref="' + refCode + '" onclick="openClient(this.dataset.ref)" style="cursor:pointer">' +
+      '<td>' +
+        '<span class="client-name">' + escapeHtml(name) + '</span>' +
+        '<br/><small style="color:var(--text-light);font-size:.72rem">' + escapeHtml(email) + '</small>' +
+      '</td>' +
+      '<td style="font-size:.78rem;color:var(--text-soft)">' + formatDate(submittedAt) + '</td>' +
+      '<td style="font-size:.8rem;color:var(--text-mid);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + escapeHtml(complaint) + '">' + escapeHtml(complaint.substring(0,55)) + (complaint.length>55?'…':'') + '</td>' +
+      '<td>' + sevBadge(sev) + '</td>' +
+      '<td><span class="urgency-' + urg + '">' + urg.toUpperCase() + '</span></td>' +
+      '<td><span class="status-badge status-' + status + '"><span class="status-dot"></span>' + (status.charAt(0).toUpperCase()+status.slice(1)) + '</span></td>' +
+      '<td><div class="row-actions"><button class="btn btn-primary" style="padding:5px 11px;font-size:.7rem" onclick="event.stopPropagation();openClient(event.currentTarget.closest(\'tr\').dataset.ref)">Open →</button></div></td>' +
+    '</tr>';
   }).join('');
 }
-function filterClients(q){const f=ALL_CLIENTS.filter(c=>JSON.stringify(c.personal).toLowerCase().includes(q.toLowerCase())||c.symptoms.primaryComplaint?.toLowerCase().includes(q.toLowerCase()));renderClientsTable(f);}
+function filterClients(q){
+  const lq=q.toLowerCase();
+  const f=ALL_CLIENTS.filter(cl=>{
+    const p=cl.personal||{};
+    const sy=cl.symptoms||{};
+    return JSON.stringify(p).toLowerCase().includes(lq)||
+           (sy.primaryComplaint||'').toLowerCase().includes(lq)||
+           (cl.client_name||'').toLowerCase().includes(lq)||
+           (cl.ref_code||cl.meta?.refCode||'').toLowerCase().includes(lq);
+  });
+  renderClientsTable(f);
+}
 function filterByStatus(s){renderClientsTable(s?ALL_CLIENTS.filter(c=>(c._reviewed?'reviewed':'new')===s):ALL_CLIENTS);}
-function filterByUrgency(u){renderClientsTable(u?ALL_CLIENTS.filter(c=>{const s=parseInt(c.symptoms.severity)||3;const urg=s>=4?'high':s>=3?'medium':'low';return urg===u;}):ALL_CLIENTS);}
+function filterByUrgency(u){renderClientsTable(u?ALL_CLIENTS.filter(cl=>{const s=parseInt((cl.symptoms||{}).severity)||3;const urg=s>=4?'high':s>=3?'medium':'low';return urg===u;}):ALL_CLIENTS);}
 
 // ══ CLIENT DETAIL ══
 function openClient(ref){
@@ -1846,7 +1880,7 @@ function openClient(ref){
   c._reviewed=true;
   showPanel('clientdetail');
   // Analyse herbs
-  const scored=herbDB.map(h=>{let sc=0;c.symptoms.selected.forEach(s=>{if(h.syms.includes(s))sc+=25;});c.bodyAreas.zones.forEach(z=>{if(h.syms.includes(z)||h.syms.some(s=>z.includes(s)))sc+=8;});const conflict=h.notSafe.filter(ns=>c.history.conditions.join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications&&c.history.medications.toLowerCase().includes(ns))).length;sc-=conflict*50;return{...h,score:Math.max(0,sc)};}).filter(h=>h.score>0).sort((a,b)=>b.score-a.score);
+  const scored=herbDB.map(h=>{let sc=0;const _chips=(c.symptoms.chips||c.symptoms.selected||[]); _chips.forEach(s=>{if(h.syms.includes(s))sc+=25;});(c.bodyAreas.zones||c.body_areas?.zones||[]).forEach(z=>{if(h.syms.includes(z)||h.syms.some(s=>z.includes(s)))sc+=8;});const conflict=h.notSafe.filter(ns=>(c.history.conditions||[]).join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications&&c.history.medications.toLowerCase().includes(ns))).length;sc-=conflict*50;return{...h,score:Math.max(0,sc)};}).filter(h=>h.score>0).sort((a,b)=>b.score-a.score);
   const maxSc=scored[0]?.score||1;
   scored.forEach(h=>{h.pct=Math.round(Math.min(97,(h.score/maxSc)*92)+5);});
   // Constitution
@@ -1855,17 +1889,17 @@ function openClient(ref){
   const vataSig=allText.includes('anxiety')||allText.includes('insomnia')||allText.includes('fatigue')||allText.includes('irregular');
   const pittaSig=allText.includes('inflammation')||allText.includes('liver')||allText.includes('skin')||allText.includes('stress');
   const kaphaSig=allText.includes('weight')||allText.includes('fatigue')||allText.includes('congestion')||allText.includes('hormones');
-  const vataPct=vataSig?Math.min(95,35+(c.symptoms.selected.filter(s=>['anxiety','insomnia','fatigue'].includes(s)).length*15)):20;
-  const pittaPct=pittaSig?Math.min(95,30+(c.symptoms.selected.filter(s=>['inflammation','liver','skin'].includes(s)).length*15)):20;
-  const kaphaPct=kaphaSig?Math.min(95,25+(c.symptoms.selected.filter(s=>['weight','hormones'].includes(s)).length*15)):20;
+  const vataPct=vataSig?Math.min(95,35+(_chips.filter(s=>['anxiety','insomnia','fatigue'].includes(s)).length*15)):20;
+  const pittaPct=pittaSig?Math.min(95,30+(_chips.filter(s=>['inflammation','liver','skin'].includes(s)).length*15)):20;
+  const kaphaPct=kaphaSig?Math.min(95,25+(_chips.filter(s=>['weight','hormones'].includes(s)).length*15)):20;
   // Flags
   const flags=[];
   if(c.history.medications&&c.history.medications.toLowerCase().includes('warfarin'))flags.push({type:'danger',icon:'⚠️',text:'Client is on Warfarin',sub:'Avoid: Turmeric (high dose), Ginger, St. John\'s Wort, Dong Quai, Garlic (therapeutic)'});
   if(c.history.medications&&(c.history.medications.toLowerCase().includes('sertraline')||c.history.medications.toLowerCase().includes('ssri')||c.history.medications.toLowerCase().includes('antidepressant')))flags.push({type:'danger',icon:'⚠️',text:'Client is on SSRI medication',sub:"Contraindicated: St. John's Wort (serotonin syndrome risk). Use Saffron, Lavender, Rhodiola instead."});
   if(c.history.medications&&(c.history.medications.toLowerCase().includes('omeprazole')||c.history.medications.toLowerCase().includes('ppi')))flags.push({type:'warn',icon:'💊',text:'PPI medication detected',sub:'Monitor: High-tannin herbs (black walnut, oak bark) may interfere with absorption. Space dosing by 2+ hours.'});
   if(c.history.pregnant&&c.history.pregnant.includes('pregnant'))flags.push({type:'danger',icon:'🤰',text:'Client is pregnant',sub:'Contraindicated: Valerian, Black Cohosh, Blue Cohosh, Dong Quai, Pennyroyal, Wormwood, Senna (high dose).'});
-  if(c.history.conditions.some(c=>c.includes('autoimmune')))flags.push({type:'warn',icon:'🔬',text:'Autoimmune condition reported',sub:'Caution: Echinacea, Astragalus (immune stimulants). May exacerbate flares. Consider adaptogens instead.'});
-  if(c.history.conditions.some(c=>c.includes('Liver')))flags.push({type:'warn',icon:'🫀',text:'Liver condition reported',sub:'Avoid: Comfrey, Kava, Pyrrolizidine alkaloid herbs. Use: Milk Thistle, Dandelion Root, Artichoke Leaf.'});
+  if((c.history.conditions||[]).some(cc=>cc.includes('autoimmune')))flags.push({type:'warn',icon:'🔬',text:'Autoimmune condition reported',sub:'Caution: Echinacea, Astragalus (immune stimulants). May exacerbate flares. Consider adaptogens instead.'});
+  if((c.history.conditions||[]).some(cc=>cc.includes('Liver')))flags.push({type:'warn',icon:'🫀',text:'Liver condition reported',sub:'Avoid: Comfrey, Kava, Pyrrolizidine alkaloid herbs. Use: Milk Thistle, Dandelion Root, Artichoke Leaf.'});
   if(c.lifestyle.substances.includes('Alcohol (regular)'))flags.push({type:'warn',icon:'🍷',text:'Regular alcohol use',sub:'Caution: Valerian, Kava potentiate sedative effects. Advise reduced intake for full protocol efficacy.'});
   if(parseInt(c.symptoms.severity)>=4)flags.push({type:'warn',icon:'🔴',text:'High severity — consider GP referral',sub:'Symptoms rated 4–5/5. Recommend concurrent conventional medical assessment alongside herbal support.'});
   // Protocol lines
@@ -1884,7 +1918,7 @@ function openClient(ref){
           <span class="ch-tag">📅 ${c.personal.dob||'DOB not provided'}</span>
           <span class="ch-tag">${c.personal.bioSex||'Sex not specified'}</span>
           <span class="ch-tag">🌍 ${c.personal.country||'—'}</span>
-          <span class="ch-tag">🌿 ${c.personal.herbalist||'Unassigned'}</span>
+          
           ${c.history.pregnant!=='No'?`<span class="ch-tag" style="background:rgba(232,130,12,.25);border-color:var(--saffron-light);color:var(--saffron-bright)">⚠️ ${c.history.pregnant}</span>`:''}
         </div>
         <div class="ch-ref">REF: ${c.meta.refCode} · Submitted: ${formatDate(c.meta.submittedAt)}</div>
@@ -1910,14 +1944,14 @@ function openClient(ref){
           <div class="detail-row"><span class="dr-label">Severity</span><span class="dr-val">
             <div class="sev-meter"><div class="sev-track"><div class="sev-fill sev${c.symptoms.severity}"></div></div><span class="sev-num" style="color:${parseInt(c.symptoms.severity)>=4?'var(--spice)':'var(--teal-mid)'}">${c.symptoms.severity}/5</span></div>
           </span></div>
-          <div class="detail-row"><span class="dr-label">Pain Level</span><span class="dr-val">${c.bodyAreas.painLevel}/10 — ${c.bodyAreas.painType.join(', ')||'None reported'}</span></div>
-          <div class="detail-row"><span class="dr-label">Variation</span><span class="dr-val" style="text-align:right;max-width:200px">${c.symptoms.variation.join('; ')||'None noted'}</span></div>
+          <div class="detail-row"><span class="dr-label">Pain Level</span><span class="dr-val">${c.bodyAreas.painLevel}/10 — ${(c.bodyAreas.painTypes||c.bodyAreas.painType||[]).join(', ')||'None reported'}</span></div>
+          <div class="detail-row"><span class="dr-label">Variation</span><span class="dr-val" style="text-align:right;max-width:200px">${(c.symptoms.triggers||c.symptoms.variation||[]).join('; ')||'None noted'}</span></div>
           ${c.symptoms.notes?`<div style="margin-top:.7rem;padding:.7rem;background:var(--surface-teal);border-radius:6px;font-size:.8rem;color:var(--text-mid);font-style:italic">"${c.symptoms.notes}"</div>`:''}
         </div>
       </div>
       <div class="detail-card">
-        <div class="dc-head"><span class="dc-title">🔴 Active Symptoms (${c.symptoms.selected.length})</span></div>
-        <div class="dc-body"><div>${c.symptoms.selected.map(s=>`<span class="detail-pill">${s}</span>`).join('')||'<em style="font-size:.82rem;color:var(--text-light)">None selected</em>'}</div>
+        <div class="dc-head"><span class="dc-title">🔴 Active Symptoms (${(c.symptoms.chips||c.symptoms.selected||[]).length})</span></div>
+        <div class="dc-body"><div>${(c.symptoms.chips||c.symptoms.selected||[]).map(s=>`<span class="detail-pill">${s}</span>`).join('')||'<em style="font-size:.82rem;color:var(--text-light)">None selected</em>'}</div>
           <div style="margin-top:1rem"><div class="dc-title" style="font-size:.82rem;margin-bottom:.5rem">🫀 Affected Body Areas</div><div>${c.bodyAreas.zones.map(z=>`<span class="detail-pill">${z}</span>`).join('')||'—'}</div></div>
         </div>
       </div>
@@ -1985,7 +2019,7 @@ function openClient(ref){
         <div class="dc-head"><span class="dc-title">🌿 Matched Herb Recommendations</span><span style="font-size:.7rem;color:var(--text-light)">${scored.length} matches</span></div>
         <div class="dc-body" style="max-height:340px;overflow-y:auto" id="herbRecsFor${ref}">
           ${scored.slice(0,8).map(h=>{
-            const hasConflict=h.notSafe.some(ns=>c.history.conditions.join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications?.toLowerCase().includes(ns)));
+            const hasConflict=h.notSafe.some(ns=>(c.history.conditions||[]).join(' ').toLowerCase().includes(ns)||(c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history.medications?.toLowerCase().includes(ns)));
             return`<div class="herb-rec-card ${hasConflict?'contraindicated':''}">
               <div class="hrc-emoji-sm">${h.emoji}</div>
               <div class="hrc-info"><div class="hrc-name">${h.name} <span style="font-size:.68rem;color:var(--text-light);font-weight:400">${h.trad}</span></div>
@@ -2175,7 +2209,7 @@ function filterProtocols(q){
 // ── PROTOCOL BUILDER ──
 function openNewProtocol(){
   editingProtocolId = null;
-  (document.getElementById('pbTitle')||{}).textContent== 'New Protocol';
+  (document.getElementById('pbTitle')||{}).textContent= 'New Protocol';
   (document.getElementById('pb-name')||{}).value = '';
   (document.getElementById('pb-cat')||{}).value = 'Anxiety & Stress';
   (document.getElementById('pb-duration')||{}).value = '';
@@ -2191,7 +2225,7 @@ function editProtocol(id){
   const p = ALL_PROTOCOLS.find(x=>x.id===id);
   if(!p) return;
   editingProtocolId = id;
-  (document.getElementById('pbTitle')||{}).textContent== 'Edit Protocol';
+  (document.getElementById('pbTitle')||{}).textContent= 'Edit Protocol';
   (document.getElementById('pb-name')||{}).value = p.name||'';
   (document.getElementById('pb-cat')||{}).value = p.category||'Custom';
   (document.getElementById('pb-duration')||{}).value = p.duration||'';
@@ -2389,9 +2423,9 @@ async function openMessageThread(ref){
   }
 
   // Update header
-  (document.getElementById('msgClientAvatar')||{}).textContent== name.charAt(0).toUpperCase();
-  (document.getElementById('msgClientName')||{}).textContent== name;
-  (document.getElementById('msgClientMeta')||{}).textContent== email + (client.personal?.herbalist?' · '+client.personal.herbalist:'');
+  (document.getElementById('msgClientAvatar')||{}).textContent= name.charAt(0).toUpperCase();
+  (document.getElementById('msgClientName')||{}).textContent= name;
+  (document.getElementById('msgClientMeta')||{}).textContent= email + (client.personal?.herbalist?' · '+client.personal.herbalist:'');
   (document.getElementById('msgEmptyState')||{style:{}}).style.display = 'none';
   (document.getElementById('msgThreadView')||{style:{}}).style.display = 'flex';
   (document.getElementById('msgThreadView')||{style:{}}).style.flexDirection = 'column';
@@ -2587,6 +2621,7 @@ async function renderCalendar(){
   });
   stored.sort((a,b)=>new Date(a.date)-new Date(b.date));
   const apptEl=document.getElementById('calendarView');
+  if(!apptEl) return;
   if(!stored.length){
     if(apptEl){apptEl.innerHTML=`<div style="max-width:600px"><div style="padding:2rem;text-align:center;color:var(--text-light);background:var(--surface);border:1.5px solid var(--border);border-radius:10px"><div style="font-size:2rem;margin-bottom:.5rem">📅</div><p style="font-weight:600">No appointments scheduled yet.</p><p style="font-size:.82rem;margin-top:.3rem">Appointments are created when you send a protocol with a follow-up date.</p></div></div>`;}
     return;
@@ -2631,6 +2666,7 @@ function checkInteraction(){
   const herbId=document.getElementById('intHerb').value;
   const drug=document.getElementById('intDrug').value.toLowerCase().trim();
   const res=document.getElementById('intResult');
+  if(!res) return;
   if(!herbId||!drug){res.innerHTML='';return;}
   const herb=herbDB.find(h=>h.id===herbId);
   if(!herb){return;}
@@ -2712,9 +2748,9 @@ function saveSettings(){
   const name=document.getElementById('settName').value;
   const spec=document.getElementById('settSpec').value;
   if(currentHerbalist){currentHerbalist.name=name;currentHerbalist.specialty=spec;}
-  (document.getElementById('tbName')||{}).textContent==name;
-  (document.getElementById('sbName')||{}).textContent==name;
-  (document.getElementById('sbSpecialty')||{}).textContent==spec;
+  (document.getElementById('tbName')||{}).textContent=name;
+  (document.getElementById('sbName')||{}).textContent=name;
+  (document.getElementById('sbSpecialty')||{}).textContent=spec;
   showToast('✅ Settings saved.');
 }
 async function deleteClient(ref){
@@ -2772,39 +2808,1352 @@ async function refreshDashboard(){
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3800);}
 
 async function loadAllClients(){
-  try {
-    // Load assessments from Supabase
-    const { data: assessments, error } = await sb.from('assessments').select('*').order('submitted_at', { ascending: false });
-    if(error){ console.error('loadAllClients:', error); return []; }
+  const seenRefs = new Set();
+  const tombstone = JSON.parse(localStorage.getItem('tfb_deleted_assessments')||'[]');
+  let clients = [];
 
-    // Merge with protocol/state data
-    const clients = await Promise.all((assessments||[]).map(async a => {
-      const protocol = await dbGetOne('protocols', { assessment_ref: a.ref_code });
-      return {
-        ...a,
-        meta: { refCode: a.ref_code, submittedAt: a.submitted_at },
-        personal: a.personal || {},
-        symptoms:  a.symptoms || {},
-        bodyAreas: a.body_areas || {},
-        history:   a.history || {},
+  // ── 1. Load from Supabase ──
+  try {
+    const { data: assessments, error } = await sb.from('assessments').select('*').order('submitted_at', { ascending: false });
+    if(error){ console.warn('loadAllClients Supabase:', error.message); }
+    if(assessments && assessments.length){
+      const merged = await Promise.all(assessments.map(async a => {
+        if(tombstone.includes(a.ref_code)) return null; // skip deleted
+        seenRefs.add(a.ref_code);
+        let protocol = null;
+        try{ protocol = await dbGetOne('protocols', { assessment_ref: a.ref_code }); }catch(e){}
+        return {
+          ...a,
+          name: a.client_name || ((a.personal?.firstName||'')+' '+(a.personal?.lastName||'')).trim() || a.client_email || 'Unknown',
+          meta:      { refCode: a.ref_code, submittedAt: a.submitted_at },
+          personal:  a.personal  || {},
+          symptoms:  a.symptoms  || {},
+          bodyAreas: a.body_areas || {},
+          history:   a.history   || {},
+          lifestyle: a.lifestyle || {},
+          _notes:         protocol?.instructions  || '',
+          _protocolLines: protocol?.protocol_lines|| [],
+          _protocolSent:  protocol?.sent          || false,
+          _reviewed:      a.reviewed              || false,
+          _followupDate:  protocol?.followup_date || null,
+          _followupTime:  protocol?.followup_time || null,
+          _instructions:  protocol?.instructions  || '',
+        };
+      }));
+      clients = merged.filter(Boolean);
+    }
+  } catch(e) { console.warn('loadAllClients Supabase exception:', e); }
+
+  // ── 2. LocalStorage fallback — picks up assessments not yet synced ──
+  try {
+    const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
+    for(const ref of refs){
+      if(tombstone.includes(ref)) continue;
+      if(seenRefs.has(ref)) continue; // already loaded from Supabase
+      const raw = localStorage.getItem('tfb_assessment_'+ref);
+      if(!raw) continue;
+      const a = JSON.parse(raw);
+      if(!a || !a.personal) continue;
+      const state = JSON.parse(localStorage.getItem('tfb_state_'+ref)||'{}');
+      clients.push({
+        ...a, ...state,
+        ref_code: ref,
+        name: (a.personal.firstName||'')+' '+(a.personal.lastName||''),
+        meta: { refCode: ref, submittedAt: a.meta?.submittedAt || a.submitted_at || new Date().toISOString() },
+        personal:  a.personal  || {},
+        symptoms:  a.symptoms  || {},
+        bodyAreas: a.body_areas|| a.bodyAreas || {},
+        history:   a.history   || {},
         lifestyle: a.lifestyle || {},
-        _notes:          protocol?.instructions || '',
-        _protocolLines:  protocol?.protocol_lines || [],
-        _protocolSent:   protocol?.sent || false,
-        _reviewed:       a.reviewed || false,
-        _followupDate:   protocol?.followup_date || null,
-        _followupTime:   protocol?.followup_time || null,
-        _instructions:   protocol?.instructions || '',
-      };
-    }));
-    return clients;
-  } catch(e) {
-    console.error('loadAllClients error:', e);
-    return [];
-  }
+        _reviewed: state.reviewed || false,
+        _protocolSent: state._protocolSent || false,
+        _protocolLines: state._protocolLines || [],
+      });
+      seenRefs.add(ref);
+    }
+  } catch(e){ console.warn('loadAllClients localStorage fallback:', e); }
+
+  return clients;
 }
 
 
+
+
+// ════════════════════════════════════════════════════════════════
+// HERBAL PROTOCOL MAP (HPM)
+// Electronic herbal doctor — full knowledge base + protocol builder
+// ════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────────
+// HPM STATE
+// ─────────────────────────────────────────────────
+var HPM = {
+  client:    null,   // selected client object
+  protocol:  {},     // { sectionKey: [item, item, …] }
+  activeSection: null,
+};
+
+// ─────────────────────────────────────────────────────────────────
+// MASTER KNOWLEDGE BASE
+// Each condition maps to protocol sections full of suggestions.
+// Herbalist can add/remove/edit every entry.
+// ─────────────────────────────────────────────────────────────────
+var HPM_DB = {
+
+  // ══ ANXIETY & STRESS ══
+  'Anxiety & Stress': {
+    icon: '😰', color: '#3b1f6b',
+    herbs: [
+      {name:'Ashwagandha (Withania somnifera)', dose:'300–600 mg extract, 2× daily', form:'Capsule / Powder', notes:'KSM-66 extract preferred; adrenal adaptogen, reduces cortisol'},
+      {name:'Passionflower (Passiflora incarnata)', dose:'250–500 mg or 1–2 mL tincture, 3× daily', form:'Tincture / Capsule', notes:'Excellent for anxious thoughts and restlessness'},
+      {name:'Lemon Balm (Melissa officinalis)', dose:'300–600 mg or 2 mL tincture, 2–3× daily', form:'Tea / Tincture', notes:'Calming, pairs well with Passionflower'},
+      {name:'Valerian (Valeriana officinalis)', dose:'300–600 mg, 1 hour before sleep', form:'Capsule / Tincture', notes:'Primarily for anxiety-related insomnia'},
+      {name:'Holy Basil / Tulsi (Ocimum tenuiflorum)', dose:'500 mg or 1–2 cups tea, 2× daily', form:'Tea / Capsule', notes:'Ayurvedic adaptogen; balances cortisol rhythm'},
+      {name:'Kava Kava (Piper methysticum)', dose:'60–120 mg kavalactones, 1–3× daily', form:'Standardised extract', notes:'Potent anxiolytic; avoid with alcohol or liver conditions'},
+      {name:'Skullcap (Scutellaria lateriflora)', dose:'1–2 mL tincture or 350 mg, 3× daily', form:'Tincture / Capsule', notes:'Nervine tonic; excellent for nervous tension and overthinking'},
+      {name:'Rhodiola (Rhodiola rosea)', dose:'200–400 mg, morning', form:'Standardised extract', notes:'Adaptogen; reduces stress-induced fatigue'},
+    ],
+    diet: [
+      {name:'Reduce caffeine & alcohol', detail:'Both amplify cortisol and disrupt GABA pathways'},
+      {name:'Increase magnesium-rich foods', detail:'Dark leafy greens, pumpkin seeds, almonds — magnesium is the original chill mineral'},
+      {name:'Prioritise omega-3 rich foods', detail:'Wild salmon, sardines, walnuts, flaxseed — reduces neuroinflammation'},
+      {name:'Eat warm, cooked meals', detail:'Ayurvedic principle: raw/cold foods aggravate Vata (anxiety type)'},
+      {name:'Avoid refined sugar & processed foods', detail:'Blood sugar spikes trigger cortisol release and mimic anxiety'},
+      {name:'Ashwagandha golden milk (evening)', detail:'1 tsp ashwagandha in warm oat milk with turmeric and cinnamon'},
+      {name:'Chamomile or tulsi tea with meals', detail:'Replace coffee — 2–3 cups daily for sustained calm'},
+    ],
+    supplements: [
+      {name:'Magnesium Glycinate', dose:'200–400 mg before bed', notes:'Best absorbed form; muscle relaxation + calm mind'},
+      {name:'L-Theanine', dose:'100–200 mg, 1–2× daily', notes:'Promotes alpha brainwave activity; pairs well with herbs'},
+      {name:'B-Complex (methylated)', dose:'1 cap daily with food', notes:'Supports nervous system function; B6, B12 and folate essential'},
+      {name:'Vitamin D3 + K2', dose:'2000–5000 IU D3 daily', notes:'Deficiency linked to anxiety and depression'},
+      {name:'GABA', dose:'250–750 mg as needed', notes:'Inhibitory neurotransmitter support; use short-term'},
+    ],
+    lifestyle: [
+      {name:'Diaphragmatic breathing — 4-7-8 technique', detail:'Inhale 4s, hold 7s, exhale 8s. Activates parasympathetic. 2× daily minimum'},
+      {name:'Daily movement — 30 min moderate exercise', detail:'Aerobic activity reduces cortisol and increases GABA'},
+      {name:'Digital detox — no screens 1 hour before bed', detail:'Blue light suppresses melatonin and maintains hyperarousal'},
+      {name:'Journalling — 10 min nightly brain dump', detail:'Externalises worry loops; prevents rumination during sleep'},
+      {name:'Reduce news and social media intake', detail:'Set limits — excessive consumption feeds the threat-response system'},
+    ],
+    sleep: [
+      {name:'Consistent sleep/wake times 7 days a week', detail:'Circadian rhythm anchoring — most underrated anxiety intervention'},
+      {name:'Valerian + Passionflower tea 1 hour before bed', detail:'5g each herb, steep 10 min'},
+      {name:'Magnesium glycinate 400 mg at bedtime', detail:'Relaxes muscles and calms racing thoughts'},
+      {name:'Cool, dark bedroom — 65–68°F / 18–20°C', detail:'Body temperature drop signals sleep onset'},
+    ],
+    mindbody: [
+      {name:'Yoga Nidra — 20 min daily', detail:'Body scan practice; proven to reduce anxiety markers equivalent to 4 hours sleep'},
+      {name:'Mindfulness meditation — 10 min daily', detail:'Start with guided (Insight Timer app). 8-week programs show significant anxiety reduction'},
+      {name:'Progressive muscle relaxation', detail:'Tense and release each muscle group from feet upward'},
+    ],
+    cautions: [
+      {name:'Kava contraindicated in liver disease', detail:'Avoid if elevated liver enzymes or history of hepatotoxicity'},
+      {name:'Valerian may potentiate sedatives', detail:'Avoid with benzodiazepines, alcohol, or sedating medications'},
+      {name:'Ashwagandha — avoid in hyperthyroidism', detail:'Stimulates thyroid; monitor TSH in thyroid patients'},
+      {name:'Avoid St. John\'s Wort if on SSRIs', detail:'Risk of serotonin syndrome; consult prescribing physician'},
+    ],
+  },
+
+  // ══ INSOMNIA & SLEEP ══
+  'Insomnia & Sleep': {
+    icon: '😴', color: '#162040',
+    herbs: [
+      {name:'Valerian (Valeriana officinalis)', dose:'300–600 mg, 30–60 min before bed', form:'Capsule / Tincture', notes:'Improves sleep latency and quality; takes 2–4 weeks for full effect'},
+      {name:'Passionflower (Passiflora incarnata)', dose:'1–2 mL tincture or 250–500 mg, before bed', form:'Tincture / Capsule', notes:'Reduces anxious mind; excellent for racing thoughts at night'},
+      {name:'California Poppy (Eschscholzia californica)', dose:'1–3 mL tincture before bed', form:'Tincture', notes:'Gentle sedative; safe for long-term use, non-addictive'},
+      {name:'Hops (Humulus lupulus)', dose:'300–500 mg or combine with valerian', form:'Capsule / Tincture', notes:'Most effective combined with valerian; reduces sleep latency'},
+      {name:'Lemon Balm (Melissa officinalis)', dose:'300–600 mg or 2 mL tincture before bed', form:'Tincture / Tea', notes:'Calms an anxious, busy mind; gentle enough for all ages'},
+      {name:'Lavender (Lavandula angustifolia)', dose:'80 mg oral (Silexan) or aromatherapy', form:'Oral capsule / Essential oil', notes:'Silexan 80mg comparable to lorazepam for generalised anxiety/sleep'},
+      {name:'Jatamansi (Nardostachys jatamansi)', dose:'500 mg powder, 1–2× daily', form:'Powder / Capsule', notes:'Ayurvedic sleep herb; calms Vata and Pitta; reduces cortisol'},
+    ],
+    diet: [
+      {name:'Avoid caffeine after 12 noon', detail:'Half-life of 5–7 hours; still circulating at 10pm if consumed at 3pm'},
+      {name:'Tryptophan-rich evening meal', detail:'Turkey, eggs, cheese, seeds — precursor to serotonin → melatonin'},
+      {name:'Light dinner — finish eating 3 hours before bed', detail:'Digestion raises core body temperature, delaying sleep onset'},
+      {name:'Tart cherry juice 30 min before bed', detail:'Natural melatonin source; 240ml twice daily in clinical trials'},
+      {name:'Warm golden milk (turmeric oat milk) at bedtime', detail:'Add ashwagandha 1 tsp, pinch nutmeg — Ayurvedic sleep tonic'},
+    ],
+    supplements: [
+      {name:'Melatonin', dose:'0.5–3 mg, 30 min before target sleep time', notes:'Low doses often more effective than high; start at 0.5 mg'},
+      {name:'Magnesium Glycinate', dose:'300–400 mg at bedtime', notes:'Activates GABA receptors; deeply relaxing for muscles and mind'},
+      {name:'L-Theanine', dose:'200 mg before bed', notes:'Alpha-wave promoting; reduces sleep latency without grogginess'},
+      {name:'5-HTP', dose:'50–100 mg, 30 min before bed', notes:'Serotonin precursor; do not combine with SSRIs'},
+      {name:'Glycine', dose:'3 g before bed', notes:'Lowers core body temperature; improves subjective sleep quality'},
+    ],
+    lifestyle: [
+      {name:'Fixed wake time every day — including weekends', detail:'The single most effective sleep intervention; anchors circadian rhythm'},
+      {name:'Bedroom only for sleep and sex', detail:'Stimulus control therapy; re-associates bed with sleep'},
+      {name:'20-minute rule — get up if awake > 20 min', detail:'Prevents learned wakefulness; do calm activity in dim light'},
+      {name:'Morning bright light exposure — 10–20 min', detail:'Sets circadian clock; advance AM light for early wakers, delay for insomniacs'},
+      {name:'Wind-down routine — 1 hour before bed', detail:'Dim lights, warm bath/shower, light reading — signals the brain to downregulate'},
+      {name:'Limit fluid intake after 7pm', detail:'Reduces nocturia interruptions'},
+    ],
+    cautions: [
+      {name:'Valerian potentiates CNS depressants', detail:'Avoid combining with benzodiazepines, alcohol, antihistamines'},
+      {name:'5-HTP contraindicated with SSRIs/MAOIs', detail:'Risk of serotonin syndrome'},
+      {name:'Melatonin — caution in autoimmune conditions', detail:'Immune-modulating effects; use with care in lupus, MS, RA'},
+    ],
+  },
+
+  // ══ DIGESTIVE ISSUES ══
+  'Digestive Issues': {
+    icon: '🫃', color: '#04331f',
+    herbs: [
+      {name:'Slippery Elm (Ulmus rubra)', dose:'400–500 mg or 1 tsp powder in water, 3× daily', form:'Powder / Capsule', notes:'Demulcent; coats and soothes intestinal lining; excellent for IBS, reflux'},
+      {name:'Marshmallow Root (Althaea officinalis)', dose:'2–5 g root or 5 mL tincture, 3× daily', form:'Cold infusion / Tincture', notes:'Anti-inflammatory mucilage; gut lining repair'},
+      {name:'Ginger (Zingiber officinale)', dose:'250–1000 mg or 1–2 mL tincture, 3× daily', form:'Capsule / Tincture / Tea', notes:'Prokinetic; reduces nausea, bloating, gas; anti-inflammatory'},
+      {name:'Peppermint (Mentha × piperita)', dose:'0.2–0.4 mL enteric-coated oil, 3× daily before meals', form:'Enteric-coated capsule', notes:'IBS first-line; reduces spasms; must be enteric-coated to avoid reflux'},
+      {name:'Licorice Root — DGL (Glycyrrhiza glabra)', dose:'380–760 mg chewable, 20 min before meals', form:'Chewable DGL tablet', notes:'Heals gastric ulcers; soothes gastritis; DGL form avoids adrenal effects'},
+      {name:'Fennel (Foeniculum vulgare)', dose:'1 tsp seed tea after meals or 1–2 mL tincture', form:'Tea / Tincture', notes:'Antispasmodic; excellent for bloating, gas, colic'},
+      {name:'Dandelion Root (Taraxacum officinale)', dose:'2–8 g root or 4 mL tincture, 3× daily', form:'Tincture / Capsule', notes:'Liver/bile stimulant; improves fat digestion; mild laxative'},
+      {name:'Chamomile (Matricaria chamomilla)', dose:'2–3 g flowers or 3 mL tincture, 3× daily', form:'Tea / Tincture', notes:'Anti-inflammatory, antispasmodic; calms gut-brain axis'},
+      {name:'Aloe Vera juice', dose:'30–60 mL, 2× daily before meals', form:'Inner leaf juice', notes:'Heals intestinal lining; reduces inflammation in IBD; caution — avoid latex layer'},
+      {name:'Triphala (Ayurvedic blend)', dose:'500 mg, 1–2× daily', form:'Powder / Capsule', notes:'TCM/Ayurveda bowel tonic; balances gut motility; excellent for constipation'},
+    ],
+    diet: [
+      {name:'Low-FODMAP diet trial — 4–6 weeks', detail:'Reduces fermentable carbohydrates that feed dysbiosis in IBS'},
+      {name:'Food sensitivity elimination trial', detail:'Remove gluten and dairy first; reintroduce one at a time after 4 weeks'},
+      {name:'Increase soluble fibre gradually', detail:'Psyllium husk, oats, sweet potato — feeds beneficial bacteria; go slow'},
+      {name:'Bone broth daily', detail:'Collagen, glycine and glutamine repair intestinal lining'},
+      {name:'Fermented foods with each meal', detail:'Kimchi, sauerkraut, kefir, miso — diverse probiotic strains'},
+      {name:'Chew food thoroughly — 20–30 times per bite', detail:'Digestion begins in the mouth; unchewed food feeds pathogenic bacteria'},
+      {name:'Avoid eating under stress', detail:'Sympathetic dominance shuts down digestive enzyme secretion'},
+      {name:'Eat at regular times', detail:'Migrating motor complex needs time between meals — wait 4–5 hours'},
+    ],
+    supplements: [
+      {name:'Probiotic — multi-strain (50+ billion CFU)', dose:'1 cap daily with meals', notes:'Look for Lactobacillus and Bifidobacterium strains; refrigerated preferred'},
+      {name:'L-Glutamine', dose:'5–10 g daily in water', notes:'Primary fuel for enterocytes; repairs leaky gut'},
+      {name:'Digestive enzymes (broad-spectrum)', dose:'1–2 caps with main meals', notes:'Support protein, fat and carbohydrate breakdown'},
+      {name:'Zinc Carnosine', dose:'75 mg, 2× daily', notes:'Heals gastric mucosa; reduces H.pylori adhesion'},
+      {name:'Prebiotic fibre (Inulin / FOS)', dose:'5 g daily, increase gradually', notes:'Feeds beneficial bacteria; start low to avoid gas'},
+    ],
+    lifestyle: [
+      {name:'Mindful eating — no screens during meals', detail:'Parasympathetic activation needed for optimal digestion'},
+      {name:'Light walk after meals — 10–15 min', detail:'Stimulates gastric motility and reduces post-meal blood sugar'},
+      {name:'Abdominal massage — clockwise, 5 min morning', detail:'Follows colon direction; stimulates bowel movement and reduces bloating'},
+      {name:'Stress management — critical for IBS', detail:'Gut-brain axis means unresolved stress directly worsens all digestive conditions'},
+    ],
+    cautions: [
+      {name:'Peppermint oil — avoid in GERD/reflux', detail:'Relaxes lower oesophageal sphincter; only use enteric-coated form'},
+      {name:'Aloe latex — avoid entirely', detail:'Strong laxative; potentially carcinogenic with long-term use'},
+      {name:'Triphala — caution in pregnancy', detail:'Stimulates bowel; avoid in first trimester'},
+      {name:'DGL — check for adrenal sensitivity', detail:'Even DGL may cause minor blood pressure effects in some'},
+    ],
+  },
+
+  // ══ HORMONAL IMBALANCE ══
+  'Hormonal Imbalance': {
+    icon: '⚗️', color: '#5c2d9e',
+    herbs: [
+      {name:'Vitex / Chaste Tree (Vitex agnus-castus)', dose:'400–500 mg or 40 drops tincture, morning', form:'Capsule / Tincture', notes:'Regulates LH/FSH; excellent for PMS, irregular cycles, progesterone deficiency. Takes 3 months'},
+      {name:'Maca (Lepidium meyenii)', dose:'1.5–3 g powder or 500 mg extract, daily', form:'Powder / Capsule', notes:'Adaptogenic; supports HPA-gonadal axis; improves libido and energy'},
+      {name:'Dong Quai (Angelica sinensis)', dose:'1–2 mL tincture or 500 mg, 2× daily', form:'Tincture / Capsule', notes:'TCM blood tonic; supports oestrogen balance; menstrual regulation'},
+      {name:'Black Cohosh (Actaea racemosa)', dose:'20–40 mg standardised extract, 2× daily', form:'Standardised tablet', notes:'Menopause symptoms — hot flushes, night sweats; 6-month limit'},
+      {name:'Shatavari (Asparagus racemosus)', dose:'500 mg–1 g powder, 2× daily', form:'Powder / Capsule', notes:'Ayurvedic female tonic; supports oestrogen, libido, and reproductive health'},
+      {name:'Ashwagandha (Withania somnifera)', dose:'300–600 mg, 2× daily', form:'Capsule', notes:'Reduces cortisol which competes with progesterone; adrenal support'},
+      {name:'Red Clover (Trifolium pratense)', dose:'40–80 mg isoflavones daily', form:'Standardised extract', notes:'Phyto-oestrogen; menopause support; mild oestrogenic activity'},
+      {name:'Saw Palmetto (Serenoa repens)', dose:'160 mg standardised extract, 2× daily', form:'Soft gel', notes:'Blocks 5-alpha reductase; reduces excess androgens; acne, PCOS, male hormones'},
+      {name:'Licorice Root (Glycyrrhiza glabra)', dose:'1–2 mL tincture, 2× daily', form:'Tincture', notes:'Blocks androgens; useful in PCOS; limit to 4–6 weeks continuous'},
+    ],
+    diet: [
+      {name:'Cruciferous vegetables daily', detail:'Broccoli, cauliflower, kale — DIM supports healthy oestrogen metabolism'},
+      {name:'Seed cycling protocol', detail:'Days 1–14: 1 tbsp flax + pumpkin seeds; Days 15–28: 1 tbsp sunflower + sesame seeds'},
+      {name:'Reduce conventional dairy and meat', detail:'Contains exogenous hormones and antibiotics; choose organic or eliminate'},
+      {name:'Increase fibre for oestrogen excretion', detail:'30 g daily minimum — binds excess oestrogen in colon for elimination'},
+      {name:'Avoid plastics with food', detail:'BPA, phthalates are xenoestrogens — use glass, stainless steel'},
+      {name:'Balance blood sugar first', detail:'Insulin resistance drives testosterone excess in PCOS; prioritise low-GI foods'},
+    ],
+    supplements: [
+      {name:'DIM (Diindolylmethane)', dose:'100–200 mg daily with meals', notes:'Shifts oestrogen to protective metabolites; critical in oestrogen dominance'},
+      {name:'Magnesium Glycinate', dose:'300–400 mg daily', notes:'Supports progesterone production; reduces PMS symptoms'},
+      {name:'B6 (Pyridoxine)', dose:'50–100 mg daily', notes:'Required for progesterone synthesis and prolactin regulation'},
+      {name:'Zinc', dose:'15–30 mg daily', notes:'Blocks 5-alpha reductase; supports ovarian function'},
+      {name:'Omega-3 (EPA/DHA)', dose:'2–3 g daily', notes:'Anti-inflammatory; reduces prostaglandin excess (period pain)'},
+      {name:'Vitex / Chaste Tree berry (standardised)', dose:'400 mg daily, morning, on empty stomach', notes:'3 full menstrual cycles minimum before assessing effect'},
+    ],
+    lifestyle: [
+      {name:'Limit high-intensity exercise — prioritise moderate', detail:'Excessive HIIT raises cortisol which suppresses progesterone'},
+      {name:'Support liver detoxification', detail:'Alcohol reduction, adequate sleep, castor oil packs over liver'},
+      {name:'Stress reduction is non-negotiable', detail:'Cortisol steals pregnenolone from progesterone synthesis (pregnenolone steal)'},
+      {name:'Sleep 8–9 hours during luteal phase', detail:'Progesterone is sleep-promoting; poor sleep worsens hormonal symptoms'},
+    ],
+    cautions: [
+      {name:'Vitex contraindicated with hormonal contraceptives', detail:'May interfere with pill and HRT mechanisms'},
+      {name:'Avoid phyto-oestrogens in hormone-sensitive cancers', detail:'Red clover, soy, flax — contraindicated in oestrogen-receptor positive conditions'},
+      {name:'Licorice root raises blood pressure', detail:'Avoid in hypertension; limit to 4 weeks continuous use'},
+      {name:'Black Cohosh — hepatotoxic in rare cases', detail:'Monitor liver enzymes; discontinue if jaundice or abdominal pain'},
+    ],
+  },
+
+  // ══ FATIGUE & LOW ENERGY ══
+  'Fatigue & Low Energy': {
+    icon: '⚡', color: '#7a4000',
+    herbs: [
+      {name:'Ashwagandha (Withania somnifera)', dose:'300–600 mg KSM-66, 2× daily', form:'Capsule', notes:'Reduces cortisol, improves VO2 max, stamina and energy — clinical evidence'},
+      {name:'Rhodiola (Rhodiola rosea)', dose:'200–400 mg, morning only', form:'Standardised extract (3% rosavins)', notes:'Reduces mental fatigue; do not take in evening — stimulating'},
+      {name:'Eleuthero / Siberian Ginseng', dose:'300–600 mg, 2× daily', form:'Capsule / Tincture', notes:'Adaptogen; reduces stress-induced fatigue; supports immune function'},
+      {name:'Panax Ginseng (Ren Shen)', dose:'200–400 mg standardised, 2× daily', form:'Standardised extract', notes:'Powerful qi tonic (TCM); reduces fatigue, improves concentration'},
+      {name:'Maca (Lepidium meyenii)', dose:'1.5–3 g powder, morning', form:'Powder / Capsule', notes:'Energy and endurance; supports adrenal-gonadal axis'},
+      {name:'Nettle Leaf (Urtica dioica)', dose:'3–4 g or 4 mL tincture, 3× daily', form:'Tea / Tincture', notes:'Iron, minerals; excellent for nutritional fatigue and anaemia'},
+      {name:'Schisandra (Schisandra chinensis)', dose:'500 mg–1.5 g, 2× daily', form:'Capsule / Tincture', notes:'Five-flavour berry; liver tonic and adaptogen; reduces fatigue from overwork'},
+      {name:'Licorice Root (Glycyrrhiza glabra)', dose:'1–2 mL tincture, 2× daily', form:'Tincture', notes:'Adrenal support; extends cortisol half-life; excellent in adrenal fatigue'},
+    ],
+    diet: [
+      {name:'Test and correct nutrient deficiencies first', detail:'Iron, B12, vitamin D, ferritin — most common correctable causes of fatigue'},
+      {name:'Reduce refined carbohydrates', detail:'Blood sugar crashes are a primary cause of afternoon energy dips'},
+      {name:'Protein with every meal', detail:'Stabilises blood sugar and provides amino acids for neurotransmitter production'},
+      {name:'Iron-rich foods with vitamin C', detail:'Red meat, legumes, spinach + citrus — enhances absorption by 300%'},
+      {name:'Hydration — minimum 2L water daily', detail:'Even mild dehydration (1–2%) reduces mental and physical performance by 20%'},
+      {name:'Adaptogenic smoothie (morning)', detail:'Ashwagandha 1 tsp + maca 1 tsp + cacao + banana + oat milk'},
+    ],
+    supplements: [
+      {name:'Iron (Ferrous bisglycinate)', dose:'25–50 mg daily with food', notes:'Only if confirmed deficiency; test ferritin first'},
+      {name:'B12 (Methylcobalamin)', dose:'1000 mcg sublingual daily', notes:'Sublingual bypasses absorption issues; critical for energy metabolism'},
+      {name:'Vitamin D3', dose:'2000–5000 IU daily', notes:'Deficiency causes profound fatigue; test 25-OH-D levels'},
+      {name:'CoQ10 (Ubiquinol form)', dose:'100–200 mg daily', notes:'Mitochondrial electron transport; particularly useful if on statins'},
+      {name:'B-Complex (methylated)', dose:'1 daily with breakfast', notes:'All B vitamins required for ATP production'},
+      {name:'Magnesium Malate', dose:'300–400 mg daily', notes:'Malate supports Krebs cycle energy production; best form for fatigue'},
+    ],
+    lifestyle: [
+      {name:'Sleep audit — prioritise duration and quality', detail:'No supplement replaces sufficient sleep; address insomnia first'},
+      {name:'Graduated exercise programme', detail:'Start with 20-min daily walks; paradoxically, movement creates energy'},
+      {name:'Cold shower finishing technique', detail:'End each shower with 30–60 seconds cold; activates sympathetic energy'},
+      {name:'Eliminate energy drains', detail:'Audit relationships, commitments and digital consumption'},
+    ],
+    cautions: [
+      {name:'Rule out hypothyroidism before supplementing', detail:'Fatigue is cardinal sign; herbal adaptogens may mask diagnosis'},
+      {name:'Rhodiola can cause insomnia if taken late', detail:'Take before noon only; stimulating in some individuals'},
+      {name:'Iron only if deficient', detail:'Excess iron is oxidative and damaging; always test before supplementing'},
+      {name:'Panax ginseng — avoid in hypertension', detail:'Can raise blood pressure; contraindicated with stimulants'},
+    ],
+  },
+
+  // ══ INFLAMMATION ══
+  'Inflammation': {
+    icon: '🔥', color: '#8b1f00',
+    herbs: [
+      {name:'Turmeric / Curcumin (Curcuma longa)', dose:'500 mg–1 g curcumin extract with piperine, 2–3× daily', form:'Standardised capsule', notes:'Most evidence-backed anti-inflammatory herb; requires piperine for absorption'},
+      {name:'Boswellia (Boswellia serrata)', dose:'300–500 mg AKBA extract, 2–3× daily', form:'Standardised capsule', notes:'Inhibits 5-LOX pathway; excellent for arthritis, IBD, asthma'},
+      {name:'Cat\'s Claw (Uncaria tomentosa)', dose:'250–350 mg, 2–3× daily', form:'Capsule / Tincture', notes:'NF-κB inhibitor; powerful immune modulator and anti-inflammatory'},
+      {name:'Ginger (Zingiber officinale)', dose:'500 mg–1 g or 2 mL tincture, 3× daily', form:'Capsule / Tincture', notes:'COX-2 inhibitor; similar to NSAIDs without GI damage'},
+      {name:'Devil\'s Claw (Harpagophytum procumbens)', dose:'50–100 mg harpagoside, 2–3× daily', form:'Standardised extract', notes:'Strong anti-inflammatory; excellent for musculoskeletal pain'},
+      {name:'White Willow Bark (Salix alba)', dose:'240 mg salicin extract, 2× daily', form:'Standardised capsule', notes:'Natural aspirin source; back pain, headaches, fever, anti-inflammatory'},
+      {name:'Frankincense Essential Oil (Boswellia)', dose:'2 drops diluted in carrier, topically', form:'Diluted topical', notes:'Topical anti-inflammatory for joint pain and skin inflammation'},
+    ],
+    diet: [
+      {name:'Anti-inflammatory diet protocol', detail:'Mediterranean base — olive oil, fish, vegetables, nuts, minimal red meat'},
+      {name:'Eliminate refined sugars completely', detail:'Sugar is the primary dietary driver of systemic inflammation (NF-κB activation)'},
+      {name:'Turmeric in cooking daily', detail:'Golden latte, curries, stir fries — ¼–½ tsp with black pepper and fat'},
+      {name:'Increase omega-3 to omega-6 ratio', detail:'Aim for 1:4 or better; reduce seed oils, increase cold-water fish'},
+      {name:'Colourful produce at every meal', detail:'Anthocyanins (berries), quercetin (onions), lycopene (tomato) — all anti-inflammatory polyphenols'},
+      {name:'Gut health — inflammation often starts there', detail:'Leaky gut drives systemic inflammation; probiotics and fibre are foundational'},
+    ],
+    supplements: [
+      {name:'Omega-3 (EPA/DHA)', dose:'3–4 g daily total EPA+DHA', notes:'Resolvin precursors; reduce CRP and inflammatory cytokines'},
+      {name:'Curcumin with Piperine', dose:'500 mg–1 g curcumin + 5–10 mg piperine, 2× daily', notes:'Piperine increases bioavailability 2000%'},
+      {name:'Resveratrol', dose:'150–500 mg daily', notes:'Sirtuin activator; reduces NF-κB; anti-ageing and anti-inflammatory'},
+      {name:'Quercetin', dose:'500–1000 mg daily', notes:'Mast cell stabiliser; reduces histamine and inflammatory mediators'},
+      {name:'Vitamin C (buffered)', dose:'1–3 g daily in divided doses', notes:'Antioxidant; cofactor for collagen synthesis; lowers CRP'},
+    ],
+    lifestyle: [
+      {name:'Adequate sleep is anti-inflammatory', detail:'Chronic sleep deprivation raises IL-6 and CRP by 40–60%'},
+      {name:'Moderate exercise reduces chronic inflammation', detail:'Avoid overtraining — excessive intensity increases systemic inflammation'},
+      {name:'Cold therapy — ice baths or cold compresses', detail:'Reduces local inflammation; activates anti-inflammatory pathways'},
+      {name:'Reduce environmental toxin exposure', detail:'Air filters, clean personal care products, filtered water — reduces inflammatory load'},
+    ],
+    cautions: [
+      {name:'Curcumin — avoid before surgery', detail:'Mild blood-thinning effect; stop 2 weeks pre-operatively'},
+      {name:'White Willow Bark — same cautions as aspirin', detail:'Avoid in aspirin allergy, bleeding disorders, children under 12'},
+      {name:'Boswellia and Devil\'s Claw — may interact with NSAIDs', detail:'Monitor for additive effects; discuss with prescriber'},
+    ],
+  },
+
+  // ══ HIGH BLOOD PRESSURE ══
+  'High Blood Pressure': {
+    icon: '💗', color: '#8b0000',
+    herbs: [
+      {name:'Garlic (Allium sativum)', dose:'600–1200 mg aged garlic extract, daily', form:'Standardised capsule', notes:'ACE inhibitor effect; reduces systolic by 8–10 mmHg in clinical trials'},
+      {name:'Hawthorn (Crataegus oxyacantha)', dose:'160–1800 mg standardised extract, 2–3× daily', form:'Capsule / Tincture', notes:'Cardiotonic; dilates coronary arteries; reduces peripheral resistance. Takes 8 weeks'},
+      {name:'Hibiscus (Hibiscus sabdariffa)', dose:'2–3 cups hibiscus tea daily or 450 mg extract', form:'Tea / Capsule', notes:'ACE inhibitor; reduces systolic 7–13 mmHg; comparable to low-dose lisinopril'},
+      {name:'Olive Leaf (Olea europaea)', dose:'500–1000 mg standardised extract, 2× daily', form:'Capsule', notes:'Oleuropein inhibits ACE; anti-inflammatory; reduces LDL simultaneously'},
+      {name:'Celery Seed (Apium graveolens)', dose:'1000–2000 mg extract or 4 stalks celery daily', form:'Capsule / Food', notes:'Phthalides relax arterial smooth muscle; traditional BP remedy with evidence'},
+      {name:'Rauwolfia (Rauwolfia serpentina)', dose:'Specialist use only; 50–100 mcg reserpine', form:'Under practitioner supervision', notes:'Potent antihypertensive; depletes catecholamines; requires careful monitoring'},
+    ],
+    diet: [
+      {name:'DASH diet — minimum 90 days', detail:'Proven to reduce BP 8–14 mmHg; high potassium, magnesium, calcium; low sodium'},
+      {name:'Reduce sodium below 1500 mg daily', detail:'Remove table salt; read labels — processed foods are the main source'},
+      {name:'Increase potassium-rich foods', detail:'Bananas, avocado, sweet potato, white beans — 4700 mg daily target'},
+      {name:'Beet root juice daily', detail:'200ml of cold-pressed beet juice — nitric oxide precursor; reduces BP 4–10 mmHg'},
+      {name:'Limit alcohol to < 1 drink daily', detail:'Alcohol raises BP directly; each unit reduces benefit of treatment'},
+      {name:'Dark chocolate > 70% cacao', detail:'Flavanols improve endothelial function; 30g daily'},
+    ],
+    supplements: [
+      {name:'Magnesium Glycinate', dose:'400–600 mg daily', notes:'Vasodilator; deficiency is widespread and directly raises BP'},
+      {name:'CoQ10 (Ubiquinol)', dose:'100–200 mg daily', notes:'Reduces systolic 17 mmHg, diastolic 10 mmHg in meta-analysis'},
+      {name:'Potassium (if dietary intake low)', dose:'200–400 mg daily', notes:'Confirm with bloods first; caution in kidney disease or ACE inhibitors'},
+      {name:'Omega-3 (EPA/DHA)', dose:'3–4 g daily', notes:'Reduces triglycerides and vascular resistance'},
+      {name:'L-Arginine', dose:'2–6 g daily', notes:'Nitric oxide precursor; endothelial relaxation; effective in mild hypertension'},
+    ],
+    cautions: [
+      {name:'CRITICAL: Do not replace medication without GP approval', detail:'Herbal approaches are adjunctive; sudden medication withdrawal is dangerous'},
+      {name:'Rauwolfia — specialist prescription only', detail:'Significant CNS effects; depression risk; requires experienced prescriber'},
+      {name:'Liquorice raises BP significantly', detail:'Contraindicated in hypertension — avoid in all forms including tea'},
+      {name:'Monitor BP weekly during herbal protocol', detail:'Record readings morning and evening; adjust protocol based on response'},
+    ],
+  },
+
+  // ══ SKIN CONDITIONS ══
+  'Skin Problems': {
+    icon: '🤚', color: '#6b2fb0',
+    herbs: [
+      {name:'Calendula (Calendula officinalis)', dose:'Topical cream/oil 2–3× daily; or 2 g tea 3× daily', form:'Topical / Tea / Tincture', notes:'Anti-inflammatory, antimicrobial; wound healing; eczema, dermatitis, rashes'},
+      {name:'Burdock Root (Arctium lappa)', dose:'2–6 g root or 3 mL tincture, 3× daily', form:'Tincture / Capsule', notes:'Alterative — eliminates waste via skin and kidneys; acne, eczema, psoriasis'},
+      {name:'Chickweed (Stellaria media)', dose:'Topical salve/cream 2–4× daily', form:'Topical salve', notes:'Antipruritic; immediate itch relief for eczema, psoriasis, hives'},
+      {name:'Red Clover (Trifolium pratense)', dose:'2–4 g flowers or 3 mL tincture, 3× daily', form:'Tea / Tincture', notes:'Blood purifier; psoriasis, eczema, chronic skin conditions'},
+      {name:'Neem (Azadirachta indica)', dose:'Topical oil (diluted) or 400 mg capsule, 2× daily', form:'Topical / Capsule', notes:'Antibacterial, antifungal; acne, fungal skin infections; dilute 1:10 with carrier oil'},
+      {name:'Turmeric (Curcuma longa)', dose:'Topical paste + 500 mg oral, 2× daily', form:'Topical / Capsule', notes:'Anti-inflammatory; psoriasis, eczema, wound healing'},
+      {name:'Aloe Vera', dose:'Pure inner leaf gel, apply liberally 3× daily', form:'Fresh gel / Standardised gel', notes:'Cooling; immediate relief for burns, eczema, rosacea'},
+    ],
+    diet: [
+      {name:'Identify and eliminate food triggers', detail:'Common: gluten, dairy, eggs, nuts, nightshades — elimination then challenge'},
+      {name:'Anti-inflammatory diet foundation', detail:'Omega-3, colourful vegetables, olive oil, avoid seed oils'},
+      {name:'Support gut-skin axis', detail:'Probiotics, fermented foods, reduce intestinal permeability — most skin conditions have gut root'},
+      {name:'Increase zinc-rich foods', detail:'Oysters, pumpkin seeds, beef — zinc is critical for skin healing and acne'},
+      {name:'Reduce sugar and dairy for acne', detail:'Both elevate IGF-1 which drives sebum production and pore occlusion'},
+      {name:'Silica-rich foods for skin integrity', detail:'Oats, millet, cucumber, horsetail tea — supports collagen and elastin'},
+    ],
+    supplements: [
+      {name:'Omega-3 (EPA/DHA)', dose:'3 g daily', notes:'Reduces inflammatory skin conditions; EPA is most relevant'},
+      {name:'Zinc (Picolinate or Glycinate)', dose:'15–30 mg daily', notes:'Reduces acne inflammation; wound healing; immune skin defence'},
+      {name:'Vitamin A (Retinol)', dose:'5000–10000 IU daily', notes:'Skin cell turnover; caution in pregnancy — teratogenic at high doses'},
+      {name:'Probiotics (skin-specific strains)', dose:'20 billion CFU daily', notes:'L. rhamnosus GG; L. reuteri — clinically shown to reduce eczema severity'},
+      {name:'Collagen Peptides', dose:'10 g daily in water or smoothie', notes:'Type I collagen; reduces wrinkles, improves skin hydration and barrier'},
+    ],
+    cautions: [
+      {name:'Neem oil — always dilute before topical use', detail:'Neat neem can cause skin irritation; dilute to max 2% in carrier oil'},
+      {name:'Vitamin A — teratogenic in pregnancy', detail:'Do not exceed 5000 IU in women of childbearing age; use beta-carotene instead'},
+      {name:'Topical calendula — test for Asteraceae allergy', detail:'Ragweed family; patch test first in sensitive individuals'},
+    ],
+  },
+
+  // ══ LIVER & DETOX ══
+  'Liver & Detox': {
+    icon: '🫀', color: '#04331f',
+    herbs: [
+      {name:'Milk Thistle (Silybum marianum)', dose:'140 mg silymarin (70–80% standardised), 3× daily', form:'Standardised capsule', notes:'Most evidence-based hepatoprotective herb; regenerates hepatocytes'},
+      {name:'Dandelion Root (Taraxacum officinale)', dose:'2–8 g root or 4 mL tincture, 3× daily', form:'Tincture / Tea', notes:'Cholagogue; stimulates bile flow; improves fat digestion and detoxification'},
+      {name:'Schisandra (Schisandra chinensis)', dose:'500 mg–1.5 g, 2× daily', form:'Capsule / Tincture', notes:'Hepatoprotective; reduces liver enzymes (AST/ALT); Phase II detox support'},
+      {name:'Artichoke Leaf (Cynara scolymus)', dose:'320–640 mg extract, 2× daily before meals', form:'Standardised extract', notes:'Bile-stimulating; reduces cholesterol; liver regeneration; IBS with fat intolerance'},
+      {name:'Yellow Dock (Rumex crispus)', dose:'2–4 g root or 2 mL tincture, 3× daily', form:'Tincture / Capsule', notes:'Alterative; bile stimulant; supports iron absorption; lymphatic'},
+      {name:'Turmeric (Curcuma longa)', dose:'500 mg curcumin, 3× daily', form:'Standardised capsule', notes:'Phase II liver enzyme inducer; anti-inflammatory in liver tissue'},
+      {name:'Globe Artichoke + Milk Thistle combo', dose:'As above, combined', form:'Compound formula', notes:'Synergistic combination for comprehensive liver support'},
+    ],
+    diet: [
+      {name:'Eliminate alcohol completely — minimum 30 days', detail:'Alcohol is directly hepatotoxic; no safe level during liver healing protocol'},
+      {name:'Cruciferous vegetables twice daily', detail:'Sulforaphane activates Phase II detox enzymes (glutathione-S-transferase)'},
+      {name:'Lemon water first thing morning', detail:'Stimulates bile flow and activates liver enzymes for the day'},
+      {name:'Reduce saturated fat and trans fats', detail:'Excess saturated fat causes hepatic steatosis (fatty liver disease)'},
+      {name:'Increase bitter foods — rocket, radicchio, endive', detail:'Bitters stimulate liver and gallbladder secretion'},
+      {name:'Sulphur-rich foods', detail:'Garlic, onions, eggs — methionine and cysteine for glutathione synthesis'},
+    ],
+    supplements: [
+      {name:'N-Acetyl Cysteine (NAC)', dose:'600 mg, 2–3× daily', notes:'Glutathione precursor; most powerful liver antioxidant/detox support'},
+      {name:'Alpha-Lipoic Acid', dose:'300–600 mg daily', notes:'Regenerates glutathione and other antioxidants; chelates heavy metals'},
+      {name:'Glutathione (liposomal)', dose:'250–500 mg daily', notes:'Master antioxidant; direct supplementation; liposomal for absorption'},
+      {name:'B-Complex (methylated)', dose:'1 daily', notes:'B vitamins essential for Phase I and II detox reactions'},
+      {name:'Phosphatidylcholine', dose:'300–1800 mg daily', notes:'Rebuilds liver cell membranes; reduces hepatic steatosis'},
+    ],
+    cautions: [
+      {name:'Liver herbs with existing liver disease — monitor LFTs', detail:'Paradoxically, some herbs can stress a compromised liver; baseline bloodwork first'},
+      {name:'Yellow Dock high doses cause diarrhoea', detail:'Start with lower doses; contains oxalates — caution in kidney stones'},
+      {name:'Avoid all hepatotoxic herbs during active liver disease', detail:'Kava, comfrey, pyrrolizidine alkaloid plants — contraindicated'},
+    ],
+  },
+
+  // ══ IMMUNE SUPPORT ══
+  'Low Immunity': {
+    icon: '🛡️', color: '#0c3060',
+    herbs: [
+      {name:'Echinacea (Echinacea purpurea/angustifolia)', dose:'300–500 mg or 3–5 mL tincture, 3× daily at onset', form:'Tincture / Capsule', notes:'Best used pulsed — 10 days on, 3 days off; reduces cold duration by 58%'},
+      {name:'Elderberry (Sambucus nigra)', dose:'1 tbsp syrup or 500 mg, 2–4× daily', form:'Syrup / Capsule', notes:'Antiviral; reduces influenza duration; cytokine caution in severe infection'},
+      {name:'Astragalus (Astragalus membranaceus)', dose:'500–1000 mg or 4 mL tincture, 2× daily', form:'Capsule / Tincture', notes:'TCM deep immune tonic; NK cell activation; use as prevention long-term'},
+      {name:'Reishi Mushroom (Ganoderma lucidum)', dose:'1.5–9 g dried mushroom or 1.5 g extract, daily', form:'Powder / Capsule / Tincture', notes:'Immune modulating; adaptogen; reduces overactive immune response'},
+      {name:'Andrographis (Andrographis paniculata)', dose:'200–400 mg andrographolide, 2–3× daily', form:'Standardised capsule', notes:'Powerful antiviral; URTI treatment; reduces fever and sore throat'},
+      {name:'Cat\'s Claw (Uncaria tomentosa)', dose:'250–350 mg, 3× daily', form:'Capsule / Tincture', notes:'Immune modulator; antiviral; anti-inflammatory; DNA repair'},
+      {name:'Garlic (Allium sativum)', dose:'1–2 raw cloves or 600 mg aged extract daily', form:'Raw / Capsule', notes:'Broad-spectrum antimicrobial; enhances NK cell activity'},
+      {name:'Osha Root (Ligusticum porteri)', dose:'1–3 mL tincture, 3× daily', form:'Tincture', notes:'Respiratory antiviral; traditional Native American remedy; antioxidant'},
+    ],
+    diet: [
+      {name:'Protein with every meal — immune cells are protein', detail:'60–80 g daily minimum; deficiency impairs antibody production'},
+      {name:'Zinc-rich foods daily', detail:'Oysters, beef, pumpkin seeds — zinc is gatekeeper of immune function'},
+      {name:'Fermented foods for gut-immune axis', detail:'70% of immune tissue is in the gut; kefir, kimchi, sauerkraut daily'},
+      {name:'Vitamin C-rich foods with each meal', detail:'Bell peppers, citrus, kiwi, broccoli — immune cell function and antioxidant'},
+      {name:'Avoid sugar during infection', detail:'100g sugar suppresses neutrophil phagocytosis for 5+ hours'},
+    ],
+    supplements: [
+      {name:'Vitamin D3 + K2', dose:'4000–10000 IU D3 daily (test first)', notes:'Vitamin D insufficiency directly impairs innate and adaptive immunity'},
+      {name:'Zinc (Acetate or Picolinate)', dose:'25–50 mg daily for acute; 15–25 mg maintenance', notes:'Antiviral; zinc lozenges for URTI most effective form'},
+      {name:'Vitamin C (buffered)', dose:'1–3 g daily; up to 10 g in acute illness', notes:'Immune cell function, antioxidant; liposomal form for higher tolerance'},
+      {name:'Probiotics (multi-strain)', dose:'20–50 billion CFU daily', notes:'Gut-immune axis; reduces URTI frequency and duration'},
+      {name:'Beta-Glucans (1,3/1,6)', dose:'250–500 mg daily', notes:'Mushroom-derived; prime NK cells and macrophages'},
+    ],
+    lifestyle: [
+      {name:'Sleep 7–9 hours — immune system works during sleep', detail:'1 night of 4-hour sleep reduces NK cell activity by 70%'},
+      {name:'Manage chronic stress — cortisol is immunosuppressive', detail:'Chronic stress decreases lymphocyte proliferation and antibody production'},
+      {name:'Regular moderate exercise', detail:'30 min daily reduces URTI frequency by 40–50%'},
+      {name:'Cold exposure — daily cold shower', detail:'Increases white blood cell count and activates immune surveillance'},
+    ],
+    cautions: [
+      {name:'Echinacea — contraindicated in autoimmune disease', detail:'Immune stimulation may worsen lupus, MS, RA — use modulating herbs instead'},
+      {name:'Elderberry cytokine storm concern', detail:'Theoretical risk in severe influenza; discontinue if condition worsening rapidly'},
+      {name:'Andrographis — avoid in pregnancy', detail:'Uterine stimulant; contraindicated in first trimester'},
+      {name:'Astragalus — avoid during active acute infection', detail:'Use before and after, not during; some evidence of worsening in acute phase'},
+    ],
+  },
+
+  // ══ MENTAL HEALTH / DEPRESSION ══
+  'Low Mood & Depression': {
+    icon: '💭', color: '#1a1a3e',
+    herbs: [
+      {name:'St. John\'s Wort (Hypericum perforatum)', dose:'300 mg 0.3% hypericin extract, 3× daily', form:'Standardised tablet', notes:'Most studied herbal antidepressant; equivalent to SSRIs for mild-moderate depression; 6-week onset'},
+      {name:'Saffron (Crocus sativus)', dose:'15–30 mg extract, 2× daily', form:'Standardised capsule', notes:'Comparable to fluoxetine in clinical trials; antidepressant + anti-anxiety + libido'},
+      {name:'Rhodiola (Rhodiola rosea)', dose:'200–400 mg morning', form:'Standardised extract', notes:'Reduces burnout depression; neurotransmitter modulation; mood and cognition'},
+      {name:'Ashwagandha (Withania somnifera)', dose:'300–600 mg, 2× daily', form:'Capsule', notes:'Reduces depression scores via cortisol reduction; HPA axis regulation'},
+      {name:'Bacopa (Bacopa monnieri)', dose:'300–600 mg standardised, daily', form:'Standardised capsule', notes:'Nerve growth factor stimulant; improves mood and memory; 8–12 week onset'},
+      {name:'Mucuna Pruriens (Velvet Bean)', dose:'400–800 mg standardised (15% L-DOPA)', form:'Standardised capsule', notes:'L-DOPA precursor; supports dopamine production; motivation, mood, drive'},
+      {name:'Lemon Balm + Lavender combination', dose:'600 mg LB + 80 mg lavender extract', form:'Combined capsule', notes:'GABAergic; reduces anxious depression; calming without sedation'},
+    ],
+    diet: [
+      {name:'Omega-3 supplementation essential', detail:'EPA specifically is antidepressant; 2 g EPA minimum for mood effects'},
+      {name:'Tryptophan-rich foods (serotonin precursor)', detail:'Turkey, eggs, cheese, pumpkin seeds — with carbohydrate for brain entry'},
+      {name:'Tyrosine-rich foods (dopamine precursor)', detail:'Chicken, beef, eggs, almonds — for motivation and drive'},
+      {name:'Fermented foods for gut-brain axis', detail:'90% of serotonin is in the gut; microbiome composition affects mood directly'},
+      {name:'Reduce inflammatory diet', detail:'Ultra-processed foods, sugar and seed oils increase neuroinflammation'},
+      {name:'Dark chocolate 70%+', detail:'Phenylethylamine and flavanols — acute mood elevation; antidepressant polyphenols'},
+    ],
+    supplements: [
+      {name:'EPA-dominant Omega-3', dose:'2–3 g EPA daily', notes:'Best evidence for depression; EPA > DHA for mood'},
+      {name:'Vitamin D3', dose:'4000–5000 IU daily', notes:'Deficiency strongly linked to depression; supplement year-round'},
+      {name:'Magnesium Glycinate', dose:'300–400 mg daily', notes:'NMDA receptor modulator; rapid antidepressant effect in some'},
+      {name:'5-HTP', dose:'50–200 mg daily', notes:'Serotonin precursor; do not combine with SSRIs; effective for mild depression'},
+      {name:'SAMe (S-Adenosyl Methionine)', dose:'400–1600 mg daily on empty stomach', notes:'Methylation support; antidepressant in multiple RCTs; expensive but potent'},
+      {name:'B12 + Folate (methylated)', dose:'1 mg B12 + 400–800 mcg methylfolate', notes:'MTHFR variants are common; methylfolate bypasses the mutation'},
+    ],
+    lifestyle: [
+      {name:'Exercise — the most evidence-based antidepressant', detail:'30 min moderate aerobic exercise 3–5 times weekly = prescription SSRI in mild depression'},
+      {name:'Social connection — prioritise intentionally', detail:'Isolation amplifies depression; schedule meaningful contact daily'},
+      {name:'Morning bright light therapy', detail:'10,000 lux box for 20 min each morning; treats seasonal and non-seasonal depression'},
+      {name:'Meaningful activity scheduling', detail:'Behavioural activation — schedule one pleasurable and one achievement activity daily'},
+    ],
+    cautions: [
+      {name:'St. John\'s Wort — CRITICAL drug interactions', detail:'Reduces plasma levels of many drugs: statins, warfarin, HIV meds, contraceptives, cyclosporin'},
+      {name:'5-HTP + SSRIs = serotonin syndrome risk', detail:'Never combine; 2-week washout period minimum'},
+      {name:'Mucuna — caution with MAOIs and levodopa', detail:'Additive dopaminergic effects; specialist guidance required'},
+      {name:'Suicidal ideation requires immediate professional help', detail:'Herbal medicine is complementary; acute crisis needs crisis line and/or emergency services'},
+    ],
+  },
+
+  // ══ JOINT & MUSCLE PAIN ══
+  'Joint & Muscle Pain': {
+    icon: '🦴', color: '#4a2000',
+    herbs: [
+      {name:'Turmeric / Curcumin', dose:'1 g curcumin + 10 mg piperine, 2–3× daily', form:'Standardised capsule', notes:'Comparable to ibuprofen for knee OA; COX-2 inhibition'},
+      {name:'Boswellia (Boswellia serrata)', dose:'300–500 mg AKBA extract, 2–3× daily', form:'Standardised capsule', notes:'5-LOX inhibitor; reduces cartilage destruction; OA gold standard herb'},
+      {name:'Devil\'s Claw (Harpagophytum procumbens)', dose:'50–100 mg harpagoside daily', form:'Standardised extract', notes:'Strong anti-inflammatory; back pain, OA, hip and knee pain'},
+      {name:'Willow Bark (Salix alba)', dose:'240 mg salicin, 2× daily', form:'Standardised extract', notes:'Natural COX inhibitor; back pain, headaches, general musculoskeletal pain'},
+      {name:'Arnica (Arnica montana)', dose:'Topical gel/cream 3–4× daily', form:'Topical only', notes:'Post-exercise muscle soreness; bruising; sprains; DO NOT take internally'},
+      {name:'Frankincense (Boswellia) Topical', dose:'Diluted in carrier oil, 2–3× daily', form:'Diluted essential oil', notes:'Anti-inflammatory topically; joints, muscle tension, arthritis'},
+      {name:'Ginger (Zingiber officinale)', dose:'500 mg–1 g or fresh juice, 3× daily', form:'Capsule / Fresh', notes:'Muscle soreness after exercise; DOMS; arthritis — comparable to ibuprofen in some trials'},
+      {name:'Cat\'s Claw (Uncaria tomentosa)', dose:'250–350 mg, 3× daily', form:'Capsule', notes:'Rheumatoid and osteoarthritis; reduces swelling and pain; immune modulator'},
+    ],
+    diet: [
+      {name:'Anti-inflammatory diet — strict adherence', detail:'Remove all seed oils, refined sugar, processed foods — amplify NSAIDs'},
+      {name:'Collagen-rich foods', detail:'Bone broth, gelatin, slow-cooked cartilage — type II collagen for joints'},
+      {name:'Cherries and berries daily', detail:'Anthocyanins reduce uric acid (gout) and COX-1/2 enzymes'},
+      {name:'Nightshade elimination trial', detail:'Tomatoes, potatoes, peppers, aubergine — alkaloids worsen inflammation in susceptible individuals'},
+      {name:'Sulphur foods — garlic, onions, egg yolks', detail:'Supports glucosamine and chondroitin synthesis in joint cartilage'},
+    ],
+    supplements: [
+      {name:'Collagen Type II (undenatured)', dose:'10–40 mg UC-II, daily on empty stomach', notes:'Different mechanism to hydrolysed collagen; oral tolerisation reduces OA inflammation'},
+      {name:'Glucosamine Sulphate', dose:'1500 mg daily', notes:'Reduces cartilage degradation; best in knee OA with moderate-severe pain'},
+      {name:'Chondroitin Sulphate', dose:'800–1200 mg daily', notes:'Retains water in cartilage; combines well with glucosamine'},
+      {name:'MSM (Methylsulfonylmethane)', dose:'1–3 g daily', notes:'Sulphur donor; reduces joint pain and stiffness; improves flexibility'},
+      {name:'Omega-3 (EPA/DHA)', dose:'3–4 g daily', notes:'Reduces prostaglandin synthesis; NSAID-sparing effect in RA'},
+    ],
+    cautions: [
+      {name:'Arnica toxic if ingested', detail:'External use only at safe dilutions; do not use on broken skin'},
+      {name:'Willow Bark — aspirin allergy contraindication', detail:'Same cautions as ASA; avoid in children under 12, peptic ulcer, bleeding disorders'},
+      {name:'Devil\'s Claw — avoid in gallstones and peptic ulcer', detail:'Stimulates bile and gastric acid secretion'},
+    ],
+  },
+
+  // ══ WOMEN\'S HEALTH ══
+  'Women\'s Health': {
+    icon: '🌸', color: '#8b1540',
+    herbs: [
+      {name:'Vitex / Chaste Tree', dose:'400–500 mg, morning on empty stomach', form:'Standardised capsule', notes:'PMS, irregular cycles, progesterone support. 3+ months for full effect'},
+      {name:'Dong Quai (Angelica sinensis)', dose:'1–2 mL tincture, 2× daily (not during menstruation)', form:'Tincture', notes:'Blood tonic; regulate cycle; TCM fundamental female herb'},
+      {name:'Red Raspberry Leaf (Rubus idaeus)', dose:'2–4 g dried leaf or 2 cups tea daily', form:'Tea / Capsule', notes:'Uterine tonic; prepare for birth in 3rd trimester; reduces heavy periods'},
+      {name:'Shatavari (Asparagus racemosus)', dose:'500 mg–1 g, 2× daily', form:'Powder / Capsule', notes:'Ayurvedic female rasayana; fertility, menopause, libido, prolactin support'},
+      {name:'Black Cohosh', dose:'20–40 mg standardised, 2× daily', form:'Standardised tablet', notes:'Menopause: hot flushes, night sweats, mood; 6-month maximum'},
+      {name:'Motherwort (Leonurus cardiaca)', dose:'1–3 mL tincture, 3× daily', form:'Tincture', notes:'Delayed menstruation, cramps, palpitations; gentle uterine stimulant'},
+      {name:'Lady\'s Mantle (Alchemilla vulgaris)', dose:'2–4 g herb or 3 mL tincture, 3× daily', form:'Tea / Tincture', notes:'Astringent uterine tonic; heavy periods, fibroids, prolapse support'},
+      {name:'Wild Yam (Dioscorea villosa)', dose:'1–2 g or 2 mL tincture, 3× daily', form:'Tincture / Capsule', notes:'Antispasmodic; period cramps, ovarian pain; does NOT convert to progesterone in body'},
+    ],
+    diet: [
+      {name:'Seed cycling — synchronised with menstrual cycle', detail:'Follicular phase: flax + pumpkin seeds. Luteal phase: sunflower + sesame seeds'},
+      {name:'Liver support foods — for oestrogen metabolism', detail:'Cruciferous veg, sulphur foods, bitters — excess oestrogen cleared via liver'},
+      {name:'Reduce red meat and conventional dairy during PMS', detail:'Arachidonic acid in these foods increases prostaglandin synthesis (period pain)'},
+      {name:'Fibre 30g+ daily', detail:'Binds excess oestrogen in colon; prevents reabsorption and oestrogen dominance'},
+      {name:'Iron replacement after heavy periods', detail:'Ferrous bisglycinate with vitamin C; spirulina and nettle tea daily'},
+    ],
+    supplements: [
+      {name:'Vitex (Chaste Tree) standardised extract', dose:'400 mg daily, morning', notes:'3 full cycles minimum; most effective standalone PMS intervention'},
+      {name:'Magnesium Glycinate', dose:'300–400 mg daily, increase to 600 mg luteal phase', notes:'Reduces PMS symptoms by 90% in some trials; muscle cramps, headaches, mood'},
+      {name:'B6 (Pyridoxal-5-Phosphate)', dose:'50–100 mg daily', notes:'Essential for progesterone synthesis and oestrogen clearance'},
+      {name:'Evening Primrose Oil', dose:'1–3 g GLA daily', notes:'Reduces cyclical breast tenderness; anti-inflammatory in luteal phase'},
+      {name:'DIM', dose:'100–200 mg daily', notes:'Shifts oestrogen to protective 2-OH metabolites; oestrogen dominance'},
+    ],
+    cautions: [
+      {name:'Avoid uterine stimulants in pregnancy unless qualified', detail:'Motherwort, Dong Quai, high-dose Vitex — contraindicated in pregnancy'},
+      {name:'Vitex interacts with hormonal contraceptives and HRT', detail:'May reduce effectiveness; discuss with prescriber'},
+      {name:'Wild Yam does NOT raise progesterone', detail:'Body cannot convert diosgenin to progesterone; set realistic expectations'},
+    ],
+  },
+
+  // ══ COGNITIVE FUNCTION ══
+  'Brain Fog & Memory': {
+    icon: '🧠', color: '#0a3060',
+    herbs: [
+      {name:'Bacopa Monnieri (Brahmi)', dose:'300–600 mg standardised (20% bacosides), daily', form:'Standardised capsule', notes:'Best studied cognitive herb; significant memory improvement in 12 weeks; fat-soluble — take with meals'},
+      {name:'Lion\'s Mane Mushroom (Hericium erinaceus)', dose:'1–3 g dried or 500 mg extract, daily', form:'Powder / Capsule', notes:'Nerve growth factor stimulant; myelin repair; neurogenesis; take consistently'},
+      {name:'Ginkgo Biloba', dose:'120–240 mg standardised (24/6%) extract, 2× daily', form:'Standardised tablet', notes:'Cerebrovascular; increases cerebral blood flow; memory and processing speed'},
+      {name:'Rosemary (Rosmarinus officinalis)', dose:'Aromatherapy or 1–2 mL tincture, 3× daily', form:'Essential oil / Tincture', notes:'1,8-cineole improves memory — aromatherapy in workspace clinically shown'},
+      {name:'Gotu Kola (Centella asiatica)', dose:'500–1000 mg, 2× daily', form:'Capsule / Tea', notes:'Anxiolytic + cognitive; improves working memory and reduces anxiety'},
+      {name:'Rhodiola (Rhodiola rosea)', dose:'200–400 mg morning', form:'Standardised extract', notes:'Reduces mental fatigue; improves cognitive performance under stress'},
+      {name:'Shankhpushpi (Convolvulus pluricaulis)', dose:'500 mg powder, 2× daily', form:'Powder / Capsule', notes:'Ayurvedic nootropic; calms mind, improves retention and recall'},
+    ],
+    diet: [
+      {name:'Omega-3 DHA — brain structural lipid', detail:'DHA makes up 40% of polyunsaturated fats in brain; 2 g DHA daily minimum'},
+      {name:'Blueberries daily', detail:'Anthocyanins cross blood-brain barrier; improve memory and processing speed'},
+      {name:'Dark leafy greens — lutein and zeaxanthin', detail:'Spinach, kale — macula and brain accumulation of carotenoids; cognitive protection'},
+      {name:'Reduce ultra-processed foods', detail:'Neuroinflammation from UPF diet is a primary driver of cognitive decline'},
+      {name:'Intermittent fasting (16:8)', detail:'Triggers BDNF (brain fertiliser); improves neuroplasticity and mental clarity'},
+      {name:'Coffee + L-theanine stack (morning)', detail:'200 mg L-theanine with coffee reduces jitters, improves sustained attention'},
+    ],
+    supplements: [
+      {name:'DHA-dominant Omega-3', dose:'1–2 g DHA daily', notes:'Structural brain lipid; essential for synaptic function and neurogenesis'},
+      {name:'Lion\'s Mane extract', dose:'1 g extract 2× daily', notes:'NGF-stimulating; most promising natural nootropic for neurogenesis'},
+      {name:'Alpha GPC or CDP-Choline', dose:'300–600 mg Alpha GPC or 250–500 mg CDP-choline', notes:'Acetylcholine precursor; memory, attention, learning'},
+      {name:'Phosphatidylserine', dose:'100 mg, 3× daily', notes:'Membrane fluidity; significant clinical evidence for memory and cognitive decline'},
+      {name:'Magnesium L-Threonate', dose:'1.5–2 g MgT daily', notes:'Only form that crosses blood-brain barrier; increases synaptic density'},
+    ],
+    cautions: [
+      {name:'Ginkgo — increases bleeding risk', detail:'Stop 2 weeks before surgery; caution with anticoagulants and aspirin'},
+      {name:'Bacopa — take with food to avoid nausea', detail:'Fat-soluble compounds; GI upset on empty stomach'},
+      {name:'Bacopa has sedating effect in some', detail:'Avoid combining with benzodiazepines or CNS depressants at high doses'},
+    ],
+  },
+
+  // ══ RESPIRATORY ══
+  'Respiratory & Cough': {
+    icon: '🫁', color: '#0c3060',
+    herbs: [
+      {name:'Mullein (Verbascum thapsus)', dose:'2–3 mL tincture or 3 cups tea, 3× daily', form:'Tincture / Tea', notes:'Respiratory demulcent; expectorant; soothes bronchial irritation; excellent for dry cough'},
+      {name:'Thyme (Thymus vulgaris)', dose:'1–2 g herb or 2 mL tincture, 3× daily', form:'Tea / Tincture', notes:'Antispasmodic; expectorant; antimicrobial; equivalent to ivy leaf for cough in trials'},
+      {name:'Elecampane (Inula helenium)', dose:'2–4 g root or 2 mL tincture, 3× daily', form:'Tincture / Decoction', notes:'Expectorant; antimicrobial for respiratory infection; SIBO and lung infections'},
+      {name:'Marshmallow Root', dose:'2–5 g cold infusion, 3× daily', form:'Cold infusion', notes:'Mucilaginous; soothes dry, irritating cough and inflamed airways'},
+      {name:'Licorice Root', dose:'1–2 mL tincture, 3× daily (max 6 weeks)', form:'Tincture', notes:'Antiviral; expectorant; anti-inflammatory in bronchial tissue; adrenal support'},
+      {name:'Oregano Oil (Origanum vulgare)', dose:'2–4 drops in capsule or 150–200 mg standardised, 3× daily', form:'Softgel / Oil', notes:'Broad-spectrum antimicrobial and antiviral; acute respiratory infection'},
+      {name:'Andrographis', dose:'200–400 mg andrographolide standardised', form:'Standardised capsule', notes:'Antiviral; reduces URTI severity and duration; anti-inflammatory'},
+    ],
+    diet: [
+      {name:'Raw garlic and ginger in food daily', detail:'Antimicrobial compounds; reduce mucus production; support clearance'},
+      {name:'Honey — local and raw', detail:'Antimicrobial; soothes mucous membranes; clinically superior to dextromethorphan for cough'},
+      {name:'Stay well hydrated — minimum 2.5L daily', detail:'Thins mucus secretions and supports ciliary clearance'},
+      {name:'Avoid dairy during active infection', detail:'Thickens mucus in some individuals; trial elimination during respiratory illness'},
+      {name:'Hot broths and soups', detail:'Steam inhalation effect; electrolytes; anti-inflammatory compounds in bone broth'},
+    ],
+    supplements: [
+      {name:'Zinc Acetate lozenges', dose:'One lozenge every 2 hours at onset (max 12 days)', notes:'Reduces cold duration and severity; must be zinc acetate form with > 5mg elemental zinc'},
+      {name:'Vitamin D3', dose:'4000–10000 IU during active infection', notes:'Cathelicidin production; innate immune activation; deficiency = higher respiratory infection risk'},
+      {name:'NAC (N-Acetyl Cysteine)', dose:'600 mg, 2–3× daily', notes:'Mucolytic; thins mucus; antioxidant in lung tissue; proven for COPD and chronic bronchitis'},
+      {name:'Vitamin C (high dose)', dose:'2–5 g daily in divided doses', notes:'Reduces duration and severity of URTI; immune cell function'},
+    ],
+    cautions: [
+      {name:'Oregano oil — hot; dilute appropriately', detail:'Can irritate mucous membranes neat; always use in capsules or well diluted'},
+      {name:'Licorice — BP and adrenal monitoring needed', detail:'Max 6 weeks continuous; avoid in hypertension'},
+      {name:'Seek medical attention for difficulty breathing', detail:'Herbal medicine is supportive; pneumonia and severe asthma require medical care'},
+    ],
+  },
+
+  // ══ THYROID ══
+  'Thyroid Issues': {
+    icon: '🦋', color: '#1a4a6b',
+    herbs: [
+      {name:'Bladderwrack (Fucus vesiculosus)', dose:'200–600 mg dried or as food/supplement', form:'Capsule / Powder', notes:'Iodine source; hypothyroid support — TEST iodine/TSH first; contains natural iodine'},
+      {name:'Ashwagandha (Withania somnifera)', dose:'300–600 mg KSM-66, 2× daily', form:'Capsule', notes:'Increases T4 and T3 in subclinical hypothyroidism; TSH normalisation'},
+      {name:'Guggul (Commiphora mukul)', dose:'25 mg guggulsterones, 3× daily', form:'Standardised capsule', notes:'Increases T3/T4 conversion; used in Ayurveda for hypothyroid; anti-inflammatory'},
+      {name:'Lemon Balm (Melissa officinalis)', dose:'300–600 mg or 2 mL tincture, 3× daily', form:'Tincture / Tea', notes:'Hyperthyroid — reduces TSH receptor stimulation; anti-thyroid in excess'},
+      {name:'Bugleweed (Lycopus virginicus)', dose:'1–3 mL tincture, 3× daily', form:'Tincture only', notes:'Hyperthyroid and Graves disease — reduces T4 production; use with caution'},
+    ],
+    diet: [
+      {name:'Reduce goitrogens when raw — cook cruciferous veg', detail:'Cooking deactivates goitrins in broccoli, kale, cabbage that block iodine uptake'},
+      {name:'Selenium-rich foods daily', detail:'Brazil nuts (2/day), tuna, sardines — selenium is essential for T4→T3 conversion'},
+      {name:'Adequate iodine but avoid excess', detail:'Seaweed, fish, iodised salt — deficiency causes hypothyroid; excess can worsen autoimmune thyroid'},
+      {name:'Avoid gluten in autoimmune thyroiditis (Hashimoto\'s)', detail:'Gluten antibodies cross-react with thyroid peroxidase; elimination trials show benefit'},
+    ],
+    supplements: [
+      {name:'Selenium (Selenomethionine)', dose:'100–200 mcg daily', notes:'Reduces thyroid antibodies in Hashimoto\'s; T4→T3 conversion cofactor'},
+      {name:'Zinc', dose:'15–25 mg daily', notes:'Required for thyroid hormone synthesis; deficiency impairs conversion'},
+      {name:'Vitamin D3', dose:'2000–5000 IU daily', notes:'Autoimmune thyroid conditions correlate with deficiency'},
+      {name:'Magnesium', dose:'300–400 mg daily', notes:'Required for iodine uptake and thyroid hormone synthesis'},
+      {name:'Iron (if deficient)', dose:'As appropriate', notes:'Iron-deficiency anaemia impairs thyroid peroxidase enzyme activity'},
+    ],
+    cautions: [
+      {name:'CRITICAL: coordinate with endocrinologist', detail:'Herbs significantly alter thyroid hormone levels; medication dose may need adjusting'},
+      {name:'Ashwagandha — stimulates thyroid', detail:'Contraindicated in hyperthyroidism and Graves disease'},
+      {name:'Lemon Balm and Bugleweed — reduce thyroid function', detail:'Contraindicated in hypothyroidism'},
+      {name:'Monitor TSH, T3, T4 every 6–8 weeks during protocol', detail:'Thyroid is sensitive; regular testing prevents over or under treatment'},
+    ],
+  },
+
+  // ══ BLOOD SUGAR ══
+  'Blood Sugar Issues': {
+    icon: '🩸', color: '#8b3a10',
+    herbs: [
+      {name:'Berberine (Berberis species)', dose:'500 mg, 3× daily before meals', form:'Capsule', notes:'AMPK activator — comparable to Metformin in trials; reduces HbA1c, fasting glucose'},
+      {name:'Cinnamon (Cinnamomum verum)', dose:'1–3 g Ceylon cinnamon powder or extract, daily', form:'Powder / Capsule', notes:'Insulin sensitiser; use Ceylon only (not Cassia); reduces post-meal glucose spike'},
+      {name:'Fenugreek (Trigonella foenum-graecum)', dose:'2.5–5 g seeds or 500 mg extract, 2× daily', form:'Capsule / Food', notes:'Slows glucose absorption; increases insulin sensitivity; reduces fasting glucose'},
+      {name:'Gymnema Sylvestre', dose:'400–800 mg standardised (25% gymnemic acids), 2× daily', form:'Standardised capsule', notes:'Reduces sugar absorption; regenerates beta cells; "destroyer of sugar" Ayurvedic name'},
+      {name:'Bitter Melon (Momordica charantia)', dose:'500 mg–2 g or fresh juice 50 ml, 2× daily', form:'Capsule / Juice', notes:'Charantin and polypeptide-p have insulin-like activity; lowers fasting glucose'},
+      {name:'Holy Basil / Tulsi', dose:'500 mg or 2 cups tea, 2× daily', form:'Tea / Capsule', notes:'Reduces post-meal glucose; cortisol reduction secondary benefit for insulin resistance'},
+    ],
+    diet: [
+      {name:'Low-glycaemic diet — strict adherence', detail:'Remove refined carbs entirely; focus on whole grains, legumes, non-starchy veg'},
+      {name:'Apple cider vinegar before starchy meals', detail:'1–2 tsp in water; reduces post-meal glucose by 20–35%; improves insulin sensitivity'},
+      {name:'Increase soluble fibre with every meal', detail:'Psyllium, oats, legumes — slows gastric emptying and glucose absorption'},
+      {name:'Protein first at each meal', detail:'Eating protein before carbohydrate reduces post-meal glucose response significantly'},
+      {name:'Cinnamon in food and drinks daily', detail:'½ tsp Ceylon cinnamon in oatmeal, smoothies, tea — consistent blood sugar benefit'},
+      {name:'Reduce portion size — eat less more often', detail:'Smaller frequent meals maintain stable insulin; avoid large carbohydrate loads'},
+    ],
+    supplements: [
+      {name:'Berberine HCl', dose:'500 mg, 3× daily before meals', notes:'Most evidence; comparable to Metformin; check interactions with diabetes medications'},
+      {name:'Alpha-Lipoic Acid', dose:'600 mg, 2× daily', notes:'Reduces insulin resistance; antioxidant; particularly useful for diabetic neuropathy'},
+      {name:'Chromium Picolinate', dose:'200–400 mcg daily', notes:'Enhances insulin receptor sensitivity; reduces sugar cravings'},
+      {name:'Magnesium Glycinate', dose:'300–400 mg daily', notes:'Deficiency impairs insulin secretion; widespread in T2D and pre-diabetes'},
+      {name:'Inositol (Myo + D-chiro)', dose:'2 g Myo + 200 mg D-chiro, 2× daily', notes:'Insulin signal transduction; excellent in PCOS-related insulin resistance'},
+    ],
+    cautions: [
+      {name:'CRITICAL: Berberine potentiates diabetes medications', detail:'Risk of hypoglycaemia; monitor blood glucose closely; inform prescribing physician'},
+      {name:'Gymnema may reduce medication requirements', detail:'Beta cell regeneration can lead to hypoglycaemia with existing medication'},
+      {name:'Monitor HbA1c and fasting glucose every 3 months', detail:'Track progress; adjust protocol accordingly'},
+      {name:'Seek medical supervision for type 1 diabetes', detail:'All protocols here are for type 2 and insulin resistance management'},
+    ],
+  },
+
+};
+
+// All condition names for searching
+var HPM_CONDITIONS = Object.keys(HPM_DB);
+
+// ─────────────────────────────────────────────────────────────────
+// SECTION META (for rendering section headers in protocol canvas)
+// ─────────────────────────────────────────────────────────────────
+var HPM_SECTION_META = {
+  herbs:     {icon:'🌿', label:'Herbal Protocol',           color:'linear-gradient(135deg,#0d3d3a,#22a89f)'},
+  diet:      {icon:'🥗', label:'Dietary Guidance',          color:'linear-gradient(135deg,#04331f,#0a7c52)'},
+  supplements:{icon:'💊',label:'Supplements',               color:'linear-gradient(135deg,#3b1f6b,#6b3fa0)'},
+  lifestyle: {icon:'🏃', label:'Lifestyle Recommendations', color:'linear-gradient(135deg,#7a4000,#d97706)'},
+  sleep:     {icon:'😴', label:'Sleep Protocol',            color:'linear-gradient(135deg,#0a2e2b,#1a7a74)'},
+  mindbody:  {icon:'🧘', label:'Mind-Body Practices',       color:'linear-gradient(135deg,#2d1060,#6b3fa0)'},
+  cautions:  {icon:'⚠️', label:'Cautions & Interactions',  color:'linear-gradient(135deg,#8b0000,#dc2626)'},
+};
+
+// ─────────────────────────────────────────────────────────────────
+// LOAD CLIENTS INTO HPM PICKER
+// ─────────────────────────────────────────────────────────────────
+function hpmLoadClients(){
+  var list = document.getElementById('hpmClientList');
+  if(!list) return;
+  var clients = ALL_CLIENTS || [];
+  if(!clients.length){
+    list.innerHTML = '<div style="font-size:.8rem;color:var(--text-light)">No clients yet. Refresh dashboard first.</div>';
+    return;
+  }
+  var colors = ['linear-gradient(135deg,#0c8a7a,#22a89f)','linear-gradient(135deg,#f07b00,#c0390c)','linear-gradient(135deg,#3b1f6b,#6b3fa0)','linear-gradient(135deg,#04331f,#0a7c52)','linear-gradient(135deg,#7a4000,#d97706)'];
+  list.innerHTML = clients.map(function(cl, i){
+    var p = cl.personal || {};
+    var name = (p.firstName ? (p.firstName + ' ' + (p.lastName||'')).trim() : null) || cl.client_name || cl.name || 'Unknown';
+    var sym = cl.symptoms || {};
+    var chips = Array.isArray(sym.chips) ? sym.chips.slice(0,2).join(', ') : (sym.primaryComplaint || 'Assessment submitted');
+    return '<div class="hpm-client-card" onclick="hpmSelectClient('+i+',this)">' +
+      '<div class="hpm-avatar" style="background:'+colors[i%colors.length]+'">'+escapeHtml(name.charAt(0).toUpperCase())+'</div>' +
+      '<div><div class="hpm-cname">'+escapeHtml(name.trim())+'</div>' +
+      '<div class="hpm-cmeta">'+escapeHtml(chips.slice(0,38))+(chips.length>38?'…':'')+'</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SELECT CLIENT — populate assessment summary + condition tags
+// ─────────────────────────────────────────────────────────────────
+function hpmSelectClient(idx, el){
+  document.querySelectorAll('.hpm-client-card').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  HPM.client = (ALL_CLIENTS||[])[idx];
+  HPM.protocol = {};
+  if(!HPM.client) return;
+
+  var cl = HPM.client;
+  var p  = cl.personal || {};
+  var sy = cl.symptoms || {};
+  var hi = cl.history  || {};
+  var li = cl.lifestyle || {};
+  var ba = cl.bodyAreas || cl.body_areas || {};
+
+  // Show assessment summary
+  var assessBox = document.getElementById('hpmAssessBox');
+  var assessContent = document.getElementById('hpmAssessContent');
+  if(assessBox) assessBox.style.display = 'block';
+  if(assessContent){
+    var html = '';
+    if(sy.primaryComplaint) html += '<div><strong>Chief complaint:</strong> '+escapeHtml(sy.primaryComplaint)+'</div>';
+    if(sy.duration) html += '<div><strong>Duration:</strong> '+escapeHtml(sy.duration)+'</div>';
+    if(sy.severity) html += '<div><strong>Severity:</strong> '+escapeHtml(sy.severity)+'/5</div>';
+    var meds = hi.medications;
+    if(meds) html += '<div style="margin-top:.3rem"><strong>Medications:</strong> '+escapeHtml(meds)+'</div>';
+    var allerg = hi.allergies;
+    if(allerg) html += '<div><strong>Allergies:</strong> '+escapeHtml(allerg)+'</div>';
+    var preg = hi.pregnant;
+    if(preg && preg !== 'No') html += '<div style="color:var(--spice)"><strong>⚠️ '+escapeHtml(preg)+'</strong></div>';
+    if(!html) html = '<em style="color:var(--text-light)">Assessment data available</em>';
+    assessContent.innerHTML = html;
+  }
+
+  // Build condition tags from assessment
+  var condBox  = document.getElementById('hpmCondBox');
+  var condTags = document.getElementById('hpmCondTags');
+  if(condBox) condBox.style.display = 'block';
+
+  var detectedConditions = new Set();
+
+  // Map symptom chips to HPM conditions
+  var chipMap = {
+    'anxiety':'Anxiety & Stress','stress':'Anxiety & Stress','insomnia':'Insomnia & Sleep',
+    'sleep':'Insomnia & Sleep','fatigue':'Fatigue & Low Energy','digestion':'Digestive Issues',
+    'bloating':'Digestive Issues','constipation':'Digestive Issues',
+    'hormones':'Hormonal Imbalance','menstrual':'Women\'s Health',
+    'inflammation':'Inflammation','joints':'Joint & Muscle Pain','back-pain':'Joint & Muscle Pain',
+    'skin':'Skin Problems','acne':'Skin Problems','eczema':'Skin Problems',
+    'liver':'Liver & Detox','immunity':'Low Immunity','cold-flu':'Low Immunity',
+    'mood':'Low Mood & Depression','memory':'Brain Fog & Memory','headaches':'Brain Fog & Memory',
+    'respiratory':'Respiratory & Cough','hypertension':'High Blood Pressure',
+    'thyroid':'Thyroid Issues','blood-sugar':'Blood Sugar Issues','weight':'Blood Sugar Issues',
+    'menopause':'Women\'s Health','libido':'Women\'s Health',
+  };
+
+  var chips = Array.isArray(sy.chips) ? sy.chips : [];
+  chips.forEach(function(chip){
+    var mapped = chipMap[chip];
+    if(mapped) detectedConditions.add(mapped);
+  });
+
+  // Add from diagnosed conditions
+  var conds = Array.isArray(hi.conditions) ? hi.conditions : [];
+  conds.forEach(function(cond){
+    var cl2 = cond.toLowerCase();
+    if(cl2.includes('diabet')||cl2.includes('blood sugar')) detectedConditions.add('Blood Sugar Issues');
+    if(cl2.includes('hypertens')||cl2.includes('blood pressure')) detectedConditions.add('High Blood Pressure');
+    if(cl2.includes('thyroid')) detectedConditions.add('Thyroid Issues');
+    if(cl2.includes('ibs')||cl2.includes('crohn')||cl2.includes('colitis')) detectedConditions.add('Digestive Issues');
+    if(cl2.includes('pcos')||cl2.includes('endometriosis')||cl2.includes('hormonal')) detectedConditions.add('Hormonal Imbalance');
+    if(cl2.includes('arthritis')||cl2.includes('joint')) detectedConditions.add('Joint & Muscle Pain');
+    if(cl2.includes('anxiety')||cl2.includes('depression')||cl2.includes('mental')) detectedConditions.add('Anxiety & Stress');
+    if(cl2.includes('autoimmune')) detectedConditions.add('Low Immunity');
+    if(cl2.includes('liver')) detectedConditions.add('Liver & Detox');
+    if(cl2.includes('skin')||cl2.includes('eczema')||cl2.includes('psoriasis')) detectedConditions.add('Skin Problems');
+    if(cl2.includes('respiratory')||cl2.includes('asthma')) detectedConditions.add('Respiratory & Cough');
+  });
+
+  // Render condition tags
+  var allConds = HPM_CONDITIONS;
+  if(condTags){
+    condTags.innerHTML = allConds.map(function(cond){
+      var def = HPM_DB[cond];
+      var detected = detectedConditions.has(cond);
+      return '<span class="hpm-tag'+(detected?' active':'')+'" onclick="hpmToggleCondition(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',this)">' +
+        def.icon + ' ' + escapeHtml(cond) +
+      '</span>';
+    }).join('');
+    // Auto-add detected conditions to protocol
+    detectedConditions.forEach(function(cond){
+      if(HPM_DB[cond] && !HPM.protocol[cond]) hpmAddConditionToProtocol(cond);
+    });
+  }
+
+  // Render empty canvas message or show protocol
+  hpmRenderCanvas();
+  showToast('👤 '+escapeHtml((p.firstName||'Client'))+' loaded — '+detectedConditions.size+' conditions detected');
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TOGGLE CONDITION TAG — add/remove section from canvas
+// ─────────────────────────────────────────────────────────────────
+function hpmToggleCondition(cond, el){
+  el.classList.toggle('active');
+  if(el.classList.contains('active')){
+    hpmAddConditionToProtocol(cond);
+  } else {
+    delete HPM.protocol[cond];
+    hpmRenderCanvas();
+  }
+}
+
+function hpmAddConditionToProtocol(cond){
+  if(!HPM_DB[cond]) return;
+  var db = HPM_DB[cond];
+  HPM.protocol[cond] = {
+    icon: db.icon, color: db.color,
+    sections: {}
+  };
+  // Add all available sections
+  Object.keys(HPM_SECTION_META).forEach(function(secKey){
+    if(db[secKey] && db[secKey].length){
+      HPM.protocol[cond].sections[secKey] = db[secKey].map(function(item){
+        return Object.assign({}, item, {_id: 'i'+Math.random().toString(36).slice(2), _custom: false});
+      });
+    }
+  });
+  hpmRenderCanvas();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SEARCH CONDITIONS
+// ─────────────────────────────────────────────────────────────────
+function hpmSearchConditions(q){
+  var results = document.getElementById('hpmCondResults');
+  if(!results) return;
+  if(!q.trim()){ results.innerHTML=''; return; }
+  var lq = q.toLowerCase();
+  var matches = HPM_CONDITIONS.filter(function(c){ return c.toLowerCase().includes(lq); });
+  // Also search within item names
+  if(matches.length < 3){
+    HPM_CONDITIONS.forEach(function(c){
+      if(matches.includes(c)) return;
+      var db = HPM_DB[c];
+      var found = ['herbs','diet','supplements','lifestyle','sleep','mindbody','cautions'].some(function(sec){
+        return (db[sec]||[]).some(function(item){ return (item.name||'').toLowerCase().includes(lq); });
+      });
+      if(found) matches.push(c);
+    });
+  }
+  results.innerHTML = matches.slice(0,10).map(function(cond){
+    var active = HPM.protocol[cond] ? ' active' : '';
+    return '<span class="hpm-tag'+active+'" onclick="hpmToggleConditionSearch(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',this)">' +
+      HPM_DB[cond].icon + ' ' + escapeHtml(cond) +
+    '</span>';
+  }).join('') || '<span style="font-size:.78rem;color:var(--text-light)">No conditions found for "'+escapeHtml(q)+'"</span>';
+}
+
+function hpmToggleConditionSearch(cond, el){
+  el.classList.toggle('active');
+  // Also toggle the tag in the condTags area if present
+  var mainTag = document.querySelector('#hpmCondTags .hpm-tag');
+  document.querySelectorAll('#hpmCondTags .hpm-tag').forEach(function(t){
+    if(t.textContent.trim().includes(cond)){
+      t.classList.toggle('active', el.classList.contains('active'));
+    }
+  });
+  if(el.classList.contains('active')){
+    hpmAddConditionToProtocol(cond);
+  } else {
+    delete HPM.protocol[cond];
+    hpmRenderCanvas();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RENDER THE PROTOCOL CANVAS
+// ─────────────────────────────────────────────────────────────────
+function hpmRenderCanvas(){
+  var canvas = document.getElementById('hpmCanvas');
+  var empty  = document.getElementById('hpmEmpty');
+  if(!canvas) return;
+
+  var condKeys = Object.keys(HPM.protocol);
+  if(!condKeys.length){
+    canvas.innerHTML = '<div class="hpm-empty" id="hpmEmpty"><div class="he-icon">🗺️</div><h3 style="font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--text-dark);margin-bottom:.6rem">Herbal Protocol Map</h3><p>Select a client and click on a condition tag to build their protocol.</p></div>';
+    return;
+  }
+
+  // Client header
+  var cl = HPM.client || {};
+  var p = cl.personal || {};
+  var name = (p.firstName ? (p.firstName+' '+(p.lastName||'')).trim() : cl.client_name || cl.name || 'Client');
+  var dateStr = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  var html = '<div style="background:linear-gradient(135deg,var(--teal-deep),var(--teal-deepest));border-radius:16px;padding:1.4rem 1.8rem;margin-bottom:1.6rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">' +
+    '<div><div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:#fff">Protocol Map — '+escapeHtml(name)+'</div>' +
+    '<div style="font-size:.74rem;color:rgba(255,255,255,.5);margin-top:.2rem">'+dateStr+' · '+condKeys.length+' condition'+(condKeys.length!==1?'s':'')+' · Practitioner: '+escapeHtml(currentHerbalist?.name||'TrueForm Herbalist')+'</div></div>' +
+    '<div style="display:flex;gap:.5rem">' +
+    '<button onclick="hpmExpandAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:.72rem;padding:5px 12px;cursor:pointer;font-family:var(--sans);font-weight:600">Expand All</button>' +
+    '<button onclick="hpmCollapseAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:.72rem;padding:5px 12px;cursor:pointer;font-family:var(--sans);font-weight:600">Collapse All</button>' +
+    '</div></div>';
+
+  condKeys.forEach(function(cond){
+    var condData = HPM.protocol[cond];
+    var secKeys  = Object.keys(condData.sections||{});
+    var totalItems = secKeys.reduce(function(sum, sk){ return sum + (condData.sections[sk]||[]).length; }, 0);
+
+    html += '<div class="hpm-section" id="hpmsec-'+btoa(cond).replace(/=/g,'')+'">' +
+      // Condition header
+      '<div style="background:'+condData.color+';padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between">' +
+        '<div style="display:flex;align-items:center;gap:.7rem">' +
+          '<span style="font-size:1.3rem">'+condData.icon+'</span>' +
+          '<span style="font-family:var(--serif);font-size:1.05rem;font-weight:700;color:#fff">'+escapeHtml(cond)+'</span>' +
+          '<span style="font-size:.64rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.2);color:rgba(255,255,255,.9)">'+totalItems+' items</span>' +
+        '</div>' +
+        '<button onclick="hpmRemoveCondition(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\')" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:rgba(255,255,255,.8);font-size:.72rem;padding:4px 10px;cursor:pointer;font-family:var(--sans);font-weight:600">✕ Remove</button>' +
+      '</div>' +
+      // Section rows
+      '<div style="padding:.8rem 1.3rem 1rem">';
+
+    secKeys.forEach(function(secKey){
+      var items = condData.sections[secKey] || [];
+      var meta  = HPM_SECTION_META[secKey] || {icon:'•', label:secKey, color:'var(--teal-deep)'};
+
+      html += '<div class="hpm-section" style="margin-bottom:.8rem;border:1.5px solid var(--border)">' +
+        '<div class="hpm-section-head" onclick="hpmOpenPicker(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')" title="Click to browse suggestions">' +
+          '<div class="hpm-sh-left">' +
+            '<div class="hpm-sh-icon" style="background:'+meta.color+'">'+meta.icon+'</div>' +
+            '<span class="hpm-sh-title">'+escapeHtml(meta.label)+'</span>' +
+            '<span class="hpm-sh-count">'+items.length+'</span>' +
+          '</div>' +
+          '<div class="hpm-sh-actions">' +
+            '<button onclick="event.stopPropagation();hpmAddCustomItem(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')" class="hpm-ia-btn" title="Add custom">+ Add</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="hpm-section-body" id="hpmbody-'+secKey+'-'+btoa(cond).replace(/=/g,'')+'">';
+
+      items.forEach(function(item){
+        html += hpmRenderItem(item, cond, secKey);
+      });
+
+      html += '<button class="hpm-add-row" onclick="hpmAddCustomItem(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')">' +
+        '<span>＋</span> Add custom recommendation' +
+      '</button>';
+      html += '</div></div>';
+    });
+
+    // Add section button
+    html += '<button class="hpm-add-row" style="border:2px dashed var(--saffron-light);color:var(--amber)" onclick="hpmAddSection(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\')">' +
+      '<span>＋</span> Add protocol section (diet / supplements / lifestyle / sleep…)' +
+    '</button>';
+
+    html += '</div></div>';
+  });
+
+  canvas.innerHTML = html;
+}
+
+function hpmRenderItem(item, cond, secKey){
+  var isHerb = (secKey === 'herbs');
+  var isSupp = (secKey === 'supplements');
+  return '<div class="hpm-item'+(item._custom?' custom':'')+'" id="hpm-item-'+item._id+'">' +
+    '<span class="hpm-item-icon">'+(item._custom ? '✏️' : (isHerb ? '🌿' : isSupp ? '💊' : '•'))+'</span>' +
+    '<div class="hpm-item-body">' +
+      '<div class="hpm-item-name">'+escapeHtml(item.name||'')+'</div>' +
+      (item.dose ? '<div class="hpm-item-detail">📏 '+escapeHtml(item.dose)+(item.form ? ' · <em>'+escapeHtml(item.form)+'</em>' : '')+'</div>' : '') +
+      (item.detail ? '<div class="hpm-item-detail">'+escapeHtml(item.detail)+'</div>' : '') +
+      (item.notes ? '<div class="hpm-item-note">💡 '+escapeHtml(item.notes)+'</div>' : '') +
+    '</div>' +
+    '<div class="hpm-item-actions">' +
+      '<button class="hpm-ia-btn" onclick="hpmEditItem(\''+item._id+'\',\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')" title="Edit">✏️</button>' +
+      '<button class="hpm-ia-btn del" onclick="hpmDeleteItem(\''+item._id+'\',\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')" title="Remove">✕</button>' +
+    '</div>' +
+  '</div>';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ITEM OPERATIONS
+// ─────────────────────────────────────────────────────────────────
+function hpmDeleteItem(itemId, cond, secKey){
+  if(!HPM.protocol[cond]||!HPM.protocol[cond].sections[secKey]) return;
+  HPM.protocol[cond].sections[secKey] = HPM.protocol[cond].sections[secKey].filter(function(i){ return i._id !== itemId; });
+  hpmRenderCanvas();
+}
+
+function hpmEditItem(itemId, cond, secKey){
+  if(!HPM.protocol[cond]||!HPM.protocol[cond].sections[secKey]) return;
+  var item = HPM.protocol[cond].sections[secKey].find(function(i){ return i._id === itemId; });
+  if(!item) return;
+  var newName = prompt('Edit item name:', item.name||'');
+  if(newName === null) return;
+  var newDetail = prompt('Edit dose/detail:', item.dose || item.detail || '');
+  if(newDetail === null) return;
+  var newNotes = prompt('Edit notes (optional):', item.notes||'');
+  item.name = newName.trim() || item.name;
+  if(item.dose !== undefined) item.dose = newDetail;
+  else item.detail = newDetail;
+  if(newNotes !== null) item.notes = newNotes;
+  item._custom = true;
+  hpmRenderCanvas();
+}
+
+function hpmAddCustomItem(cond, secKey){
+  if(!HPM.protocol[cond]) return;
+  if(!HPM.protocol[cond].sections) HPM.protocol[cond].sections = {};
+  if(!HPM.protocol[cond].sections[secKey]) HPM.protocol[cond].sections[secKey] = [];
+
+  var isHerb = (secKey==='herbs');
+  var isSupp = (secKey==='supplements');
+  var name = prompt('Item name:');
+  if(!name||!name.trim()) return;
+  var dose = (isHerb||isSupp) ? prompt('Dose / amount:','') : prompt('Detail / instruction:','');
+  var notes = prompt('Notes (optional):','');
+
+  var newItem = {
+    _id: 'c'+Math.random().toString(36).slice(2),
+    _custom: true,
+    name: name.trim(),
+  };
+  if(isHerb||isSupp){ newItem.dose = dose||''; newItem.form = ''; }
+  else { newItem.detail = dose||''; }
+  if(notes) newItem.notes = notes;
+
+  HPM.protocol[cond].sections[secKey].push(newItem);
+  hpmRenderCanvas();
+  showToast('✓ Item added to '+secKey);
+}
+
+function hpmAddSection(cond){
+  if(!HPM.protocol[cond]) return;
+  var secOptions = Object.keys(HPM_SECTION_META).filter(function(k){ return !HPM.protocol[cond].sections[k]; });
+  if(!secOptions.length){ showToast('All sections already added.'); return; }
+  var choice = prompt('Add section:\n'+secOptions.map(function(k,i){ return (i+1)+'. '+HPM_SECTION_META[k].label; }).join('\n')+'\n\nType the number:');
+  if(!choice) return;
+  var idx = parseInt(choice)-1;
+  if(idx<0||idx>=secOptions.length){ showToast('Invalid selection.'); return; }
+  var secKey = secOptions[idx];
+  var db = HPM_DB[cond];
+  if(!HPM.protocol[cond].sections) HPM.protocol[cond].sections = {};
+  if(db && db[secKey]){
+    HPM.protocol[cond].sections[secKey] = db[secKey].map(function(item){ return Object.assign({},item,{_id:'i'+Math.random().toString(36).slice(2),_custom:false}); });
+  } else {
+    HPM.protocol[cond].sections[secKey] = [];
+  }
+  hpmRenderCanvas();
+}
+
+function hpmRemoveCondition(cond){
+  delete HPM.protocol[cond];
+  // Deactivate tag
+  document.querySelectorAll('.hpm-tag').forEach(function(t){
+    if(t.textContent.trim().includes(cond)) t.classList.remove('active');
+  });
+  hpmRenderCanvas();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// REFERENCE PICKER (RIGHT PANEL)
+// ─────────────────────────────────────────────────────────────────
+var _hpmPickerState = {cond:null, secKey:null};
+var _hpmPickerOpen = false;
+
+function hpmOpenPicker(cond, secKey){
+  _hpmPickerState = {cond:cond, secKey:secKey};
+  var picker = document.getElementById('hpmPicker');
+  var sub    = document.getElementById('hpmPickerSub');
+  var meta   = HPM_SECTION_META[secKey] || {label:secKey};
+  if(sub) sub.textContent = meta.icon+' '+meta.label+' — '+cond;
+  if(picker) picker.classList.remove('collapsed');
+  _hpmPickerOpen = true;
+  hpmRenderPicker('');
+  document.getElementById('hpmPickerToggle').textContent = '📚 Hide Picker';
+}
+
+function hpmTogglePicker(){
+  var picker = document.getElementById('hpmPicker');
+  _hpmPickerOpen = !_hpmPickerOpen;
+  if(picker) picker.classList.toggle('collapsed', !_hpmPickerOpen);
+  document.getElementById('hpmPickerToggle').textContent = _hpmPickerOpen ? '📚 Hide Picker' : '📚 Picker';
+}
+
+function hpmFilterPicker(q){ hpmRenderPicker(q); }
+
+function hpmRenderPicker(q){
+  var content = document.getElementById('hpmPickerContent');
+  if(!content) return;
+  var cond   = _hpmPickerState.cond;
+  var secKey = _hpmPickerState.secKey;
+  if(!cond || !secKey || !HPM_DB[cond] || !HPM_DB[cond][secKey]){
+    content.innerHTML = '<div style="font-size:.8rem;color:var(--text-light);text-align:center;padding:1rem 0">Click a section header on the canvas to browse suggestions.</div>';
+    return;
+  }
+  var allItems = HPM_DB[cond][secKey];
+  var lq = (q||'').toLowerCase().trim();
+  var filtered = lq ? allItems.filter(function(i){ return (i.name||'').toLowerCase().includes(lq)||(i.notes||'').toLowerCase().includes(lq); }) : allItems;
+
+  // Check which are already in protocol
+  var existing = new Set((((HPM.protocol[cond]||{}).sections||{})[secKey]||[]).map(function(i){ return i.name; }));
+
+  content.innerHTML = '<div class="hpm-sugg-group">' +
+    '<div class="hpm-sugg-title">'+HPM_DB[cond].icon+' '+cond+' — '+HPM_SECTION_META[secKey].label+'</div>' +
+    '<div class="hpm-sugg-chips">' +
+      filtered.map(function(item){
+        var added = existing.has(item.name);
+        return '<div class="hpm-sugg-chip'+(added?' added':'')+'" onclick="hpmPickerAddItem(this)" data-name="'+escapeHtml(item.name||'')+'" data-dose="'+escapeHtml(item.dose||item.detail||'')+'" data-form="'+escapeHtml(item.form||'')+'" data-notes="'+escapeHtml(item.notes||'')+'">' +
+          escapeHtml(item.name||'') +
+          (item.dose ? '<span style="font-size:.65em;color:var(--text-light);margin-left:.3rem">'+escapeHtml(item.dose.slice(0,25))+'</span>' : '') +
+        '</div>';
+      }).join('') +
+    '</div></div>' +
+    '<div style="margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border)">' +
+      '<button class="hpm-add-row" style="border-style:dashed" onclick="hpmAddCustomItem(\''+escapeHtml(cond.replace(/'/g,"\\'"))+'\',\''+secKey+'\')">' +
+        '<span>＋</span> Add custom item to this section' +
+      '</button>' +
+    '</div>';
+}
+
+function hpmPickerAddItem(el){
+  var cond   = _hpmPickerState.cond;
+  var secKey = _hpmPickerState.secKey;
+  if(!cond||!secKey) return;
+  if(!HPM.protocol[cond]){ hpmAddConditionToProtocol(cond); }
+  if(!HPM.protocol[cond].sections) HPM.protocol[cond].sections = {};
+  if(!HPM.protocol[cond].sections[secKey]) HPM.protocol[cond].sections[secKey] = [];
+
+  var name  = el.dataset.name;
+  var dose  = el.dataset.dose;
+  var form  = el.dataset.form;
+  var notes = el.dataset.notes;
+
+  // Check not already added
+  var alreadyIn = HPM.protocol[cond].sections[secKey].some(function(i){ return i.name === name; });
+  if(alreadyIn){ el.classList.add('added'); showToast('"'+name+'" is already in the protocol.'); return; }
+
+  var newItem = {_id:'p'+Math.random().toString(36).slice(2), _custom:false, name:name};
+  if(secKey==='herbs'||secKey==='supplements'){ newItem.dose=dose; newItem.form=form; }
+  else { newItem.detail=dose; }
+  newItem.notes=notes;
+
+  HPM.protocol[cond].sections[secKey].push(newItem);
+  el.classList.add('added');
+  hpmRenderCanvas();
+  showToast('✓ '+name+' added');
+}
+
+// ─────────────────────────────────────────────────────────────────
+// COLLECT PROTOCOL TEXT
+// ─────────────────────────────────────────────────────────────────
+function hpmCollectText(){
+  var cl = HPM.client || {};
+  var p = cl.personal || {};
+  var name = (p.firstName ? (p.firstName+' '+(p.lastName||'')).trim() : cl.client_name||cl.name||'Client');
+  var date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  var practitioner = currentHerbalist ? currentHerbalist.name : 'TrueForm Botanical Practitioner';
+
+  var text = 'PERSONALISED HERBAL PROTOCOL MAP\n';
+  text += 'Client: '+name+'\nDate: '+date+'\nPractitioner: '+practitioner+'\n';
+  text += '═'.repeat(50)+'\n\n';
+
+  Object.keys(HPM.protocol).forEach(function(cond){
+    var condData = HPM.protocol[cond];
+    text += condData.icon+' '+cond.toUpperCase()+'\n'+'─'.repeat(40)+'\n';
+    Object.keys(condData.sections||{}).forEach(function(secKey){
+      var meta = HPM_SECTION_META[secKey] || {icon:'•', label:secKey};
+      text += '\n  '+meta.icon+' '+meta.label.toUpperCase()+'\n';
+      (condData.sections[secKey]||[]).forEach(function(item){
+        text += '  • '+item.name;
+        if(item.dose) text += '\n    Dose: '+item.dose;
+        if(item.form) text += ' ('+item.form+')';
+        if(item.detail) text += '\n    '+item.detail;
+        if(item.notes) text += '\n    Note: '+item.notes;
+        text += '\n';
+      });
+    });
+    text += '\n';
+  });
+
+  text += '═'.repeat(50)+'\n';
+  text += 'This protocol is prepared by a certified herbalist based on your pre-consultation assessment.\n';
+  text += 'Please discuss all herbal protocols with your primary healthcare provider.\n';
+  return text;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SAVE / SEND / PRINT
+// ─────────────────────────────────────────────────────────────────
+function hpmSaveProtocol(){
+  if(!Object.keys(HPM.protocol).length){ showToast('⚠️ Nothing to save yet.'); return; }
+  var cl = HPM.client || {};
+  var p = cl.personal || {};
+  var name = (p.firstName ? (p.firstName+' '+(p.lastName||'')).trim() : cl.client_name||cl.name||'Client');
+  var text = hpmCollectText();
+  var saved = JSON.parse(localStorage.getItem('tfb_hpm_saved')||'[]');
+  saved.push({id:'hpm_'+Date.now(), client:name, date:new Date().toISOString(), text:text, protocol:HPM.protocol});
+  try{ localStorage.setItem('tfb_hpm_saved', JSON.stringify(saved)); }catch(e){}
+  showToast('💾 Protocol Map saved for '+name);
+}
+
+async function hpmSendToClient(){
+  if(!HPM.client){ showToast('⚠️ Select a client first.'); return; }
+  if(!Object.keys(HPM.protocol).length){ showToast('⚠️ Build a protocol first.'); return; }
+  var cl = HPM.client;
+  var p = cl.personal || {};
+  var name = (p.firstName ? (p.firstName+' '+(p.lastName||'')).trim() : cl.client_name||cl.name||'Client');
+  var email = p.email || cl.client_email || '';
+  var text = hpmCollectText();
+  try{
+    await sb.from('protocols').insert({
+      client_email:  email,
+      client_id:     cl.id || null,
+      client_name:   name,
+      content:       text,
+      herbalist:     currentHerbalist?.name || 'TrueForm Practitioner',
+      sent_at:       new Date().toISOString(),
+      status:        'sent',
+    });
+    showToast('📤 Protocol Map sent to '+name+"'s portal!");
+  } catch(e){
+    try{ localStorage.setItem('tfb_hpm_pending_'+Date.now(), JSON.stringify({client:name,email:email,text:text,sent:new Date().toISOString()})); }catch(e2){}
+    showToast('📤 Protocol saved locally — will sync when online.');
+  }
+}
+
+function hpmPrint(){ window.print(); }
+
+function hpmClear(){
+  if(!confirm('Clear all protocol sections? This cannot be undone.')) return;
+  HPM.protocol = {};
+  document.querySelectorAll('.hpm-tag').forEach(function(t){ t.classList.remove('active'); });
+  hpmRenderCanvas();
+  showToast('Protocol cleared.');
+}
+
+function hpmExpandAll(){
+  document.querySelectorAll('.hpm-section-body').forEach(function(b){ b.classList.remove('collapsed'); });
+}
+function hpmCollapseAll(){
+  document.querySelectorAll('.hpm-section-body').forEach(function(b){ b.classList.add('collapsed'); });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// PATCH showPanel TO INIT HPM
+// ─────────────────────────────────────────────────────────────────
+var _origShowPanel_HPM = showPanel;
+function showPanel(id){
+  _origShowPanel_HPM(id);
+  if(id === 'hpm'){
+    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+    var navEl = document.getElementById('nav-hpm');
+    if(navEl) navEl.classList.add('active');
+    hpmLoadClients();
+    try{ /* Restore any saved drafts */ }catch(e){}
+  }
+}
 
 </script>
 </body>

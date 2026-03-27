@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://*.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none';"/>
 <meta charset="UTF-8"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
@@ -1427,8 +1428,10 @@ async function loadAll(){
 
   // localStorage fallback for pre-Supabase data
   try {
+    const tombstone = JSON.parse(localStorage.getItem('tfb_deleted_assessments')||'[]');
     const refs = await sget('tfb_refs')||[];
     for(const ref of refs){
+      if(tombstone.includes(ref)) continue; // skip deleted
       const a = await sget('tfb_assessment_'+ref);
       if(!a) continue;
       const state = await sget('tfb_state_'+ref)||{};
@@ -1680,6 +1683,7 @@ function renderAdmins(list=ALL_ADMINS){
 
 function renderOverviewActivity(){
   const el=document.getElementById('recentActivity');
+  if(!el) return;
   if(!ALL_AUDIT.length){el.innerHTML='<div class="empty-state" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.8rem">📋</div><div class="empty-msg">No activity yet.</div></div>';return;}
   el.innerHTML=ALL_AUDIT.slice(0,8).map(e=>`
     <div class="audit-item">
@@ -1691,6 +1695,7 @@ function renderOverviewActivity(){
 
 function renderAuditLog(list=ALL_AUDIT){
   const el=document.getElementById('auditLogList');
+  if(!el) return;
   if(!list.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Audit log is empty</div><div class="empty-msg">All administrative actions will appear here.</div></div>';return;}
   el.innerHTML=list.map(e=>`
     <div class="audit-item">
@@ -3695,13 +3700,46 @@ async function markAssessmentReviewed(ref){
 
 async function deleteAssessment(ref){
   showConfirm('Delete Assessment', 'Permanently delete assessment ' + ref + '? This cannot be undone.', async function(){
+    let sbOk = false;
+    // 1. Delete from Supabase
     try {
-      await sb.from('assessments').delete().eq('ref_code', ref);
-      ALL_ASSESSMENTS = ALL_ASSESSMENTS.filter(a=>(a.ref_code||a.meta?.refCode)!==ref);
-      renderAssessments();
-      updateStats();
-      showToast('🗑️ Assessment deleted.');
-    } catch(e){ showToast('⚠️ Could not delete assessment.'); }
+      const { error } = await sb.from('assessments').delete().eq('ref_code', ref);
+      if(error){ console.error('Supabase delete error:', error); }
+      else { sbOk = true; }
+    } catch(e){ console.error('Supabase delete exception:', e); }
+
+    // 2. Delete from localStorage (all keys for this ref)
+    try {
+      const keysToRemove = ['tfb_assessment_'+ref, 'tfb_state_'+ref];
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+      // Also remove from tfb_refs list
+      const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
+      const newRefs = refs.filter(r => r !== ref);
+      localStorage.setItem('tfb_refs', JSON.stringify(newRefs));
+      // Also attempt via window.storage
+      for(const k of keysToRemove){
+        try{ await window.storage.delete(k, false); }catch(e){}
+        try{ await window.storage.delete(k, true);  }catch(e){}
+      }
+    } catch(e){ console.warn('localStorage delete error:', e); }
+
+    // 3. Add to tombstone — prevents fallback from re-inserting
+    try {
+      const tombstone = JSON.parse(localStorage.getItem('tfb_deleted_assessments')||'[]');
+      if(!tombstone.includes(ref)){
+        tombstone.push(ref);
+        localStorage.setItem('tfb_deleted_assessments', JSON.stringify(tombstone));
+      }
+    } catch(e){}
+
+    // 4. Remove from in-memory arrays
+    ALL_ASSESSMENTS = ALL_ASSESSMENTS.filter(a=>(a.ref_code||a.meta?.refCode)!==ref);
+    ALL_CLIENTS_USR = ALL_CLIENTS_USR.filter(cl=>cl.assessmentRef!==ref);
+
+    renderAssessments();
+    renderClients();
+    updateStats();
+    showToast(sbOk ? '🗑️ Assessment permanently deleted.' : '🗑️ Assessment removed locally.');
   });
 }
 
@@ -3833,6 +3871,7 @@ function renderSuspended(){
 
   // Herbalists table
   const hTbody = document.getElementById('suspendedHerbalistsTbody');
+  if(!hTbody) return;
   if(hTbody){
     if(!suspH.length){
       if(hTbody){hTbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended herbalists</td></tr>';}
@@ -3851,6 +3890,7 @@ function renderSuspended(){
 
   // Clients table
   const cTbody = document.getElementById('suspendedClientsTbody');
+  if(!cTbody) return;
   if(cTbody){
     if(!suspC.length){
       if(cTbody){cTbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-light);font-style:italic">No suspended clients</td></tr>';}
