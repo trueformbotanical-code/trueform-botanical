@@ -236,75 +236,90 @@ body{background:var(--surface-alt);font-family:var(--sans);color:var(--text-dark
 .modal-body{padding:1.4rem}
 
 
-/* ══ AI PROTOCOL GENERATOR ══ */
-.ai-gen-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.ai-gen-top{padding:1.2rem 1.8rem;background:linear-gradient(135deg,#030d0c,#0a3f38);border-bottom:2px solid rgba(16,196,176,.2);flex-shrink:0}
-.ai-gen-top h2{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.2rem}
-.ai-gen-top p{font-size:.78rem;color:rgba(255,255,255,.55)}
-.ai-sections{display:grid;grid-template-columns:320px 1fr;height:calc(100% - 80px);min-height:0}
-.ai-left{border-right:1.5px solid var(--border);overflow-y:auto;background:var(--surface-alt)}
-.ai-right{overflow-y:auto;background:var(--surface)}
-.ai-client-pick{padding:1.2rem 1.4rem;border-bottom:1.5px solid var(--border)}
-.ai-client-pick h4{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.6rem}
-.ai-client-card{display:flex;align-items:center;gap:.7rem;padding:.65rem .9rem;border-radius:10px;border:2px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;margin-bottom:.4rem}
-.ai-client-card:hover{border-color:var(--teal-mid);background:var(--surface-teal)}
-.ai-client-card.active{border-color:var(--teal-bright);background:linear-gradient(135deg,var(--surface-teal),#d0f0ee);box-shadow:0 2px 10px rgba(34,168,159,.15)}
-.ai-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
-.ai-client-name{font-weight:700;font-size:.84rem;color:var(--text-dark)}
-.ai-client-meta{font-size:.72rem;color:var(--text-light)}
-.ai-opts{padding:1.2rem 1.4rem}
-.ai-opts h4{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.7rem}
-.ai-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)}
-.ai-toggle-row:last-child{border-bottom:none}
-.ai-toggle-label{font-size:.82rem;font-weight:600;color:var(--text-mid);display:flex;align-items:center;gap:.45rem}
-.ai-toggle{position:relative;width:38px;height:22px;cursor:pointer;flex-shrink:0}
-.ai-toggle input{opacity:0;width:0;height:0;position:absolute}
-.ai-toggle-track{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:background .25s}
-.ai-toggle-thumb{position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.ai-toggle input:checked + .ai-toggle-track{background:var(--teal-mid)}
-.ai-toggle input:checked + .ai-toggle-track{background:var(--teal-mid)}
-.ai-toggle input:checked + .ai-toggle-track ~ .ai-toggle-thumb{left:19px}
-.ai-gen-btn{width:calc(100% - 2.8rem);margin:1rem 1.4rem;padding:13px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .28s;box-shadow:0 4px 16px rgba(181,74,30,.35);display:flex;align-items:center;justify-content:center;gap:.5rem}
-.ai-gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(181,74,30,.45)}
-.ai-gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-/* Right side */
-.ai-right-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-light);text-align:center;padding:2rem}
-.ai-right-empty .aie-icon{font-size:4rem;margin-bottom:1rem;opacity:.4}
-.ai-right-empty p{font-size:.9rem;max-width:280px;line-height:1.7}
-/* Report output */
-.ai-report{padding:1.8rem}
-.ai-report-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.8rem;flex-wrap:wrap}
-.ai-report-title{font-family:var(--serif);font-size:1.4rem;font-weight:700;color:var(--teal-deep)}
-.ai-report-meta{font-size:.76rem;color:var(--text-light);margin-top:.2rem}
-.ai-report-actions{display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0}
-/* Report sections */
-.ai-section{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;margin-bottom:1.2rem;overflow:hidden;transition:box-shadow .2s}
-.ai-section:hover{box-shadow:0 4px 16px rgba(13,61,58,.08)}
-.ai-section-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;cursor:pointer;user-select:none}
-.ai-section-head-left{display:flex;align-items:center;gap:.7rem}
-.ai-section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.ai-section-title{font-weight:700;font-size:.92rem;color:var(--text-dark)}
-.ai-section-badge{font-size:.62rem;padding:2px 8px;border-radius:20px;font-weight:700}
-.ai-section-toggle{display:flex;gap:.4rem;align-items:center}
-.ai-section-body{padding:.2rem 1.3rem 1.2rem;border-top:1.5px solid var(--border);background:linear-gradient(180deg,var(--surface) 0%,#f8fffe 100%)}
-.ai-section-body.collapsed{display:none}
-/* Editable items */
-.ai-item{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .7rem;margin-bottom:.4rem;border:1.5px solid var(--border);border-radius:9px;background:var(--surface);transition:all .18s;group:true}
-.ai-item:hover{border-color:var(--border-mid);background:var(--surface-teal)}
-.ai-item-icon{font-size:.9rem;flex-shrink:0;margin-top:.1rem}
-.ai-item-text{flex:1;font-size:.84rem;color:var(--text-mid);line-height:1.6}
-.ai-item-text[contenteditable=true]:focus{outline:2px solid var(--teal-bright);outline-offset:2px;border-radius:4px}
-.ai-item-del{opacity:0;background:none;border:none;cursor:pointer;color:var(--red);font-size:.85rem;padding:2px 5px;border-radius:4px;transition:opacity .2s;flex-shrink:0;margin-top:.05rem}
-.ai-item:hover .ai-item-del{opacity:1}
-.ai-item-add{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:2px dashed var(--border);border-radius:9px;background:transparent;cursor:pointer;font-size:.8rem;color:var(--text-light);font-family:var(--sans);transition:all .2s;width:100%;margin-top:.2rem}
-.ai-item-add:hover{border-color:var(--teal-mid);color:var(--teal-mid);background:var(--surface-teal)}
-/* Loading spinner */
-.ai-spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* Streaming text */
-.ai-stream-wrap{padding:1rem;background:linear-gradient(135deg,#f0faf9,var(--surface));border:1.5px solid var(--border);border-radius:10px;font-size:.86rem;color:var(--text-mid);line-height:1.75;white-space:pre-wrap;min-height:120px}
-/* Print / export */
-@media print{.sidebar,.topbar,.ai-left,.ai-report-actions,.ai-item-del,.ai-item-add{display:none!important}.ai-right{overflow:visible!important}.ai-sections{display:block!important}.ai-report{padding:0}}
+/* ══════════════════════════════════════════════
+   HERBAL PROTOCOL MAP (HPM)
+══════════════════════════════════════════════ */
+.hpm-wrap{display:flex;height:100%;overflow:hidden;background:var(--surface-alt)}
+
+/* Left: client + condition picker */
+.hpm-left{width:300px;flex-shrink:0;display:flex;flex-direction:column;border-right:1.5px solid var(--border);background:var(--surface);overflow-y:auto}
+.hpm-left-section{padding:1rem 1.2rem;border-bottom:1px solid var(--border)}
+.hpm-left-section h4{font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem}
+.hpm-client-card{display:flex;align-items:center;gap:.65rem;padding:.6rem .8rem;border-radius:10px;border:2px solid var(--border);background:var(--surface-alt);cursor:pointer;transition:all .18s;margin-bottom:.4rem}
+.hpm-client-card:hover{border-color:var(--teal-mid);background:var(--surface-teal)}
+.hpm-client-card.active{border-color:var(--teal-bright);background:linear-gradient(135deg,var(--surface-teal),#d0f0ee);box-shadow:0 2px 10px rgba(26,122,116,.15)}
+.hpm-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0}
+.hpm-cname{font-size:.82rem;font-weight:700;color:var(--text-dark);line-height:1.2}
+.hpm-cmeta{font-size:.7rem;color:var(--text-light)}
+
+/* Condition tags */
+.hpm-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem}
+.hpm-tag{padding:5px 11px;border-radius:20px;font-size:.73rem;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--text-soft);transition:all .18s;display:inline-flex;align-items:center;gap:.3rem;user-select:none}
+.hpm-tag:hover{border-color:var(--teal-mid);color:var(--teal-deep);background:var(--surface-teal)}
+.hpm-tag.active{background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-color:var(--teal-bright);color:#fff;box-shadow:0 2px 8px rgba(26,122,116,.25)}
+.hpm-tag.active::before{content:'✓ ';font-size:.65em;font-weight:900}
+.hpm-search-cond{width:100%;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:.82rem;outline:none;background:var(--surface);margin-bottom:.5rem;transition:border-color .2s}
+.hpm-search-cond:focus{border-color:var(--teal-bright)}
+
+/* Centre: HPM canvas */
+.hpm-centre{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.hpm-toolbar{padding:.8rem 1.4rem;background:var(--surface);border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;flex-shrink:0}
+.hpm-canvas{flex:1;overflow-y:auto;padding:1.4rem 1.8rem}
+.hpm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--text-light);padding:2rem}
+.hpm-empty .he-icon{font-size:4rem;margin-bottom:1rem;opacity:.35}
+.hpm-empty p{font-size:.9rem;max-width:300px;line-height:1.7}
+
+/* Protocol sections on canvas */
+.hpm-section{background:var(--surface);border-radius:16px;border:1.5px solid var(--border);margin-bottom:1.2rem;overflow:hidden;box-shadow:0 3px 14px rgba(13,61,58,.07);transition:box-shadow .2s}
+.hpm-section:hover{box-shadow:0 6px 24px rgba(13,61,58,.12)}
+.hpm-section-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;background:linear-gradient(135deg,var(--surface),var(--surface-alt))}
+.hpm-sh-left{display:flex;align-items:center;gap:.7rem}
+.hpm-sh-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;color:#fff}
+.hpm-sh-title{font-weight:700;font-size:.94rem;color:var(--text-dark)}
+.hpm-sh-count{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--surface-teal);color:var(--teal-deep);border:1px solid var(--border-mid)}
+.hpm-sh-actions{display:flex;gap:.4rem;align-items:center}
+.hpm-section-body{padding:.8rem 1.3rem 1rem}
+
+/* Item rows */
+.hpm-item{display:flex;align-items:flex-start;gap:.55rem;padding:.6rem .75rem;margin-bottom:.4rem;border:1.5px solid var(--border);border-radius:9px;background:var(--surface-alt);transition:all .18s;position:relative;group:true}
+.hpm-item:hover{border-color:var(--border-mid);background:var(--surface-teal)}
+.hpm-item.custom{border-color:var(--saffron-light);background:var(--saffron-pale)}
+.hpm-item-icon{font-size:.9rem;flex-shrink:0;margin-top:.15rem;width:18px;text-align:center}
+.hpm-item-body{flex:1;min-width:0}
+.hpm-item-name{font-size:.84rem;font-weight:700;color:var(--text-dark);line-height:1.3}
+.hpm-item-detail{font-size:.76rem;color:var(--text-soft);line-height:1.5;margin-top:.1rem}
+.hpm-item-note{font-size:.74rem;color:var(--teal-mid);font-weight:600;margin-top:.15rem;display:flex;align-items:center;gap:.3rem}
+.hpm-item-actions{display:flex;gap:.3rem;flex-shrink:0;opacity:0;transition:opacity .15s}
+.hpm-item:hover .hpm-item-actions{opacity:1}
+.hpm-ia-btn{background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.72rem;padding:3px 8px;font-family:var(--sans);color:var(--text-soft);transition:all .15s;white-space:nowrap}
+.hpm-ia-btn:hover{background:var(--surface-teal);border-color:var(--teal-mid);color:var(--teal-deep)}
+.hpm-ia-btn.del:hover{background:var(--red-pale);border-color:var(--red-border);color:var(--red)}
+
+/* Add item row */
+.hpm-add-row{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border:2px dashed var(--border);border-radius:9px;cursor:pointer;color:var(--text-light);font-size:.8rem;font-family:var(--sans);font-weight:600;background:transparent;transition:all .18s;width:100%;margin-top:.25rem}
+.hpm-add-row:hover{border-color:var(--teal-mid);color:var(--teal-mid);background:var(--surface-teal)}
+
+/* Suggestion chips in picker drawer */
+.hpm-sugg-group{margin-bottom:1rem}
+.hpm-sugg-title{font-size:.64rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.5rem}
+.hpm-sugg-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.hpm-sugg-chip{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:.76rem;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:.3rem}
+.hpm-sugg-chip:hover{border-color:var(--teal-mid);background:var(--surface-teal);color:var(--teal-deep)}
+.hpm-sugg-chip.added{border-color:var(--teal-bright);background:var(--surface-teal);color:var(--teal-deep)}
+.hpm-sugg-chip.added::before{content:'✓ ';font-size:.65em;font-weight:900;color:var(--teal-mid)}
+
+/* Right: quick add picker drawer */
+.hpm-right{width:290px;flex-shrink:0;border-left:1.5px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden;transition:width .3s}
+.hpm-right.collapsed{width:0;border:none}
+.hpm-right-head{padding:.9rem 1.1rem;background:linear-gradient(135deg,var(--teal-deep),var(--teal-mid));border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.hpm-right-head h4{font-family:var(--serif);font-size:1rem;font-weight:700;color:#fff}
+.hpm-right-head p{font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.1rem}
+.hpm-right-body{flex:1;overflow-y:auto;padding:1rem 1.1rem}
+.hpm-search-sugg{width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:.8rem;outline:none;background:var(--surface-alt);margin-bottom:.9rem;transition:border-color .2s}
+.hpm-search-sugg:focus{border-color:var(--teal-bright)}
+
+/* Print */
+@media print{.hpm-left,.hpm-right,.hpm-toolbar,.hpm-ia-btn,.hpm-add-row,.sidebar,.topbar{display:none!important}.hpm-centre{overflow:visible!important}}
 
 /* ══ TABLET ══ */
 @media(max-width:1024px){
@@ -732,8 +747,8 @@ async function dbDelete(table, filters) {
         <div class="sidebar-label">Tools</div>
         <div class="nav-item" onclick="showPanel('herbdb')"><span class="nav-icon">🌿</span>Herb Reference</div>
         <div class="nav-item" onclick="showPanel('protocols')"><span class="nav-icon">📋</span>Protocol Library</div>
-        <div class="nav-item" onclick="showPanel('aigen')" id="navAigen"><span class="nav-icon">🤖</span>AI Protocol Generator</div>
-        <div class="nav-item" onclick="showPanel('interactions')"><span class="nav-icon">⚠️</span>Interaction Checker</div>
+        <div class="nav-item" id="nav-hpm" onclick="showPanel('hpm')"><span class="nav-icon">🗺️</span>Herbal Protocol Map</div>
+<div class="nav-item" onclick="showPanel('interactions')"><span class="nav-icon">⚠️</span>Interaction Checker</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Resources</div>
@@ -981,110 +996,85 @@ async function dbDelete(table, filters) {
         <div style="padding:1.4rem 1.8rem" id="calendarView"></div>
       </div>
 
-      <!-- ══ AI PROTOCOL GENERATOR ══ -->
-      <div class="content-panel" id="panel-aigen">
-        <div class="ai-gen-wrap">
+      <!-- ══ HERBAL PROTOCOL MAP ══ -->
+      <div class="content-panel" id="panel-hpm">
+        <div class="hpm-wrap">
 
-          <div class="ai-gen-top">
-            <div style="display:flex;align-items:center;gap:1rem">
-              <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 14px rgba(181,74,30,.4)">🤖</div>
+          <!-- ═══ LEFT: Client + Condition Picker ═══ -->
+          <div class="hpm-left">
+
+            <!-- Client selector -->
+            <div class="hpm-left-section">
+              <h4>👤 Select Client</h4>
+              <div id="hpmClientList">
+                <div style="font-size:.8rem;color:var(--text-light)">Loading clients…</div>
+              </div>
+            </div>
+
+            <!-- Assessment summary (populates when client selected) -->
+            <div class="hpm-left-section" id="hpmAssessBox" style="display:none">
+              <h4>📋 Assessment Summary</h4>
+              <div id="hpmAssessContent" style="font-size:.78rem;color:var(--text-mid);line-height:1.7"></div>
+            </div>
+
+            <!-- Condition / Symptom tags from assessment -->
+            <div class="hpm-left-section" id="hpmCondBox" style="display:none">
+              <h4>🩺 Active Conditions</h4>
+              <p style="font-size:.73rem;color:var(--text-light);margin-bottom:.5rem">Click to add protocol sections</p>
+              <div id="hpmCondTags" class="hpm-tags"></div>
+            </div>
+
+            <!-- Manual condition search -->
+            <div class="hpm-left-section">
+              <h4>🔍 Add Condition</h4>
+              <input type="text" class="hpm-search-cond" id="hpmCondSearch" placeholder="Search any condition…" oninput="hpmSearchConditions(this.value)"/>
+              <div id="hpmCondResults" class="hpm-tags"></div>
+            </div>
+
+          </div>
+
+          <!-- ═══ CENTRE: Protocol Canvas ═══ -->
+          <div class="hpm-centre">
+
+            <div class="hpm-toolbar">
+              <button class="btn btn-primary" onclick="hpmSaveProtocol()" style="font-size:.75rem;padding:7px 14px">💾 Save Protocol</button>
+              <button class="btn btn-saffron" onclick="hpmSendToClient()" style="font-size:.75rem;padding:7px 14px">📤 Send to Client</button>
+              <button class="btn btn-ghost" onclick="hpmPrint()" style="font-size:.75rem;padding:7px 14px">🖨 Print</button>
+              <button class="btn btn-ghost" onclick="hpmClear()" style="font-size:.75rem;padding:7px 14px">🗑 Clear All</button>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:.5rem">
+                <button class="btn btn-ghost" onclick="hpmTogglePicker()" id="hpmPickerToggle" style="font-size:.75rem;padding:7px 12px" title="Toggle reference picker">📚 Picker</button>
+              </div>
+            </div>
+
+            <div class="hpm-canvas" id="hpmCanvas">
+              <div class="hpm-empty" id="hpmEmpty">
+                <div class="he-icon">🗺️</div>
+                <h3 style="font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--text-dark);margin-bottom:.6rem">Herbal Protocol Map</h3>
+                <p>Select a client and click on a condition or symptom on the left to begin building their personalised protocol.</p>
+                <p style="font-size:.78rem;margin-top:.6rem;color:var(--text-light)">Each section can be customised — add, edit or remove any item.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ═══ RIGHT: Reference Picker ═══ -->
+          <div class="hpm-right" id="hpmPicker">
+            <div class="hpm-right-head">
               <div>
-                <h2>AI Protocol Generator</h2>
-                <p>Generates a personalised herbal protocol from the client's pre-consultation assessment using AI. Review, edit and send directly to the client.</p>
+                <h4>Reference Picker</h4>
+                <p id="hpmPickerSub">Select a section to browse</p>
+              </div>
+              <button onclick="hpmTogglePicker()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center">✕</button>
+            </div>
+            <div class="hpm-right-body">
+              <input type="text" class="hpm-search-sugg" id="hpmPickerSearch" placeholder="Search herbs, supplements…" oninput="hpmFilterPicker(this.value)"/>
+              <div id="hpmPickerContent">
+                <div style="font-size:.82rem;color:var(--text-light);text-align:center;padding:1rem 0">Click a section heading on the canvas to browse suggestions for that category.</div>
               </div>
             </div>
           </div>
 
-          <div class="ai-sections">
-
-            <!-- LEFT: Client picker + options -->
-            <div class="ai-left">
-
-              <!-- Client selector -->
-              <div class="ai-client-pick">
-                <h4>1 · Select Client</h4>
-                <div id="aiClientList">
-                  <div style="font-size:.8rem;color:var(--text-light);padding:.5rem 0">Loading clients…</div>
-                </div>
-              </div>
-
-              <!-- Generation options -->
-              <div class="ai-opts">
-                <h4>2 · Report Sections</h4>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">🔍 Clinical Assessment Summary</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-summary" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">🌿 Herbal Protocol</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-herbs" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">🥗 Dietary Guidance</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-diet" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">💊 Supplements</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-supps" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">🏃 Lifestyle Recommendations</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-lifestyle" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">😴 Sleep Protocol</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-sleep" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">🧘 Mind-Body Practices</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-mindbody" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">⚠️ Cautions &amp; Contraindications</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-cautions" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-                <div class="ai-toggle-row">
-                  <span class="ai-toggle-label">📅 Follow-up Schedule</span>
-                  <label class="ai-toggle"><input type="checkbox" id="opt-followup" checked/><div class="ai-toggle-track"></div><div class="ai-toggle-thumb"></div></label>
-                </div>
-              </div>
-
-              <!-- Tradition override -->
-              <div style="padding:.4rem 1.4rem 0">
-                <h4 style="font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.6rem">3 · Tradition Focus</h4>
-                <select id="aiTradition" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:.83rem;outline:none;background:var(--surface);color:var(--text-dark);margin-bottom:.8rem">
-                  <option value="">Auto-match to client preference</option>
-                  <option value="Ayurveda">Ayurveda</option>
-                  <option value="TCM">Traditional Chinese Medicine</option>
-                  <option value="Western Phytotherapy">Western Phytotherapy</option>
-                  <option value="African Botanicals">African Botanicals</option>
-                  <option value="Integrative">Integrative (blend all traditions)</option>
-                </select>
-              </div>
-
-              <!-- Herbalist notes to AI -->
-              <div style="padding:.2rem 1.4rem">
-                <h4 style="font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:.6rem">4 · Additional Clinical Notes <span style="font-weight:400;text-transform:none;font-size:.7rem;color:var(--text-light)">(optional)</span></h4>
-                <textarea id="aiHerbNotes" rows="3" placeholder="Add your clinical observations, specific concerns, or treatment priorities for the AI to incorporate…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:.82rem;outline:none;resize:vertical;background:var(--surface);color:var(--text-dark);line-height:1.6"></textarea>
-              </div>
-
-              <button class="ai-gen-btn" id="aiGenBtn" onclick="generateAIProtocol()">
-                <span id="aiGenBtnText">✨ Generate AI Protocol</span>
-                <div class="ai-spinner" id="aiGenSpinner" style="display:none"></div>
-              </button>
-
-            </div>
-
-            <!-- RIGHT: Generated report -->
-            <div class="ai-right" id="aiReportArea">
-              <div class="ai-right-empty">
-                <div class="aie-icon">🌿</div>
-                <p>Select a client and click <strong>Generate AI Protocol</strong> to create a personalised plan of care based on their pre-consultation assessment.</p>
-              </div>
-            </div>
-
-          </div><!-- /ai-sections -->
-        </div><!-- /ai-gen-wrap -->
+        </div>
       </div>
 
       <!-- ══ SETTINGS ══ -->
@@ -2814,471 +2804,8 @@ async function loadAllClients(){
   }
 }
 
-// ── Internal Note Modal (used in messages panel) ──
-function openInternalNoteModal(){
-  const client = ALL_CLIENTS.find(function(cl){
-    const personal = cl.personal||{};
-    const name = (personal.firstName||'')+ ' '+(personal.lastName||'');
-    const msgMeta = document.getElementById('msgClientMeta');
-    return msgMeta && msgMeta.textContent && name && msgMeta.textContent.includes(personal.firstName||'');
-  }) || null;
-  const note = prompt('Internal clinical note (not visible to client):');
-  if(!note || !note.trim()) return;
-  showToast('📋 Note saved: '+note.slice(0,30)+(note.length>30?'…':''));
-  // Save locally
-  try{
-    const notes = JSON.parse(localStorage.getItem('tfb_internal_notes')||'[]');
-    notes.push({ts:new Date().toISOString(), note:note, author:currentHerbalist?.name||'Herbalist'});
-    localStorage.setItem('tfb_internal_notes', JSON.stringify(notes));
-  }catch(e){}
-}
 
-// ════════════════════════════════════════════════════════
-// AI PROTOCOL GENERATOR
-// ════════════════════════════════════════════════════════
 
-var _aiSelectedClient = null;
-var _aiGeneratedReport = null;
-var _aiSavedProtocols  = [];
-
-// ── Load clients into AI picker ──
-function loadAIClientList(){
-  const list = document.getElementById('aiClientList');
-  if(!list) return;
-  const clients = ALL_CLIENTS || [];
-  if(!clients.length){
-    list.innerHTML = '<div style="font-size:.8rem;color:var(--text-light);padding:.5rem 0">No clients found. Refresh the dashboard first.</div>';
-    return;
-  }
-  const colors = ['linear-gradient(135deg,#0c8a7a,#12c4b0)','linear-gradient(135deg,#f07b00,#c0390c)','linear-gradient(135deg,#3b1f6b,#6b3fa0)','linear-gradient(135deg,#04331f,#0a7c52)','linear-gradient(135deg,#7a4000,#d97706)'];
-  list.innerHTML = clients.map(function(cl, i){
-    // Support both shapes: direct fields or nested .personal
-    const personal = cl.personal || {};
-    const name = (personal.firstName ? personal.firstName + ' ' + (personal.lastName||'') : null)
-              || cl.client_name || cl.name || 'Unknown';
-    const symChips = (cl.symptoms||{}).chips;
-    const symptoms = Array.isArray(symChips) ? symChips.slice(0,2).join(', ')
-                   : ((cl.symptoms||{}).primaryComplaint || cl.primaryComplaint || 'Assessment submitted');
-    const initial = (name.trim().charAt(0)||'?').toUpperCase();
-    const color = colors[i % colors.length];
-    const reviewed = cl._reviewed ? ' ✓' : '';
-    return '<div class="ai-client-card" id="aicc-'+i+'" onclick="selectAIClient('+i+',this)">' +
-      '<div class="ai-avatar" style="background:'+color+'">'+initial+'</div>' +
-      '<div style="flex:1;min-width:0"><div class="ai-client-name">'+escapeHtml(name.trim())+reviewed+'</div>' +
-      '<div class="ai-client-meta">'+escapeHtml(symptoms.slice(0,40))+(symptoms.length>40?'…':'')+'</div></div>' +
-    '</div>';
-  }).join('');
-}
-
-function selectAIClient(idx, el){
-  document.querySelectorAll('.ai-client-card').forEach(function(c){ c.classList.remove('active'); });
-  el.classList.add('active');
-  _aiSelectedClient = (ALL_CLIENTS||[])[idx];
-  // Reset report area
-  document.getElementById('aiReportArea').innerHTML = '<div class="ai-right-empty"><div class="aie-icon" style="opacity:.5">✨</div><p>Client selected: <strong>'+ escapeHtml(_aiSelectedClient.name||_aiSelectedClient.client_name||'Client') +'</strong><br/>Click <strong>Generate AI Protocol</strong> to create their personalised plan of care.</p></div>';
-}
-
-// ── Build prompt from client assessment ──
-function buildProtocolPrompt(client, opts, tradition, herbNotes){
-  const _personal = client.personal || {};
-  const name    = (_personal.firstName ? (_personal.firstName+' '+(_personal.lastName||'')).trim() : null)
-               || client.client_name || client.name || 'the client';
-  const syms    = client.symptoms || {};
-  const body    = client.body || client.bodyAreas || client.body_areas || {};
-  const history = client.history || {};
-  const life    = client.lifestyle || {};
-  const personal = client.personal || {};
-
-  const chipStr      = Array.isArray(syms.chips)   ? syms.chips.join(', ')   : '';
-  const bodyStr      = Array.isArray(body.zones)    ? body.zones.join(', ')   : '';
-  const condStr      = Array.isArray(history.conditions) ? history.conditions.join(', ') : '';
-  const dietStr      = Array.isArray(life.diet)     ? life.diet.join(', ')    : '';
-  const subStr       = Array.isArray(life.substances) ? life.substances.join(', ') : '';
-  const exerciseStr  = life.exercise || '';
-  const sleepQual    = life.sleepQuality || '';
-  const stressLvl    = life.stressLevel  || '';
-  const meds         = history.medications || '';
-  const supplements  = history.supplements || '';
-  const allergies    = history.allergies || '';
-  const pregnant     = history.pregnant || '';
-  const prevHerbal   = history.prevHerbal || '';
-  const primaryComp  = syms.primaryComplaint || client.primaryComplaint || '';
-  const duration     = syms.duration || '';
-  const severity     = syms.severity || '';
-  const goals        = life.healthGoals || '';
-  const emotional    = life.emotional || '';
-  const herbalist    = _personal.herbalist || (client.personal||{}).herbalist || '';
-  const tradFocus    = tradition || herbalist || 'integrative herbal medicine';
-
-  const sectionsRequested = [];
-  if(opts.summary)   sectionsRequested.push('1. CLINICAL ASSESSMENT SUMMARY');
-  if(opts.herbs)     sectionsRequested.push('2. HERBAL PROTOCOL (herbs, forms, dosages, timing, duration)');
-  if(opts.diet)      sectionsRequested.push('3. DIETARY GUIDANCE (foods to emphasise, foods to avoid, meal timing)');
-  if(opts.supps)     sectionsRequested.push('4. SUPPLEMENT RECOMMENDATIONS (non-herbal nutrients, dosages)');
-  if(opts.lifestyle) sectionsRequested.push('5. LIFESTYLE RECOMMENDATIONS (movement, stress, environment)');
-  if(opts.sleep)     sectionsRequested.push('6. SLEEP PROTOCOL (sleep hygiene, herbs, routines)');
-  if(opts.mindbody)  sectionsRequested.push('7. MIND-BODY PRACTICES (meditation, breathwork, yoga, journalling)');
-  if(opts.cautions)  sectionsRequested.push('8. CAUTIONS & CONTRAINDICATIONS (drug-herb interactions, safety notes)');
-  if(opts.followup)  sectionsRequested.push('9. FOLLOW-UP SCHEDULE (check-in timeline, monitoring markers)');
-
-  return `You are an expert certified clinical herbalist with deep knowledge of ${tradFocus}. Generate a comprehensive, evidence-informed personalised care protocol for the following client. Be specific, practical and clinically sound. Format each section with clear headings and bullet points.
-
-CLIENT PROFILE:
-- Name: ${name}
-- Primary complaint: ${primaryComp}
-- Duration of symptoms: ${duration}
-- Symptom severity: ${severity}/5
-- Reported symptoms: ${chipStr || 'See primary complaint'}
-- Affected body areas/systems: ${bodyStr || 'Not specified'}
-- Diagnosed conditions: ${condStr || 'None reported'}
-- Current medications: ${meds || 'None'}
-- Current supplements: ${supplements || 'None'}
-- Known allergies/sensitivities: ${allergies || 'None reported'}
-- Pregnancy/breastfeeding status: ${pregnant}
-- Previous herbal treatment: ${prevHerbal}
-- Diet pattern: ${dietStr || 'Not specified'}
-- Exercise level: ${exerciseStr || 'Not specified'}
-- Sleep quality: ${sleepQual}/5
-- Stress level: ${stressLvl}/4
-- Substance use: ${subStr || 'None'}
-- Emotional wellbeing: ${emotional || 'Not specified'}
-- Health goals: ${goals || 'General wellness improvement'}
-- Tradition preference: ${tradFocus}
-${herbNotes ? '- Herbalist clinical notes: ' + herbNotes : ''}
-
-GENERATE THE FOLLOWING SECTIONS:
-${sectionsRequested.join('\n')}
-
-IMPORTANT GUIDELINES:
-- Be specific with herb names (Latin and common), dosages, preparation forms and timing
-- Flag any potential interactions with listed medications
-- Tailor recommendations to the tradition focus
-- Consider the client's lifestyle (diet, exercise, stress) in all recommendations
-- Include realistic, sustainable changes — not overwhelming protocols
-- Note any safety considerations clearly
-- Each herbal recommendation should include: herb name, form (tincture/tea/capsule/powder), dose, frequency, duration`;
-}
-
-// ── Main generation function ──
-async function generateAIProtocol(){
-  if(!_aiSelectedClient){
-    showToast('⚠️ Please select a client first.');
-    return;
-  }
-
-  const opts = {
-    summary:   document.getElementById('opt-summary').checked,
-    herbs:     document.getElementById('opt-herbs').checked,
-    diet:      document.getElementById('opt-diet').checked,
-    supps:     document.getElementById('opt-supps').checked,
-    lifestyle: document.getElementById('opt-lifestyle').checked,
-    sleep:     document.getElementById('opt-sleep').checked,
-    mindbody:  document.getElementById('opt-mindbody').checked,
-    cautions:  document.getElementById('opt-cautions').checked,
-    followup:  document.getElementById('opt-followup').checked,
-  };
-
-  if(!Object.values(opts).some(Boolean)){
-    showToast('⚠️ Please select at least one report section.');
-    return;
-  }
-
-  const tradition = document.getElementById('aiTradition').value;
-  const herbNotes = (document.getElementById('aiHerbNotes').value||'').trim();
-  const btn  = document.getElementById('aiGenBtn');
-  const btnTxt = document.getElementById('aiGenBtnText');
-  const spinner = document.getElementById('aiGenSpinner');
-
-  // Show loading state
-  btn.disabled = true;
-  btnTxt.textContent = 'Generating…';
-  if(spinner) spinner.style.display = 'block';
-
-  // Show streaming placeholder
-  const reportArea = document.getElementById('aiReportArea');
-  const clientName = _aiSelectedClient.name || _aiSelectedClient.client_name || 'Client';
-  reportArea.innerHTML = '<div style="padding:1.8rem"><div style="background:linear-gradient(135deg,#030d0c,#0a3f38);border-radius:14px;padding:1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:1rem"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--spice));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0">'+(clientName.charAt(0)||'?').toUpperCase()+'</div><div><div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:#fff">Generating protocol for '+escapeHtml(clientName)+'…</div><div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:.1rem">AI is analysing the assessment and building a personalised plan of care</div></div></div><div class="ai-stream-wrap" id="aiStreamBox"><span style="opacity:.5">Connecting to AI…</span></div></div>';
-
-  const prompt = buildProtocolPrompt(_aiSelectedClient, opts, tradition, herbNotes);
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2800,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await response.json();
-    const rawText = (data.content||[]).filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('\n');
-
-    if(!rawText){ throw new Error('No response from AI'); }
-
-    // Parse and render structured report
-    _aiGeneratedReport = rawText;
-    renderAIReport(clientName, rawText, opts);
-
-  } catch(err) {
-    reportArea.innerHTML = '<div style="padding:1.8rem"><div style="background:#fde8e8;border:1.5px solid #f89898;border-radius:12px;padding:1.2rem 1.4rem"><div style="font-weight:700;color:#b01c1c;margin-bottom:.4rem">⚠️ Generation failed</div><div style="font-size:.84rem;color:#7a1c1c">'+escapeHtml(err.message||'Unknown error')+'</div></div></div>';
-    showToast('❌ AI generation failed. Check your connection.');
-  } finally {
-    btn.disabled = false;
-    btnTxt.textContent = '✨ Generate AI Protocol';
-    if(spinner) spinner.style.display = 'none';
-  }
-}
-
-// ── Parse raw AI text into structured sections ──
-function renderAIReport(clientName, rawText, opts){
-  const reportArea = document.getElementById('aiReportArea');
-  const now = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-
-  // Section definitions with icons and colors
-  const SECTION_DEFS = [
-    {key:'summary',   icon:'🔍', title:'Clinical Assessment Summary',  color:'#0a2e2b'},
-    {key:'herbs',     icon:'🌿', title:'Herbal Protocol',              color:'#3b1f6b'},
-    {key:'diet',      icon:'🥗', title:'Dietary Guidance',             color:'#04331f'},
-    {key:'supps',     icon:'💊', title:'Supplement Recommendations',    color:'#5c1000'},
-    {key:'lifestyle', icon:'🏃', title:'Lifestyle Recommendations',     color:'#7a4000'},
-    {key:'sleep',     icon:'😴', title:'Sleep Protocol',               color:'#162040'},
-    {key:'mindbody',  icon:'🧘', title:'Mind-Body Practices',           color:'#2d1060'},
-    {key:'cautions',  icon:'⚠️', title:'Cautions & Contraindications', color:'#5c0820'},
-    {key:'followup',  icon:'📅', title:'Follow-up Schedule',           color:'#0a3f38'},
-  ];
-
-  // Split raw text into sections by scanning lines for the section title keyword
-  function extractSection(text, sectionTitle){
-    var lines = text.split('\n');
-    var titleWords = sectionTitle.toLowerCase().split(/\s+/).filter(function(w){ return w.length > 3; });
-    var collecting = false;
-    var collected = [];
-    var sectionHeadings = /^(?:\d+\.?\s+)?[A-Z][A-Z\s&,\/]+[:\s]*$/;
-
-    for(var i = 0; i < lines.length; i++){
-      var line = lines[i];
-      var lowerLine = line.toLowerCase();
-      // Detect if this line is the section heading we want
-      var matchCount = titleWords.filter(function(w){ return lowerLine.indexOf(w) >= 0; }).length;
-      var isTargetHeading = matchCount >= Math.min(2, titleWords.length);
-
-      if(isTargetHeading && !collecting){
-        collecting = true;
-        continue;
-      }
-      if(collecting){
-        // Stop when we hit another section heading
-        var isNewSection = (sectionHeadings.test(line.trim()) && line.trim().length > 5 && !line.match(/^[-•*·▸]/));
-        if(isNewSection && collected.length > 2) break;
-        collected.push(line);
-      }
-    }
-    return collected.join('\n').trim();
-  }
-
-  // Convert bullet text to editable items
-  function textToItems(text, secKey){
-    if(!text) return '<div style="font-size:.82rem;color:var(--text-light);padding:.4rem 0;font-style:italic">No specific recommendations generated for this section.</div>';
-    const lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 3; });
-    return lines.map(function(line, i){
-      const clean = line.replace(/^[-•*·▸▹→]+\s*/,'').replace(/^\d+\.\s*/,'').trim();
-      if(!clean || clean.length < 4) return '';
-      return '<div class="ai-item" id="aiitem-'+secKey+'-'+i+'">' +
-        '<span class="ai-item-icon">•</span>' +
-        '<span class="ai-item-text" contenteditable="true">'+escapeHtml(clean)+'</span>' +
-        '<button class="ai-item-del" onclick="removeAIItem(this)" title="Remove">✕</button>' +
-      '</div>';
-    }).filter(Boolean).join('') +
-    '<button class="ai-item-add" data-sec="'+secKey+'" onclick="addAIItem(this,this.dataset.sec)"><span>+</span> Add recommendation</button>' +
-      '<span>+</span> Add recommendation' +
-    '</button>';
-  }
-
-  // Build sections HTML
-  var sectionsHTML = '';
-  SECTION_DEFS.forEach(function(def){
-    if(!opts[def.key]) return;
-    const content = extractSection(rawText, def.title);
-    sectionsHTML += '<div class="ai-section" id="aisec-'+def.key+'">' +
-      '<div class="ai-section-head" onclick="toggleAISec(this)">' +
-        '<div class="ai-section-head-left">' +
-          '<div class="ai-section-icon" style="background:'+def.color+';color:#fff">'+def.icon+'</div>' +
-          '<span class="ai-section-title">'+def.title+'</span>' +
-        '</div>' +
-        '<div class="ai-section-toggle">' +
-          '<button data-key="'+def.key+'" data-title="'+def.title+'" onclick="event.stopPropagation();regenerateSection(this.dataset.key,this.dataset.title)" style="font-size:.68rem;padding:3px 9px;background:var(--surface-teal);border:1px solid var(--border-mid);border-radius:6px;cursor:pointer;color:var(--teal-deep);font-weight:700;font-family:var(--sans)" title="Regenerate this section">↻ Regenerate</button>' +
-          '<span style="color:var(--text-light);font-size:.9rem;margin-left:.5rem">▾</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="ai-section-body" id="aisecbody-'+def.key+'"><div id="aiitems-'+def.key+'">'+textToItems(content, def.key)+'</div></div>' +
-    '</div>';
-  });
-
-  reportArea.innerHTML = '<div class="ai-report">' +
-    '<div class="ai-report-header">' +
-      '<div>' +
-        '<div class="ai-report-title">Care Protocol — '+escapeHtml(clientName)+'</div>' +
-        '<div class="ai-report-meta">Generated '+now+' · '+Object.values(opts).filter(Boolean).length+' sections · AI-assisted, reviewed by practitioner</div>' +
-      '</div>' +
-      '<div class="ai-report-actions">' +
-        '<button class="btn btn-ghost" onclick="copyAIReport()" title="Copy to clipboard">📋 Copy</button>' +
-        '<button class="btn btn-ghost" onclick="printAIReport()" title="Print / Save as PDF">🖨 Print</button>' +
-        '<button class="btn btn-ghost" onclick="saveAIProtocol()" title="Save to Protocol Library">💾 Save</button>' +
-        '<button class="btn btn-primary" onclick="sendAIProtocolToClient()" title="Send to client portal">📤 Send to Client</button>' +
-      '</div>' +
-    '</div>' +
-    sectionsHTML +
-    '<div style="margin-top:1.5rem;padding:1rem 1.2rem;background:linear-gradient(135deg,var(--saffron-pale),#fff);border:1.5px solid var(--saffron-light);border-radius:12px;font-size:.78rem;color:var(--amber);line-height:1.65">' +
-      '<strong>⚕️ Practitioner Note:</strong> This protocol was AI-generated based on the client\'s self-reported assessment. All recommendations should be reviewed and validated by the assigned certified herbalist before being sent to the client. Individual sections can be edited, added or removed above.' +
-    '</div>' +
-  '</div>';
-}
-
-// ── Toggle section collapse ──
-function toggleAISec(head){
-  const body = head.nextElementSibling;
-  const arrow = head.querySelector('span[style*="▾"], span[style*="▲"]');
-  const isOpen = !body.classList.contains('collapsed');
-  body.classList.toggle('collapsed', isOpen);
-  if(arrow) arrow.textContent = isOpen ? '▸' : '▾';
-}
-
-// ── Add / remove items ──
-function removeAIItem(btn){
-  btn.closest('.ai-item').remove();
-}
-
-function addAIItem(btn, secKey){
-  const text = prompt('Enter new recommendation:');
-  if(!text || !text.trim()) return;
-  const idx = Date.now();
-  const newItem = document.createElement('div');
-  newItem.className = 'ai-item';
-  newItem.id = 'aiitem-'+secKey+'-'+idx;
-  newItem.innerHTML = '<span class="ai-item-icon">•</span>' +
-    '<span class="ai-item-text" contenteditable="true">'+escapeHtml(text.trim())+'</span>' +
-    '<button class="ai-item-del" onclick="removeAIItem(this)" title="Remove">✕</button>';
-  btn.parentNode.insertBefore(newItem, btn);
-}
-
-// ── Regenerate a single section ──
-async function regenerateSection(secKey, sectionTitle){
-  if(!_aiSelectedClient || !_aiGeneratedReport){ showToast('⚠️ Generate a full report first.'); return; }
-  const container = document.getElementById('aiitems-'+secKey);
-  if(!container) return;
-  const tradition = document.getElementById('aiTradition').value;
-  const herbNotes = (document.getElementById('aiHerbNotes').value||'').trim();
-
-  container.innerHTML = '<div style="padding:.8rem;font-size:.82rem;color:var(--text-light);display:flex;align-items:center;gap:.5rem"><div class="ai-spinner" style="border-color:rgba(13,61,58,.2);border-top-color:var(--teal-mid)"></div>Regenerating…</div>';
-
-  const singlePrompt = buildProtocolPrompt(_aiSelectedClient, {[secKey]:true}, tradition, herbNotes) +
-    '\n\nFocus ONLY on the "'+sectionTitle+'" section. Be specific and comprehensive.';
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:singlePrompt}]})
-    });
-    const data = await response.json();
-    const text = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('\n');
-
-    // Convert to items
-    const lines = text.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>4;});
-    container.innerHTML = lines.map(function(line,i){
-      const clean = line.replace(/^[-•*·▸▹→]+\s*/,'').replace(/^\d+\.\s*/,'').trim();
-      if(!clean||clean.length<4) return '';
-      return '<div class="ai-item"><span class="ai-item-icon">•</span><span class="ai-item-text" contenteditable="true">'+escapeHtml(clean)+'</span><button class="ai-item-del" onclick="removeAIItem(this)" title="Remove">✕</button></div>';
-    }).filter(Boolean).join('') +
-    '<button class="ai-item-add" data-sec="'+secKey+'" onclick="addAIItem(this,this.dataset.sec)"><span>+</span> Add recommendation</button>';
-    showToast('✅ Section regenerated.');
-  } catch(e){
-    container.innerHTML = '<div style="color:var(--red);font-size:.82rem;padding:.5rem">Regeneration failed. Try again.</div>';
-  }
-}
-
-// ── Collect current report text ──
-function collectAIReportText(){
-  const name = _aiSelectedClient ? (_aiSelectedClient.name||_aiSelectedClient.client_name||'Client') : 'Client';
-  const now = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-  let text = 'PERSONALISED CARE PROTOCOL\n'+name+'\nGenerated: '+now+'\nPrepared by: TrueForm Botanical Practitioner\n\n';
-  document.querySelectorAll('.ai-section').forEach(function(sec){
-    const title = sec.querySelector('.ai-section-title');
-    const items = sec.querySelectorAll('.ai-item-text');
-    if(title && items.length){
-      text += '═══ '+title.textContent+' ═══\n';
-      items.forEach(function(it){ text += '• '+it.textContent+'\n'; });
-      text += '\n';
-    }
-  });
-  return text;
-}
-
-function copyAIReport(){
-  const text = collectAIReportText();
-  navigator.clipboard.writeText(text).then(function(){
-    showToast('✅ Protocol copied to clipboard.');
-  }).catch(function(){
-    showToast('⚠️ Copy failed. Use Print instead.');
-  });
-}
-
-function printAIReport(){
-  window.print();
-}
-
-function saveAIProtocol(){
-  if(!_aiSelectedClient){ showToast('⚠️ No client selected.'); return; }
-  const name = _aiSelectedClient.name||_aiSelectedClient.client_name||'Client';
-  const text = collectAIReportText();
-  const entry = {id:'ai_'+Date.now(), name:'AI Protocol — '+name, date:new Date().toISOString(), text:text, clientName:name};
-  _aiSavedProtocols.push(entry);
-  try{ localStorage.setItem('tfb_ai_protocols', JSON.stringify(_aiSavedProtocols)); }catch(e){}
-  showToast('💾 Protocol saved to library.');
-}
-
-async function sendAIProtocolToClient(){
-  if(!_aiSelectedClient){ showToast('⚠️ No client selected.'); return; }
-  const name = _aiSelectedClient.name||_aiSelectedClient.client_name||'Client';
-  const email = _aiSelectedClient.email||'';
-  const text  = collectAIReportText();
-  const clientId = _aiSelectedClient.id||_aiSelectedClient.client_id||null;
-
-  try {
-    // Save to Supabase protocols/messages table
-    await sb.from('protocols').insert({
-      client_email: email,
-      client_id:    clientId,
-      client_name:  name,
-      content:      text,
-      herbalist:    currentHerbalist?.name||'TrueForm Practitioner',
-      sent_at:      new Date().toISOString(),
-      status:       'sent',
-    });
-    showToast('📤 Protocol sent to '+name+'\'s portal!');
-  } catch(e){
-    // Fallback: save locally
-    try{ localStorage.setItem('tfb_protocol_'+Date.now(), JSON.stringify({client:name,email:email,text:text,sent:new Date().toISOString()})); }catch(e2){}
-    showToast('📤 Protocol saved (client will see it on next login).');
-  }
-}
-
-// Patch showPanel to load clients when AI panel is opened
-var _origShowPanel = showPanel;
-function showPanel(id){
-  _origShowPanel(id);
-  if(id === 'aigen'){
-    // Update nav highlight
-    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-    var navEl = document.getElementById('navAigen');
-    if(navEl) navEl.classList.add('active');
-    loadAIClientList();
-    // Load saved protocols
-    try{ _aiSavedProtocols = JSON.parse(localStorage.getItem('tfb_ai_protocols')||'[]'); }catch(e){}
-  }
-}
 </script>
 </body>
 </html>
