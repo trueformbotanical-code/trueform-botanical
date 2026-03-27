@@ -1212,8 +1212,8 @@ async function loadHerbalistList() {
 }
 
 (async function initLogin(){
-  loginHerbalistList = await loadHerbalistList();
-})();
+  try{ loginHerbalistList = await loadHerbalistList(); }catch(e){ loginHerbalistList = [...BUILT_IN_HERBALISTS]; }
+})()
 
 function onUsernameInput(val) {
   const q = val.trim().toLowerCase();
@@ -2140,15 +2140,26 @@ function openClient(ref){
 }
 
 async function saveNotes(ref){
-  const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
-  if(!c)return;
-  c._notes=document.getElementById('notes_'+ref)?.value||c._notes||'';
-  c._instructions=document.getElementById('instructions_'+ref)?.value||c._instructions||'';
-  c._reviewed=true;
-  const state={_notes:c._notes,_instructions:c._instructions,_reviewed:true,_protocolLines:protocolLines[ref]||[]};
-  try{(()=>{try{localStorage.setItem('tfb_state_'+ref,JSON.stringify(state));}catch(e){}})();}
-  catch(e){localStorage.setItem('tfb_state_'+ref,JSON.stringify(state));}
-  showToast('💾 Notes saved for '+c.personal.firstName);
+  const cl=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
+  if(!cl) return;
+  cl._notes        = document.getElementById('notes_'+ref)?.value||cl._notes||'';
+  cl._instructions = document.getElementById('instructions_'+ref)?.value||cl._instructions||'';
+  cl._reviewed     = true;
+  const state = {
+    _notes: cl._notes, _instructions: cl._instructions,
+    _reviewed: true, _protocolLines: protocolLines[ref]||[]
+  };
+  // Save locally
+  try{ localStorage.setItem('tfb_state_'+ref, JSON.stringify(state)); }catch(e){}
+  // Sync to Supabase in background
+  sb.from('assessments').update({ reviewed: true, reviewed_at: new Date().toISOString() })
+    .eq('ref_code', ref).then(()=>{}).catch(()=>{});
+  sb.from('protocols').upsert({
+    assessment_ref: ref, client_email: cl.personal?.email||cl.client_email||'',
+    client_name: cl.name||'', herbalist: currentHerbalist?.name||'',
+    instructions: cl._notes, protocol_lines: protocolLines[ref]||[]
+  }, {onConflict:'assessment_ref'}).then(()=>{}).catch(()=>{});
+  showToast('💾 Notes saved for '+(cl.personal?.firstName||'client'));
 }
 
 function addProtocolLine(ref){protocolLines[ref]=protocolLines[ref]||[];protocolLines[ref].push({herb:'',dose:'',frequency:'',duration:''});renderProtocolLines(ref);}
@@ -2626,8 +2637,14 @@ async function sendMessage(){
   const msgs = allThreads[ref]||[];
   msgs.push(msg);
   allThreads[ref] = msgs;
-  saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
-
+  saveToStorage(msgKey(ref), JSON.stringify(msgs));
+  // Supabase sync in background
+  sb.from('messages').insert({
+    assessment_ref: ref, from_role:'herbalist',
+    from_name: currentHerbalist?.name||'Herbalist',
+    message_type:'client', body: text,
+    read_by_herbalist: true, read_by_client: false
+  }).then(()=>{}).catch(()=>{});
   if(input) input.value='';
   renderMessages(ref);
   renderThreadList();
@@ -2654,8 +2671,14 @@ async function sendNote(){
   const msgs = allThreads[ref]||[];
   msgs.push(note);
   allThreads[ref] = msgs;
-  saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
-
+  saveToStorage(msgKey(ref), JSON.stringify(msgs));
+  // Internal notes also synced to Supabase
+  sb.from('messages').insert({
+    assessment_ref: ref, from_role:'herbalist',
+    from_name: currentHerbalist?.name||'Herbalist',
+    message_type:'note', body: text,
+    read_by_herbalist: true, read_by_client: false
+  }).then(()=>{}).catch(()=>{});
   if(input) input.value='';
   switchMsgTab('client');
   renderMessages(ref);
@@ -2814,42 +2837,84 @@ async function confirmSend(){
       showToast('📅 Follow-up appointment scheduled for '+followupDate);
     }
   }
+  // Sync to Supabase
+  if(c){
+    sb.from('protocols').upsert({
+      assessment_ref: currentClientRef,
+      client_email:   c.personal?.email||c.client_email||'',
+      client_name:    c.name||'',
+      herbalist:      currentHerbalist?.name||'',
+      protocol_lines: protocolLines[currentClientRef]||[],
+      instructions:   msg,
+      followup_date:  followupDate||null,
+      followup_time:  followupTime||null,
+      sent:           true,
+      status:         'sent',
+      sent_at:        new Date().toISOString(),
+    },{onConflict:'assessment_ref'}).then(()=>{}).catch(()=>{});
+    // Also mark reviewed
+    sb.from('assessments').update({reviewed:true, reviewed_at:new Date().toISOString(), status:'protocol_sent'})
+      .eq('ref_code', currentClientRef).then(()=>{}).catch(()=>{});
+  }
   closeModal('sendModal');
   showToast('📤 Protocol sent to client successfully!');
-  if(currentClientRef)openClient(currentClientRef);
-  await renderCalendar();
+  if(currentClientRef) openClient(currentClientRef);
+  try{ await renderCalendar(); }catch(e){}
 }
 
 // ══ SETTINGS ══
 function saveSettings(){
-  const name=document.getElementById('settName').value;
-  const spec=document.getElementById('settSpec').value;
-  if(currentHerbalist){currentHerbalist.name=name;currentHerbalist.specialty=spec;}
-  (document.getElementById('tbName')||{}).textContent=name;
-  (document.getElementById('sbName')||{}).textContent=name;
-  (document.getElementById('sbSpecialty')||{}).textContent=spec;
-  showToast('✅ Settings saved.');
+  const name = (document.getElementById('settName')?.value||'').trim();
+  const spec = (document.getElementById('settSpec')?.value||'').trim();
+  if(!name){ showToast('⚠️ Name cannot be empty.'); return; }
+  if(currentHerbalist){ currentHerbalist.name=name; currentHerbalist.specialty=spec; }
+  (document.getElementById('tbName')||{}).textContent     = name;
+  (document.getElementById('tbAvatar')||{}).textContent   = name.charAt(0);
+  (document.getElementById('greetName')||{}).textContent  = name.split(' ')[0];
+  (document.getElementById('sbName')||{}).textContent     = name;
+  (document.getElementById('sbSpecialty')||{}).textContent= spec;
+  // Persist to localStorage
+  try{
+    const stored = JSON.parse(localStorage.getItem('tfb_herbalists')||'[]');
+    const idx = stored.findIndex(h=>h.id===currentHerbalist?.id||h.username===currentHerbalist?.id);
+    if(idx>=0){ stored[idx].name=name; stored[idx].specialty=spec; }
+    else{ stored.push({id:currentHerbalist?.id,name,specialty:spec}); }
+    localStorage.setItem('tfb_herbalists', JSON.stringify(stored));
+  }catch(e){}
+  // Sync to Supabase herbalists table in background
+  if(currentHerbalist?.id){
+    sb.from('herbalists').update({full_name:name, specialty:spec})
+      .eq('username', currentHerbalist.id)
+      .then(()=>{}).catch(()=>{});
+  }
+  showToast('✅ Profile updated successfully!');
 }
 async function deleteClient(ref){
-  if(!confirm('Permanently delete this client record? This cannot be undone.'))return;
+  if(!confirm('Permanently delete this client record? This cannot be undone.')) return;
+  // Tombstone so it never reappears
   try{
-    (()=>{try{localStorage.removeItem('tfb_assessment_'+ref);}catch(e){}})();
-    (()=>{try{localStorage.removeItem('tfb_state_'+ref);}catch(e){}})();
-    const r=(()=>{try{const _v=localStorage.getItem('tfb_refs');return _v?{value:_v}:null;}catch(e){return null;}})();
-    if(r&&r.value){
-      let refs=JSON.parse(r.value);
-      refs=refs.filter(x=>x!==ref);
-      (()=>{try{localStorage.setItem('tfb_refs',JSON.stringify(refs));}catch(e){}})();
-    }
+    const tomb = JSON.parse(localStorage.getItem('tfb_deleted_assessments')||'[]');
+    if(!tomb.includes(ref)){ tomb.push(ref); localStorage.setItem('tfb_deleted_assessments', JSON.stringify(tomb)); }
   }catch(e){}
-  ALL_CLIENTS=ALL_CLIENTS.filter(c=>c.meta.refCode!==ref);
-  renderClientsTable(ALL_CLIENTS);
-  (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
-  (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
-    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
-    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
+  // Remove from localStorage
+  try{ localStorage.removeItem('tfb_assessment_'+ref); }catch(e){}
+  try{ localStorage.removeItem('tfb_state_'+ref); }catch(e){}
+  try{
+    const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]').filter(x=>x!==ref);
+    localStorage.setItem('tfb_refs', JSON.stringify(refs));
+  }catch(e){}
+  // Delete from Supabase
+  sb.from('assessments').delete().eq('ref_code', ref).then(()=>{}).catch(()=>{});
+  sb.from('protocols').delete().eq('assessment_ref', ref).then(()=>{}).catch(()=>{});
+  // Remove from memory
+  ALL_CLIENTS = ALL_CLIENTS.filter(cl=>cl.meta?.refCode!==ref && cl.ref_code!==ref);
+  try{ renderClientsTable(ALL_CLIENTS); }catch(e){}
+  (document.getElementById('statNew')||{}).textContent    = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+  (document.getElementById('statTotal')||{}).textContent  = ALL_CLIENTS.length;
+  (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+  (document.getElementById('nbClients')||{}).textContent  = ALL_CLIENTS.length;
   showPanel('clients');
-  showToast('🗑️ Client record deleted.');
+  showToast('🗑️ Client record permanently deleted.');
 }
 
 // ══ PRINT ══
