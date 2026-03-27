@@ -754,7 +754,7 @@ async function dbDelete(table, filters) {
       <div class="sidebar-section">
         <div class="sidebar-label">Resources</div>
         <div class="nav-item" onclick="window.location.href='client.html'"><span class="nav-icon">📝</span>Client Assessment Form</div>
-        <div class="nav-item" onclick="showPanel('settings')"><span class="nav-icon">⚙️</span>Settings</div>
+        <div class="nav-item" onclick="showPanel('settings')"><span class="nav-icon">👤</span>Herbalist Profile</div>
         <div class="nav-item" onclick="window.location.href='admin.html'" style="margin-top:.4rem;border-top:1px solid rgba(255,255,255,.07);padding-top:.8rem"><span class="nav-icon">🛡️</span>System Admin</div>
       </div>
       <div class="sidebar-footer">
@@ -1080,7 +1080,7 @@ async function dbDelete(table, filters) {
 
       <!-- ══ SETTINGS ══ -->
       <div class="content-panel" id="panel-settings">
-        <div class="panel-header"><div><div class="panel-title">Practice <em>Settings</em></div></div></div>
+        <div class="panel-header"><div><div class="panel-title">Herbalist <em>Profile</em></div></div></div>
         <div style="padding:1.4rem 1.8rem;max-width:540px">
           <div class="detail-card" style="margin-bottom:1rem"><div class="dc-head"><span class="dc-title">👤 Practitioner Profile</span></div><div class="dc-body">
             <div style="margin-bottom:.8rem"><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);display:block;margin-bottom:.3rem">Display Name</label><input id="settName" type="text" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none"/></div>
@@ -1645,24 +1645,25 @@ document.getElementById('loginUsername').addEventListener('keydown', e => { if (
     (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
     (document.getElementById('greetDate')||{}).textContent= new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
-    showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
-    ALL_CLIENTS = await loadAllClients();
-    (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl => !cl._reviewed).length;
-    (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
-    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
-    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
-    (document.getElementById('nbNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
-    (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
-    renderRecentTable();
-    renderClientsTable(ALL_CLIENTS);
-    renderHerbDb();
-    renderProtocolLibrary(); loadProtocols();
-    await loadAllThreads();
-    await refreshMessages();
-    await loadProtocols();
-    await renderCalendar();
-    populateIntHerbs();
-    showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+    try {
+      showToast('🌿 Loading your dashboard, ' + herbalistData.greet + '…');
+      ALL_CLIENTS = await loadAllClients();
+      (document.getElementById('statNew')||{}).textContent      = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+      (document.getElementById('statTotal')||{}).textContent    = ALL_CLIENTS.length;
+      (document.getElementById('statProtocols')||{}).textContent= ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+      (document.getElementById('nbNew')||{}).textContent        = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+      (document.getElementById('nbClients')||{}).textContent    = ALL_CLIENTS.length;
+      try { renderRecentTable(); }    catch(e){ console.warn('renderRecentTable:', e); }
+      try { renderClientsTable(ALL_CLIENTS); } catch(e){ console.warn('renderClientsTable:', e); }
+      try { renderHerbDb(); }         catch(e){ console.warn('renderHerbDb:', e); }
+      try { renderProtocolLibrary(); loadProtocols(); } catch(e){ console.warn('protocols:', e); }
+      try { await loadAllThreads(); await refreshMessages(); } catch(e){ console.warn('messages:', e); }
+      try { await renderCalendar(); } catch(e){ console.warn('calendar:', e); }
+      try { populateIntHerbs(); }     catch(e){ console.warn('intHerbs:', e); }
+      showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+    } catch(dashErr){
+      console.warn('Auto-login dashboard load:', dashErr);
+    }
   } catch(e) {
     // Auto-login failed silently — user sees normal login screen
     sessionStorage.removeItem('tfb_pract_autologin');
@@ -1750,19 +1751,27 @@ async function doLogin() {
   (document.getElementById('settSpec')||{}).value            = herbalistData.specialty;
   (document.getElementById('greetDate')||{}).textContent= new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  showToast('🌿 Loading client assessments…');
-  ALL_CLIENTS = await loadAllClients();
-  (document.getElementById('statNew')||{}).textContent = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
-  (document.getElementById('statTotal')||{}).textContent = ALL_CLIENTS.length;
-    (document.getElementById('statProtocols')||{}).textContent = ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
-    (document.getElementById('statAppts')||{}).textContent = (typeof appointments!=='undefined'?appointments.filter(a=>a.status==='upcoming').length:0);
-  (document.getElementById('nbNew')||{}).textContent= ALL_CLIENTS.filter(c=>!c._reviewed).length;
-  (document.getElementById('nbClients')||{}).textContent = ALL_CLIENTS.length;
-  renderRecentTable(); renderClientsTable(ALL_CLIENTS);
-  renderHerbDb(); renderProtocolLibrary(); loadProtocols();
-  await loadAllThreads(); await refreshMessages();
-  await renderCalendar(); populateIntHerbs();
-  showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+  // ── Load client data ──
+  try {
+    showToast('🌿 Loading client assessments…');
+    ALL_CLIENTS = await loadAllClients();
+    (document.getElementById('statNew')||{}).textContent      = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+    (document.getElementById('statTotal')||{}).textContent    = ALL_CLIENTS.length;
+    (document.getElementById('statProtocols')||{}).textContent= ALL_CLIENTS.filter(cl=>cl._protocolSent).length;
+    (document.getElementById('nbNew')||{}).textContent        = ALL_CLIENTS.filter(cl=>!cl._reviewed).length;
+    (document.getElementById('nbClients')||{}).textContent    = ALL_CLIENTS.length;
+    try { renderRecentTable(); }    catch(e){ console.warn('renderRecentTable:', e); }
+    try { renderClientsTable(ALL_CLIENTS); } catch(e){ console.warn('renderClientsTable:', e); }
+    try { renderHerbDb(); }         catch(e){ console.warn('renderHerbDb:', e); }
+    try { renderProtocolLibrary(); loadProtocols(); } catch(e){ console.warn('renderProtocols:', e); }
+    try { await loadAllThreads(); await refreshMessages(); } catch(e){ console.warn('messages:', e); }
+    try { await renderCalendar(); } catch(e){ console.warn('calendar:', e); }
+    try { populateIntHerbs(); }     catch(e){ console.warn('intHerbs:', e); }
+    showToast('✅ Welcome back, ' + herbalistData.greet + '!');
+  } catch(e) {
+    console.error('Dashboard load error:', e);
+    showToast('⚠️ Some data could not load. Try Refresh.');
+  }
 }
 
 // ══ NAVIGATION ══
@@ -4154,6 +4163,40 @@ function showPanel(id){
     try{ /* Restore any saved drafts */ }catch(e){}
   }
 }
+
+// ── SUPABASE DB HELPERS ──
+async function dbGet(table, filters={}) {
+  let q = sb.from(table).select('*');
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q;
+  if(error) console.warn('dbGet', table, error.message);
+  return data || [];
+}
+async function dbGetOne(table, filters={}) {
+  const rows = await dbGet(table, filters);
+  return rows[0] || null;
+}
+async function dbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if(error) console.warn('dbInsert', table, error.message);
+  return data;
+}
+async function dbUpdate(table, filters, updates) {
+  let q = sb.from(table).update(updates);
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q.select();
+  if(error) console.warn('dbUpdate', table, error.message);
+  return data;
+}
+async function dbUpsert(table, row, onConflict) {
+  const q = onConflict
+    ? sb.from(table).upsert(row, {onConflict}).select().single()
+    : sb.from(table).upsert(row).select().single();
+  const { data, error } = await q;
+  if(error) console.warn('dbUpsert', table, error.message);
+  return data;
+}
+
 
 </script>
 </body>
