@@ -1187,7 +1187,7 @@ const BUILT_IN_HERBALISTS = [
 async function loadHerbalistList() {
   let storageList = [];
   try {
-    const res = await window.storage.get('tfb_herbalists', true);
+    const res = (()=>{try{const _v=localStorage.getItem('tfb_herbalists');return _v?{value:_v}:null;}catch(e){return null;}})();
     if (res && res.value) {
       const parsed = JSON.parse(res.value);
       if (Array.isArray(parsed)) storageList = parsed;
@@ -1412,7 +1412,7 @@ async function sendResetCode() {
   // Search in storage first, then built-ins
   let match = null;
   try {
-    const res = await window.storage.get('tfb_herbalists', true);
+    const res = (()=>{try{const _v=localStorage.getItem('tfb_herbalists');return _v?{value:_v}:null;}catch(e){return null;}})();
     if (res && res.value) {
       match = JSON.parse(res.value).find(h => h.email?.toLowerCase() === email);
     }
@@ -1446,15 +1446,16 @@ async function sendResetCode() {
   fpResetCode = String(Math.floor(100000 + Math.random() * 900000));
 
   // Save reset request to storage (so admin can see it)
+  // Save reset code to localStorage for admin visibility
   try {
-    await window.storage.set('tfb_reset_' + match.id, JSON.stringify({
-      code: fpResetCode,
-      email: email,
-      name: match.name,
+    localStorage.setItem('tfb_reset_' + match.id, JSON.stringify({
+      code:        fpResetCode,
+      email:       email,
+      name:        match.name,
       requestedAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 15 * 60000).toISOString(), // 15 min
-      used: false
-    }), true);
+      expiresAt:   new Date(Date.now() + 15 * 60000).toISOString(),
+      used:        false
+    }));
   } catch(e) {}
 
   // Move to step 2
@@ -1579,7 +1580,7 @@ async function setNewPassword() {
 
   // Update password in storage
   try {
-    const res = await window.storage.get('tfb_herbalists', true);
+    const res = (()=>{try{const _v=localStorage.getItem('tfb_herbalists');return _v?{value:_v}:null;}catch(e){return null;}})();
     let list = res && res.value ? JSON.parse(res.value) : BUILT_IN_HERBALISTS.map(h => ({...h}));
     let updated = false;
     list = list.map(h => {
@@ -1587,11 +1588,11 @@ async function setNewPassword() {
       return h;
     });
     if (!updated) list.push({...fpUser, pw: newPw});
-    await window.storage.set('tfb_herbalists', JSON.stringify(list), true);
+    (()=>{try{localStorage.setItem('tfb_herbalists',JSON.stringify(list));}catch(e){}})();
     // Also update local list
     loginHerbalistList = list;
     // Mark reset token as used
-    await window.storage.set('tfb_reset_' + fpUser.id, JSON.stringify({used: true, usedAt: new Date().toISOString()}), true);
+    (()=>{try{localStorage.removeItem('tfb_reset_'+fpUser.id);}catch(e){}})();
   } catch(e) {
     errEl.textContent = 'Failed to save new password. Please try again.';
     errEl.style.display = 'block';
@@ -2145,7 +2146,7 @@ async function saveNotes(ref){
   c._instructions=document.getElementById('instructions_'+ref)?.value||c._instructions||'';
   c._reviewed=true;
   const state={_notes:c._notes,_instructions:c._instructions,_reviewed:true,_protocolLines:protocolLines[ref]||[]};
-  try{await window.storage.set('tfb_state_'+ref,JSON.stringify(state),true);}
+  try{(()=>{try{localStorage.setItem('tfb_state_'+ref,JSON.stringify(state));}catch(e){}})();}
   catch(e){localStorage.setItem('tfb_state_'+ref,JSON.stringify(state));}
   showToast('💾 Notes saved for '+c.personal.firstName);
 }
@@ -2199,7 +2200,7 @@ let ALL_PROTOCOLS = [];
 let editingProtocolId = null;
 
 async function loadProtocols(){
-  const saved = await loadFromStorage('tfb_protocols');
+  const saved = loadFromStorage('tfb_protocols');
   const custom = saved ? JSON.parse(saved) : [];
   // Merge defaults with custom (custom overrides matching defaults)
   ALL_PROTOCOLS = [...DEFAULT_PROTOCOLS];
@@ -2213,7 +2214,7 @@ async function loadProtocols(){
 async function saveProtocolsToStorage(){
   // Only persist custom/modified protocols
   const toSave = ALL_PROTOCOLS.filter(p=>!p.isDefault||p._modified);
-  await saveToStorage('tfb_protocols', JSON.stringify(toSave));
+  saveToStorage('tfb_protocols', JSON.stringify(toSave));
 }
 
 function renderProtocolLibrary(list=ALL_PROTOCOLS){
@@ -2375,14 +2376,11 @@ let activeMsgTab        = 'client'; // 'client' | 'note'
 let allThreads          = {};    // keyed by ref
 
 // Storage helpers (localStorage first, window.storage second)
-async function loadFromStorage(key, shared=true){
-  try{const r=await window.storage.get(key,shared);if(r&&r.value)return r.value;}catch(e){}
-  try{const v=localStorage.getItem(key);if(v)return v;}catch(e){}
-  return null;
+function loadFromStorage(key){
+  try{ return localStorage.getItem(key)||null; }catch(e){ return null; }
 }
-async function saveToStorage(key, val, shared=true){
-  try{localStorage.setItem(key, val);}catch(e){}
-  try{await window.storage.set(key, val, shared);}catch(e){}
+function saveToStorage(key, val){
+  try{ localStorage.setItem(key, typeof val==='string'?val:JSON.stringify(val)); }catch(e){}
 }
 
 function msgKey(ref){ return 'tfb_messages_' + ref; }
@@ -2497,7 +2495,7 @@ async function openMessageThread(ref){
   let changed = false;
   msgs.forEach(m=>{ if(m.type==='client'&&!m.readByHerbalist){m.readByHerbalist=true;changed=true;} });
   if(changed){
-    await saveToStorage(msgKey(ref_), JSON.stringify(msgs), true);
+    saveToStorage(msgKey(ref_), JSON.stringify(msgs), true);
     allThreads[ref_] = msgs;
   }
 
@@ -2628,7 +2626,7 @@ async function sendMessage(){
   const msgs = allThreads[ref]||[];
   msgs.push(msg);
   allThreads[ref] = msgs;
-  await saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
+  saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
 
   if(input) input.value='';
   renderMessages(ref);
@@ -2656,7 +2654,7 @@ async function sendNote(){
   const msgs = allThreads[ref]||[];
   msgs.push(note);
   allThreads[ref] = msgs;
-  await saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
+  saveToStorage(msgKey(ref), JSON.stringify(msgs), true);
 
   if(input) input.value='';
   switchMsgTab('client');
@@ -2724,10 +2722,10 @@ async function renderCalendar(){
 async function cancelAppointment(ref,date){
   if(!confirm('Cancel this appointment?'))return;
   try{
-    const r=await window.storage.get('tfb_appointments',true);
+    const r=(()=>{try{const _v=localStorage.getItem('tfb_appointments');return _v?{value:_v}:null;}catch(e){return null;}})();
     let appts=r&&r.value?JSON.parse(r.value):[];
     appts=appts.filter(a=>!(a.ref===ref&&a.date===date));
-    await window.storage.set('tfb_appointments',JSON.stringify(appts),true);
+    (()=>{try{localStorage.setItem('tfb_appointments',JSON.stringify(appts));}catch(e){}})();
     // Also clear followup on client
     const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
     if(c){delete c._followupDate;delete c._followupTime;}
@@ -2801,16 +2799,16 @@ async function confirmSend(){
       _protocolSentAt:new Date().toISOString(),
       _protocolSentBy:currentHerbalist?.name||'Practitioner',
     };
-    try{await window.storage.set('tfb_state_'+currentClientRef,JSON.stringify(state),true);}
+    try{(()=>{try{localStorage.setItem('tfb_state_'+currentClientRef,JSON.stringify(state));}catch(e){}})();}
     catch(e){localStorage.setItem('tfb_state_'+currentClientRef,JSON.stringify(state));}
     // Schedule appointment if date provided
     if(followupDate){
       try{
-        const r=await window.storage.get('tfb_appointments',true);
+        const r=(()=>{try{const _v=localStorage.getItem('tfb_appointments');return _v?{value:_v}:null;}catch(e){return null;}})();
         const appts=r&&r.value?JSON.parse(r.value):[];
         if(!appts.find(a=>a.ref===currentClientRef&&a.date===followupDate)){
           appts.push({ref:currentClientRef,date:followupDate,time:followupTime||'TBD',client:c.personal.firstName+' '+c.personal.lastName,type:delivery==='phone'?'Phone Call':'Video Call'});
-          await window.storage.set('tfb_appointments',JSON.stringify(appts),true);
+          (()=>{try{localStorage.setItem('tfb_appointments',JSON.stringify(appts));}catch(e){}})();
         }
       }catch(e){}
       showToast('📅 Follow-up appointment scheduled for '+followupDate);
@@ -2835,13 +2833,13 @@ function saveSettings(){
 async function deleteClient(ref){
   if(!confirm('Permanently delete this client record? This cannot be undone.'))return;
   try{
-    await window.storage.delete('tfb_assessment_'+ref,true);
-    await window.storage.delete('tfb_state_'+ref,true);
-    const r=await window.storage.get('tfb_refs',true);
+    (()=>{try{localStorage.removeItem('tfb_assessment_'+ref);}catch(e){}})();
+    (()=>{try{localStorage.removeItem('tfb_state_'+ref);}catch(e){}})();
+    const r=(()=>{try{const _v=localStorage.getItem('tfb_refs');return _v?{value:_v}:null;}catch(e){return null;}})();
     if(r&&r.value){
       let refs=JSON.parse(r.value);
       refs=refs.filter(x=>x!==ref);
-      await window.storage.set('tfb_refs',JSON.stringify(refs),true);
+      (()=>{try{localStorage.setItem('tfb_refs',JSON.stringify(refs));}catch(e){}})();
     }
   }catch(e){}
   ALL_CLIENTS=ALL_CLIENTS.filter(c=>c.meta.refCode!==ref);
