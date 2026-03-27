@@ -1929,11 +1929,47 @@ function filterByStatus(s){renderClientsTable(s?ALL_CLIENTS.filter(c=>(c._review
 function filterByUrgency(u){renderClientsTable(u?ALL_CLIENTS.filter(cl=>{const s=parseInt((cl.symptoms||{}).severity)||3;const urg=s>=4?'high':s>=3?'medium':'low';return urg===u;}):ALL_CLIENTS);}
 
 // ══ CLIENT DETAIL ══
+// ── Mark assessment as reviewed ──
+function markReviewed(ref){
+  const cl = ALL_CLIENTS.find(x => (x.meta?.refCode||x.ref_code) === ref);
+  if(!cl){ showToast('⚠️ Client not found.'); return; }
+
+  cl._reviewed = true;
+
+  // Save to localStorage
+  try{
+    const state = JSON.parse(localStorage.getItem('tfb_state_'+ref)||'{}');
+    state._reviewed = true;
+    state.reviewedAt = new Date().toISOString();
+    state.reviewedBy = currentHerbalist?.name||'Herbalist';
+    localStorage.setItem('tfb_state_'+ref, JSON.stringify(state));
+  }catch(e){}
+
+  // Sync to Supabase
+  sb.from('assessments')
+    .update({ reviewed: true, reviewed_at: new Date().toISOString(), status: 'reviewed' })
+    .eq('ref_code', ref)
+    .then(()=>{ showToast('✅ Assessment marked as reviewed.'); })
+    .catch(()=>{ showToast('✅ Marked as reviewed (saved locally).'); });
+
+  // Update stat counters
+  const newCount = ALL_CLIENTS.filter(x=>!x._reviewed).length;
+  (document.getElementById('statNew')||{}).textContent  = newCount;
+  (document.getElementById('nbNew')||{}).textContent    = newCount;
+
+  // Re-render the client detail to show the "Reviewed" badge
+  openClient(ref);
+}
+
+
 function openClient(ref){
   currentClientRef=ref;
   const c=ALL_CLIENTS.find(x=>x.meta.refCode===ref);
   if(!c)return;
   c._reviewed=true;
+  // Silently mark reviewed in Supabase when file is opened
+  sb.from('assessments').update({reviewed:true, reviewed_at:new Date().toISOString()})
+    .eq('ref_code',ref).then(()=>{}).catch(()=>{});
   showPanel('clientdetail');
   // Analyse herbs
   const scored=herbDB.map(h=>{let sc=0;const _chips=(c.symptoms.chips||c.symptoms.selected||[]); _chips.forEach(s=>{if(h.syms.includes(s))sc+=25;});(c.bodyAreas.zones||c.body_areas?.zones||[]).forEach(z=>{if(h.syms.includes(z)||h.syms.some(s=>z.includes(s)))sc+=8;});const conflict=h.notSafe.filter(ns=>(c.history.conditions||[]).join(' ').toLowerCase().includes(ns)||(c.history?.pregnant && c.history.pregnant!=='No'&&ns==='pregnancy')||(c.history?.medications&&c.history.medications.toLowerCase().includes(ns))).length;sc-=conflict*50;return{...h,score:Math.max(0,sc)};}).filter(h=>h.score>0).sort((a,b)=>b.score-a.score);
@@ -1980,7 +2016,10 @@ function openClient(ref){
         <div class="ch-ref">REF: ${c.meta.refCode} · Submitted: ${formatDate(c.meta.submittedAt)}</div>
       </div>
       <div class="ch-actions">
-        <button class="btn btn-saffron" onclick="openModal('sendModal')">📤 Send Protocol</button>
+        ${c._reviewed
+          ? '<span style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:var(--green-pale);border:1.5px solid var(--green-border);border-radius:6px;font-size:.72rem;font-weight:700;color:var(--green)">✓ Reviewed</span>'
+          : `<button class="btn btn-primary" style="font-size:.75rem;padding:6px 14px" onclick="markReviewed(\'${ref}\')">✅ Mark as Reviewed</button>`
+        }
         <button class="btn btn-ghost" onclick="printClient()">🖨️ Print Assessment</button>
         <button class="btn btn-danger" onclick="deleteClient('${ref}')" style="font-size:.7rem;padding:6px 12px">🗑️ Delete Record</button>
       </div>
