@@ -502,6 +502,30 @@ async function dbDelete(table, filters) {
   if (error) console.error('dbDelete', table, error);
   return !error;
 }
+
+// ── SAFE PROXIES — ensure HTML-callable functions never throw ReferenceError ──
+// These are overridden by Block 1's real implementations once it loads.
+// They exist here so that if Block 1 has any runtime error, the page 
+// still degrades gracefully instead of crashing on every user interaction.
+function onUsernameInput(v){}
+function doLogin(){}
+function showSuggestions(){}
+function closeSuggestions(){}
+function highlightSuggest(){}
+function selectSuggest(){}
+function togglePwVis(){}
+function openForgotPassword(){}
+function closeForgotPassword(){}
+function fpBack(){}
+function fpSetStep(){}
+function sendResetCode(){}
+function verifyCode(){}
+function setNewPassword(){}
+function startResendTimer(){}
+function checkPwStrength(){}
+function toggleFpPw(){}
+function showLoginAfterReset(){}
+
 </script>
 </head>
 <body><a href="#main" class="skip-link" style="position:fixed;top:-50px;left:1rem;background:#1a7a74;color:#fff;padding:10px 20px;border-radius:0 0 6px 6px;z-index:9999;font-weight:700;transition:top .2s;text-decoration:none" onfocus="this.style.top='0'" onblur="this.style.top='-50px'">Skip to main content</a>
@@ -1096,19 +1120,6 @@ async function dbDelete(table, filters) {
 
 <script>
 //
-// ── SAFE STORAGE POLYFILL (herbalist) ──
-// window.storage is only available in Claude Artifacts.
-// Outside that env we fall back to localStorage entirely.
-const safeStorage = {
-  get: async function(key){ try{ const v=localStorage.getItem(key); return v?{key,value:v}:null; }catch(e){ return null; } },
-  set: async function(key, value){ try{ localStorage.setItem(key, typeof value==='string'?value:JSON.stringify(value)); return {key,value}; }catch(e){ return null; } },
-  delete: async function(key){ try{ localStorage.removeItem(key); return {key,deleted:true}; }catch(e){ return null; } },
-  list: async function(prefix){ try{ const keys=Object.keys(localStorage).filter(k=>!prefix||k.startsWith(prefix)); return {keys}; }catch(e){ return {keys:[]}; } }
-};
-if(typeof window !== 'undefined' && (typeof window.storage === 'undefined' || typeof window.storage.get !== 'function')){
-  window.storage = safeStorage;
-}
-
 // ══════════════════════════════
 // DATA
 // ══════════════════════════════
@@ -1117,6 +1128,7 @@ const HERBALISTS={
   liang:{name:'Liang Wei PhD',initial:'L',specialty:'TCM · Phytochemistry',greet:'Dr. Wei',pw:'herb2025'},
   sofia:{name:'Sofia Navarro',initial:'S',specialty:'Western Phytotherapy',greet:'Sofia',pw:'herb2025'},
   priya:{name:'Dr. Priya Sharma',initial:'P',specialty:'Ayurveda · Panchakarma',greet:'Dr. Sharma',pw:'herb2025'},
+  'miller.jerome':{name:'Jerome Miller',initial:'J',specialty:'Western Herbal Medicine',greet:'Jerome',pw:'herb2025'},
 };
 
 const herbDB=[
@@ -1604,8 +1616,13 @@ function showLoginAfterReset() {
   showToast('✅ Password updated! Enter your new password to sign in.');
 }
 
-document.getElementById('loginPw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('loginUsername').addEventListener('keydown', e => { if (e.key === 'Enter') { closeSuggestions(); document.getElementById('loginPw').focus(); } });
+// Keyboard navigation for login form
+(function(){
+  const pwEl  = document.getElementById('loginPw');
+  const unEl  = document.getElementById('loginUsername');
+  if(pwEl)  pwEl.addEventListener('keydown',  e => { if(e.key === 'Enter') doLogin(); });
+  if(unEl)  unEl.addEventListener('keydown',  e => { if(e.key === 'Enter'){ closeSuggestions(); if(pwEl) pwEl.focus(); } });
+})();
 
 // ── AUTO-LOGIN from portal ──
 // Fires when practitioner navigated here from index.html portal
@@ -4206,39 +4223,6 @@ function showPanel(id){
     hpmLoadClients();
     try{ /* Restore any saved drafts */ }catch(e){}
   }
-}
-
-// ── SUPABASE DB HELPERS ──
-async function dbGet(table, filters={}) {
-  let q = sb.from(table).select('*');
-  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
-  const { data, error } = await q;
-  if(error) console.warn('dbGet', table, error.message);
-  return data || [];
-}
-async function dbGetOne(table, filters={}) {
-  const rows = await dbGet(table, filters);
-  return rows[0] || null;
-}
-async function dbInsert(table, row) {
-  const { data, error } = await sb.from(table).insert(row).select().single();
-  if(error) console.warn('dbInsert', table, error.message);
-  return data;
-}
-async function dbUpdate(table, filters, updates) {
-  let q = sb.from(table).update(updates);
-  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
-  const { data, error } = await q.select();
-  if(error) console.warn('dbUpdate', table, error.message);
-  return data;
-}
-async function dbUpsert(table, row, onConflict) {
-  const q = onConflict
-    ? sb.from(table).upsert(row, {onConflict}).select().single()
-    : sb.from(table).upsert(row).select().single();
-  const { data, error } = await q;
-  if(error) console.warn('dbUpsert', table, error.message);
-  return data;
 }
 
 
