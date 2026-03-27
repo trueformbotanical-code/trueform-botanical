@@ -122,6 +122,18 @@ body{background:linear-gradient(160deg,#e8faf8 0%,#f5fffe 40%,#fff8f0 100%);back
 .chip.sel-violet{background:linear-gradient(135deg,var(--violet),var(--violet-mid));border-color:var(--violet-mid);color:#fff}
 .chip.sel-violet::before{content:'✓';font-size:.7em;font-weight:800}
 
+/* ── DIET TOOLTIP ── */
+.diet-tooltip{
+  position:fixed;z-index:9000;background:linear-gradient(135deg,#030d0c,#0a3f38);
+  color:#fff;border-radius:12px;padding:.9rem 1.1rem;max-width:280px;font-size:.8rem;
+  line-height:1.65;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.35);
+  border:1px solid rgba(18,196,176,.25);opacity:0;transition:opacity .2s;
+}
+.diet-tooltip::after{content:'';position:absolute;bottom:-7px;left:20px;
+  border:7px solid transparent;border-top-color:#0a3f38;border-bottom:none}
+.diet-tooltip.show{opacity:1}
+.diet-tooltip .dt-label{font-weight:700;color:var(--teal-light,#3de0ce);margin-bottom:.3rem;font-size:.82rem}
+
 /* ── BODY SYSTEM GROUPS ── */
 .body-system-group{margin-bottom:.7rem;border:2px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:all .2s}
 .body-system-group:hover{border-color:var(--border-mid);box-shadow:0 4px 16px rgba(8,40,32,.08)}
@@ -160,11 +172,14 @@ body{background:linear-gradient(160deg,#e8faf8 0%,#f5fffe 40%,#fff8f0 100%);back
 /* ── SCALES ── */
 .scale-wrap{margin-top:.4rem}
 .scale-labels{display:flex;justify-content:space-between;font-size:.66rem;color:var(--text-soft);font-weight:600;margin-bottom:.4rem;letter-spacing:.03em}
-input[type=range].scale-input{width:100%;-webkit-appearance:none;height:6px;border-radius:4px;outline:none;cursor:pointer}
-.scale-mild{background:linear-gradient(90deg,var(--teal-pale),var(--teal-bright))}
-.scale-freq{background:linear-gradient(90deg,var(--teal-pale),var(--saffron-bright),var(--spice))}
-input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--surface);border:3px solid var(--teal-mid);box-shadow:0 2px 8px rgba(12,138,122,.35)}
-.scale-val{text-align:center;font-size:.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-radius:20px;padding:5px 16px;display:inline-block;margin-top:.6rem;box-shadow:0 2px 8px rgba(12,138,122,.25)}
+input[type=range].scale-input{width:100%;-webkit-appearance:none;height:8px;border-radius:10px;outline:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.scale-mild{background:linear-gradient(90deg,#3de0ce,#0c8a7a)}
+.scale-freq{background:linear-gradient(90deg,#3de0ce,#f07b00,#c0390c)}
+.scale-pain{background:linear-gradient(90deg,#6ee0a0,#fbbf24,#c41c1c)}
+input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#fff,#f0faf9);border:3px solid var(--teal-mid);box-shadow:0 3px 12px rgba(12,138,122,.4);cursor:grab;transition:transform .15s,box-shadow .15s}
+input[type=range].scale-input::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.2);box-shadow:0 5px 20px rgba(12,138,122,.55)}
+input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#fff,#f0faf9);border:3px solid var(--teal-mid);box-shadow:0 3px 12px rgba(12,138,122,.4);cursor:grab}
+.scale-val{text-align:center;font-size:.82rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#0c8a7a,#12c4b0);border-radius:24px;padding:6px 18px;display:inline-block;margin-top:.7rem;box-shadow:0 4px 14px rgba(12,138,122,.3);letter-spacing:.02em}
 
 /* ── SEVERITY BAR ── */
 .sev-bar-wrap{margin-top:.5rem}
@@ -370,16 +385,7 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
             <select id="lang"><option>English</option><option>Español</option><option>Français</option><option>中文</option><option>हिन्दी</option><option>Português</option></select>
           </div>
         </div>
-        <div class="fgrp"><label>Preferred Herbalist</label>
-          <select id="herbalist">
-            <option>No preference — assign automatically</option>
-            <option>Dr. Amara Osei (African Botanicals · Ayurveda)</option>
-            <option>Liang Wei PhD (Traditional Chinese Medicine)</option>
-            <option>Sofia Navarro (Western Phytotherapy)</option>
-            <option>Dr. Priya Sharma (Ayurveda · Panchakarma)</option>
-            <option>Jerome Miller (Western Herbal Medicine)</option>
-          </select>
-        </div>
+
       </div>
     </div>
     <div class="step-nav">
@@ -595,16 +601,16 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
         <div class="fgrp">
           <label>Diet / Eating Pattern</label>
           <div class="chip-group">
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Omnivore</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Vegetarian</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Vegan</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Gluten-free</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Dairy-free</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Low-carb / Keto</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Paleo</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Mediterranean</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Ayurvedic</span>
-            <span class="chip" data-g="diet" onclick="toggleChip(this)">Irregular / no fixed pattern</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Eats all food groups — meat, fish, dairy, eggs, fruits and vegetables. No dietary restrictions." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Omnivore</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="No meat or fish. May include dairy and eggs. Focuses on plant-based foods." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Vegetarian</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="No animal products whatsoever — no meat, fish, dairy, eggs or honey." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Vegan</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Avoids wheat, barley, rye and gluten-containing products. Often for coeliac disease or sensitivity." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Gluten-free</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="No milk, cheese, yoghurt or dairy-derived products. For lactose intolerance or dairy allergy." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Dairy-free</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Very low carbohydrate intake. Forces the body to burn fat for fuel (ketosis). High fat, moderate protein." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Low-carb / Keto</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Based on ancestral eating — meat, fish, eggs, nuts, seeds, vegetables. No grains, legumes or dairy." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Paleo</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Olive oil, fish, whole grains, vegetables, legumes, nuts and moderate red wine. Heart-protective." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Mediterranean</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="Based on your dosha (body constitution). Warm, cooked, seasonal foods. Avoids cold, raw, processed." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Ayurvedic</span>
+            <span class="chip diet-chip" data-g="diet" onclick="toggleChip(this)" data-tooltip="No consistent meal times or dietary approach. Eating is unstructured or driven by convenience." onmouseenter="showDietTooltip(event,this)" onmouseleave="hideDietTooltip()">Irregular / no fixed pattern</span>
           </div>
         </div>
         <div class="fgrp">
@@ -699,7 +705,7 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
           <div class="check-item" id="consent3" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">I confirm all information provided is accurate and complete to the best of my knowledge. <strong style="color:var(--spice)">*</strong></span></div>
         </div>
         <div class="privacy-notice">
-          🔐 <strong>Privacy guarantee:</strong> Your data is encrypted with AES-256, stored on HIPAA-aligned infrastructure, and only accessible to your assigned practitioner. You may request full deletion at any time by emailing <em>privacy@trueformbotanical.com</em>.
+          🔐 <strong>Privacy guarantee:</strong> Your data is encrypted with AES-256, stored on HIPAA-aligned infrastructure, and only accessible to your assigned practitioner. You may request full deletion at any time by emailing <em><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5424263d2235372d1420262131323b2639363b20353a3d3735387a373b39">[email&#160;protected]</a></em>.
         </div>
       </div>
     </div>
@@ -715,15 +721,145 @@ input[type=range].scale-input::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="submit-confirm" id="submitConfirm">
     <div class="confirm-icon">🌿</div>
     <div class="confirm-title">Assessment Submitted!</div>
-    <p class="confirm-msg">Thank you. Your herbalist has been notified and will review your assessment before your appointment. You'll receive a confirmation email within 15 minutes.</p>
+    <p class="confirm-msg">Thank you! Your herbalist will review your assessment and be in touch. Redirecting you to your portal…</p>
     <div class="ref-code">REF: <span id="refNum"></span></div>
-    <button onclick="window.location.href='index.html'" class="btn-primary" style="margin:0 auto">← Return to TrueForm Botanical</button>
+    <button onclick="returnToPortal()" class="btn-primary" style="margin:0 auto">← Go to My Portal</button>
+  </div>
+
+  <!-- ═══ SYMPTOM DIARY ═══ -->
+  <div id="diarySection" style="display:none">
+    <div class="section-card" style="margin-top:2rem">
+      <div class="sc-header" style="background:linear-gradient(135deg,#0a2e2b,#0c8a7a)">
+        <div class="sc-icon">📓</div>
+        <div><h3>Symptom Diary</h3><p>Track how you feel each day — shared with your herbalist</p></div>
+      </div>
+      <div class="sc-body">
+
+        <!-- Diary entry form -->
+        <div style="background:linear-gradient(135deg,var(--surface-teal),#f0fffe);border-radius:14px;padding:1.4rem;margin-bottom:1.4rem;border:1.5px solid var(--border)">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:1rem">Log Today's Entry</div>
+          <div class="frow" style="margin-bottom:1rem">
+            <div class="fgrp" style="margin:0">
+              <label>Date</label>
+              <input type="date" id="diaryDate" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface)"/>
+            </div>
+            <div class="fgrp" style="margin:0">
+              <label>Overall Feeling</label>
+              <select id="diaryMood" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface)">
+                <option value="5">😄 Excellent</option>
+                <option value="4">🙂 Good</option>
+                <option value="3" selected>😐 Neutral</option>
+                <option value="2">😔 Low</option>
+                <option value="1">😟 Very Poor</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Energy level slider -->
+          <div class="fgrp" style="margin-bottom:1rem">
+            <label>Energy Level</label>
+            <div class="scale-wrap">
+              <div class="scale-labels"><span>Exhausted</span><span>Low</span><span>Moderate</span><span>Good</span><span>High</span></div>
+              <input type="range" class="scale-input scale-mild" id="diaryEnergy" min="1" max="5" value="3" oninput="updateDiarySlider(this,'diaryEnergyVal')"/>
+              <div class="scale-val" id="diaryEnergyVal">Moderate energy</div>
+            </div>
+          </div>
+
+          <!-- Pain level slider -->
+          <div class="fgrp" style="margin-bottom:1rem">
+            <label>Pain / Discomfort Level</label>
+            <div class="scale-wrap">
+              <div class="scale-labels"><span>0 — None</span><span>5 — Moderate</span><span>10 — Severe</span></div>
+              <input type="range" class="scale-input scale-pain" id="diaryPain" min="0" max="10" value="0" oninput="updateDiarySlider(this,'diaryPainVal')"/>
+              <div class="scale-val" id="diaryPainVal">0 — No pain</div>
+            </div>
+          </div>
+
+          <!-- Sleep last night -->
+          <div class="frow" style="margin-bottom:1rem">
+            <div class="fgrp" style="margin:0">
+              <label>Sleep Last Night</label>
+              <select id="diarySleep" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface)">
+                <option>< 5 hours</option><option>5–6 hours</option><option>6–7 hours</option>
+                <option selected>7–8 hours</option><option>8+ hours</option>
+              </select>
+            </div>
+            <div class="fgrp" style="margin:0">
+              <label>Sleep Quality</label>
+              <select id="diarySleepQ" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface)">
+                <option value="1">Very poor — restless</option>
+                <option value="2">Poor — woke multiple times</option>
+                <option value="3" selected>Fair — some rest</option>
+                <option value="4">Good — mostly restful</option>
+                <option value="5">Excellent — deep sleep</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Active symptoms today -->
+          <div class="fgrp" style="margin-bottom:1rem">
+            <label>Active Symptoms Today <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--text-light)">(select all that apply)</span></label>
+            <div class="chip-group" id="diarySympChips" style="margin-top:.4rem">
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Fatigue</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Headache</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Bloating</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Nausea</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Anxiety</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Low mood</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Joint pain</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Skin flare</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Brain fog</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Digestive issues</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Poor sleep</span>
+              <span class="chip" onclick="toggleChip(this)" data-g="dsymp">Shortness of breath</span>
+            </div>
+          </div>
+
+          <!-- Stress today -->
+          <div class="fgrp" style="margin-bottom:1rem">
+            <label>Stress Level Today</label>
+            <div class="scale-wrap">
+              <div class="scale-labels"><span>Very low</span><span>Low</span><span>Moderate</span><span>High</span><span>Extreme</span></div>
+              <input type="range" class="scale-input scale-freq" id="diaryStress" min="1" max="5" value="2" oninput="updateDiarySlider(this,'diaryStressVal')"/>
+              <div class="scale-val" id="diaryStressVal">Low stress</div>
+            </div>
+          </div>
+
+          <!-- Medications/herbs taken today -->
+          <div class="fgrp" style="margin-bottom:1rem">
+            <label>Herbs / Supplements Taken Today</label>
+            <input type="text" id="diaryMeds" placeholder="e.g. Ashwagandha 600mg, Magnesium 400mg…" style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface)"/>
+          </div>
+
+          <!-- Notes -->
+          <div class="fgrp" style="margin-bottom:1.2rem">
+            <label>Daily Notes <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--text-light)">(anything you want your herbalist to know)</span></label>
+            <textarea id="diaryNotes" rows="3" placeholder="How do you feel today? Any changes, reactions to herbs, or observations…" style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:var(--r-lg);font-family:var(--sans);font-size:.86rem;outline:none;background:var(--surface);resize:vertical;line-height:1.65"></textarea>
+          </div>
+
+          <button onclick="saveDiaryEntry()" class="btn-saffron" style="width:100%;justify-content:center;padding:13px">
+            💾 Save Today's Entry
+          </button>
+        </div>
+
+        <!-- Past entries -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft)">Previous Entries</div>
+            <button onclick="exportDiary()" style="font-size:.72rem;padding:5px 12px;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;cursor:pointer;color:var(--teal-deep);font-family:var(--sans);font-weight:600">⬇ Export</button>
+          </div>
+          <div id="diaryEntries">
+            <div style="font-size:.82rem;color:var(--text-light);text-align:center;padding:1.5rem 0;font-style:italic">No diary entries yet. Start logging your daily progress above.</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div><!-- /page-wrap -->
 
 <!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
@@ -977,7 +1113,7 @@ function collectData(){
     photo_base64: window._photoBase64||null,
     personal:{
       firstName:v('firstName'), lastName:v('lastName'), dob:v('dob'), bioSex:v('bioSex'),
-      email:v('email'), phone:v('phone'), country:v('country'), lang:v('lang'), herbalist:v('herbalist'),
+      email:v('email'), phone:v('phone'), country:v('country'), lang:v('lang'),
     },
     symptoms:{
       primaryComplaint:v('primaryComplaint'), duration:v('duration'), pattern:v('pattern'),
@@ -1016,7 +1152,7 @@ function buildReview(){
   }
 
   var html='<div style="padding:1.4rem 1.8rem">'+photoSnippet+'<div class="summary-grid">'+
-    '<div class="summary-card"><h4>👤 Personal</h4>'+field('Name',(p.firstName+' '+p.lastName).trim())+field('Email',p.email)+field('Phone',p.phone||'—')+field('Country',p.country)+field('Herbalist',p.herbalist)+'</div>'+
+    '<div class="summary-card"><h4>👤 Personal</h4>'+field('Name',(p.firstName+' '+p.lastName).trim())+field('Email',p.email)+field('Phone',p.phone||'—')+field('Country',p.country)+'</div>'+
     '<div class="summary-card"><h4>🩺 Main Concern</h4>'+field('Complaint',s.primaryComplaint)+field('Duration',s.duration)+field('Pattern',s.pattern)+field('Severity',SEV_LABELS[s.severity]||s.severity)+'</div>'+
     '<div class="summary-card"><h4>🔴 Symptoms</h4>'+pills(s.chips)+'</div>'+
     '<div class="summary-card"><h4>🫀 Body Areas</h4>'+pills(b.zones)+field('Pain Level',b.painLevel+'/10')+'</div>'+
@@ -1033,48 +1169,9 @@ function buildReview(){
 // ════════════════════════════════════════════════
 // AUTOSAVE
 // ════════════════════════════════════════════════
-var _saveTimer=null;
-async function autoSave(){
-  try{
-    var d=collectData();
-    await window.storage.set('tfb_draft_assessment',JSON.stringify(d));
-    var dot=document.getElementById('autosave');
-    var status=document.getElementById('saveStatus');
-    if(dot){ dot.classList.add('show'); setTimeout(function(){ dot.classList.remove('show'); },2000); }
-    if(status) status.textContent='Saved';
-    setTimeout(function(){ var s=document.getElementById('saveStatus'); if(s) s.textContent='Auto-saving…'; },3000);
-  }catch(e){}
-}
 
-async function loadDraft(){
-  try{
-    var raw=await window.storage.get('tfb_draft_assessment');
-    if(!raw||!raw.value) return;
-    var d=JSON.parse(raw.value);
-    if(!d||!d.personal) return;
-    var setV=function(id,val){ var el=document.getElementById(id); if(el&&val) el.value=val; };
-    var p=d.personal||{};
-    setV('firstName',p.firstName); setV('lastName',p.lastName); setV('dob',p.dob);
-    setV('bioSex',p.bioSex); setV('email',p.email); setV('phone',p.phone);
-    setV('country',p.country); setV('lang',p.lang); setV('herbalist',p.herbalist);
-    if(d.symptoms){
-      setV('primaryComplaint',d.symptoms.primaryComplaint);
-      setV('duration',d.symptoms.duration); setV('pattern',d.symptoms.pattern);
-      setV('symNotes',d.symptoms.notes);
-    }
-    if(d.history){
-      setV('otherConditions',d.history.otherConditions);
-      setV('medications',d.history.medications); setV('supplements',d.history.supplements);
-      setV('allergies',d.history.allergies); setV('prevHerbal',d.history.prevHerbal);
-      setV('pregnant',d.history.pregnant); setV('familyHistory',d.history.familyHistory);
-    }
-    if(d.lifestyle){
-      setV('occupation',d.lifestyle.occupation); setV('emotional',d.lifestyle.emotional);
-      setV('healthGoals',d.lifestyle.healthGoals); setV('referral',d.lifestyle.referral);
-      setV('water',d.lifestyle.water); setV('sleepHrs',d.lifestyle.sleepHrs);
-    }
-  }catch(e){}
-}
+
+
 
 // ════════════════════════════════════════════════
 // SUBMIT ASSESSMENT
@@ -1112,7 +1209,7 @@ async function submitAssessment(){
   var row={
     ref_code:refCode, client_name:d.personal.firstName+' '+d.personal.lastName,
     client_email:d.personal.email, client_phone:d.personal.phone||null,
-    assigned_herbalist:d.personal.herbalist||null,
+    assigned_herbalist: null, // assigned by admin/system
     client_photo:d.photo_base64?'[photo attached]':null,
     personal_info:JSON.stringify(d.personal),
     symptoms:JSON.stringify(d.symptoms), body_areas:JSON.stringify(d.body),
@@ -1146,6 +1243,8 @@ async function submitAssessment(){
   document.querySelectorAll('#step1,#step2,#step3,#step4,#step5,#step6').forEach(function(s){ s.classList.add('hidden'); });
   var conf=document.getElementById('submitConfirm');
   if(conf){ conf.style.display='block'; }
+  showDiarySection();
+  startPortalRedirect();
   try{ await window.storage.delete('tfb_draft_assessment'); }catch(e){}
   showToast('✅ Assessment submitted successfully!');
 }
@@ -1253,10 +1352,382 @@ updateProgress();
 
 // Auto-save on any input change
 document.addEventListener('change',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
+
+// ════════════════════════════════════════════════
+// DIET TOOLTIP
+// ════════════════════════════════════════════════
+var _dietTooltipEl = null;
+
+function showDietTooltip(e, chip){
+  if(!_dietTooltipEl){
+    _dietTooltipEl = document.createElement('div');
+    _dietTooltipEl.className = 'diet-tooltip';
+    document.body.appendChild(_dietTooltipEl);
+  }
+  var label = chip.textContent.trim();
+  var desc  = chip.dataset.tooltip || '';
+  _dietTooltipEl.innerHTML = '<div class="dt-label">'+escapeHtmlT(label)+'</div>'+escapeHtmlT(desc);
+
+  // Position above the chip
+  var rect = chip.getBoundingClientRect();
+  var tt = _dietTooltipEl;
+  tt.style.display = 'block';
+  tt.style.left = Math.max(8, rect.left) + 'px';
+  tt.style.top  = (rect.top + window.scrollY - tt.offsetHeight - 12) + 'px';
+  // Adjust if off-screen right
+  var right = rect.left + tt.offsetWidth;
+  if(right > window.innerWidth - 12){
+    tt.style.left = (window.innerWidth - tt.offsetWidth - 12) + 'px';
+  }
+  setTimeout(function(){ tt.classList.add('show'); }, 10);
+}
+
+function hideDietTooltip(){
+  if(_dietTooltipEl){
+    _dietTooltipEl.classList.remove('show');
+  }
+}
+
+function escapeHtmlT(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════════════
+// AUTOSAVE — ROBUST VERSION
+// Saves to localStorage every 2 seconds after any change
+// Loads draft on page init
+// ════════════════════════════════════════════════
+var DRAFT_KEY = 'tfb_assessment_draft_v2';
+var _saveTimer = null;
+var _lastSavedHash = '';
+
+function getDraftHash(data){
+  try{ return JSON.stringify(data).slice(0,200); } catch(e){ return ''; }
+}
+
+async function autoSave(){
+  try{
+    var data = collectData();
+    var hash = getDraftHash(data);
+    if(hash === _lastSavedHash) return; // no change
+    _lastSavedHash = hash;
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      data: data,
+      step: currentStep,
+      savedAt: new Date().toISOString(),
+      photo: window._photoBase64 || null,
+    }));
+    var status = document.getElementById('saveStatus');
+    if(status){ status.textContent = 'Saved ✓'; setTimeout(function(){ status.textContent = 'Auto-saving…'; }, 2000); }
+    var dot = document.getElementById('autosave');
+    if(dot){ dot.classList.add('show'); setTimeout(function(){ dot.classList.remove('show'); }, 2500); }
+  } catch(e){ console.warn('Autosave error:', e); }
+}
+
+function loadDraft(){
+  try{
+    var raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return;
+    var saved = JSON.parse(raw);
+    if(!saved || !saved.data) return;
+    var d = saved.data;
+    var p = d.personal || {};
+
+    // Restore personal
+    var setV = function(id, val){ var el=document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
+    setV('firstName', p.firstName); setV('lastName', p.lastName); setV('dob', p.dob);
+    setV('bioSex', p.bioSex); setV('email', p.email); setV('phone', p.phone);
+    setV('country', p.country); setV('lang', p.lang);
+
+    // Restore symptoms
+    var sy = d.symptoms || {};
+    setV('primaryComplaint', sy.primaryComplaint);
+    setV('duration', sy.duration); setV('pattern', sy.pattern);
+    setV('symNotes', sy.notes);
+    if(sy.severity) setSev(parseInt(sy.severity)||3);
+
+    // Restore chips (symptoms, triggers, diet, substance, pain)
+    ['symptom','trigger','diet','substance','pain'].forEach(function(g){
+      var arr = (g === 'symptom' ? sy.chips : g === 'trigger' ? sy.triggers : g === 'diet' ? (d.lifestyle||{}).diet : g === 'substance' ? (d.lifestyle||{}).substances : (d.body||{}).painTypes) || [];
+      document.querySelectorAll('.chip[data-g="'+g+'"]').forEach(function(chip){
+        var val = chip.dataset.v || chip.textContent.trim();
+        if(arr.includes(val)) chip.classList.add('sel');
+      });
+    });
+
+    // Restore body zones
+    var zones = (d.body || {}).zones || [];
+    if(zones.length){
+      document.querySelectorAll('.body-zone').forEach(function(z){
+        if(zones.includes(z.dataset.z || z.querySelector('span')?.textContent)) z.classList.add('selected');
+      });
+    }
+
+    // Restore scales
+    var life = d.lifestyle || {};
+    if(life.sleepQuality){ setV('sleepScale', life.sleepQuality); updateScale(document.getElementById('sleepScale'), 'sleepVal'); }
+    if(life.stressLevel){ setV('stressScale', life.stressLevel); updateScale(document.getElementById('stressScale'), 'stressVal'); }
+    var body = d.body || {};
+    if(body.painLevel){ setV('painScale', body.painLevel); updateScale(document.getElementById('painScale'), 'painVal'); }
+
+    // Restore lifestyle cards
+    if(life.exercise){
+      document.querySelectorAll('.lf-card[data-l="exercise"]').forEach(function(c){
+        if(c.querySelector('span:last-child')?.textContent === life.exercise) c.classList.add('sel');
+      });
+    }
+
+    // Restore history
+    var hi = d.history || {};
+    setV('otherConditions', hi.otherConditions);
+    setV('medications', hi.medications); setV('supplements', hi.supplements);
+    setV('allergies', hi.allergies); setV('prevHerbal', hi.prevHerbal);
+    setV('pregnant', hi.pregnant); setV('familyHistory', hi.familyHistory);
+
+    // Restore conditions checklist
+    var conds = hi.conditions || [];
+    document.querySelectorAll('#step4 .check-item').forEach(function(item){
+      var label = item.querySelector('.check-label');
+      if(label && conds.some(function(co){ return co.includes(label.textContent.slice(0,20)); })){
+        item.classList.add('sel');
+        var box = item.querySelector('.check-box');
+        if(box) box.textContent = '✓';
+      }
+    });
+
+    // Restore lifestyle
+    setV('occupation', life.occupation); setV('emotional', life.emotional);
+    setV('healthGoals', life.healthGoals); setV('referral', life.referral);
+    setV('water', life.water); setV('sleepHrs', life.sleepHrs);
+
+    // Restore photo
+    if(saved.photo){
+      window._photoBase64 = saved.photo;
+      window._hasPhoto = true;
+      var img = document.getElementById('photoImg');
+      var prompt2 = document.getElementById('photoPrompt');
+      var preview = document.getElementById('photoPreview');
+      var removeBtn = document.getElementById('photoRemoveBtn');
+      if(img){ img.src=saved.photo; img.style.display='block'; }
+      if(prompt2) prompt2.style.display='none';
+      if(preview){ preview.style.borderStyle='solid'; preview.style.borderColor='var(--teal-bright)'; }
+      if(removeBtn) removeBtn.style.display='block';
+    }
+
+    // Show draft banner
+    var savedAt = saved.savedAt ? new Date(saved.savedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    showToast('📋 Draft restored from '+savedAt+' — review before submitting.');
+    _lastSavedHash = getDraftHash(d);
+  } catch(e){ console.warn('loadDraft error:', e); }
+}
+
+// ════════════════════════════════════════════════
+// RETURN TO PORTAL after submission
+// ════════════════════════════════════════════════
+function returnToPortal(){
+  // Clear the draft since assessment was submitted
+  try{ localStorage.removeItem(DRAFT_KEY); } catch(e){}
+  // Check if there's a portal session to return to
+  try{
+    var sess = sessionStorage.getItem('tfb_client_session');
+    if(sess){
+      window.location.href = 'index.html#portal';
+      return;
+    }
+  } catch(e){}
+  window.location.href = 'index.html';
+}
+
+// ── Auto-redirect after 4 seconds on confirmation screen ──
+function startPortalRedirect(){
+  var countdown = 4;
+  var btn = document.querySelector('#submitConfirm .btn-primary');
+  var interval = setInterval(function(){
+    countdown--;
+    if(btn) btn.textContent = '← Go to My Portal ('+countdown+'s)';
+    if(countdown <= 0){
+      clearInterval(interval);
+      returnToPortal();
+    }
+  }, 1000);
+}
+
+// ════════════════════════════════════════════════
+// DIARY FUNCTIONS
+// ════════════════════════════════════════════════
+var DIARY_KEY = 'tfb_symptom_diary';
+var diaryEnergyLabels = ['','Exhausted — no energy','Low energy','Moderate energy','Good energy','High energy — feeling great'];
+var diaryStressLabels = ['','Very low stress','Low stress','Moderate stress','High stress','Extreme stress'];
+var diaryPainLabels = {'0':'0 — No pain','1':'1 — Barely noticeable','2':'2 — Minor discomfort','3':'3 — Noticeable','4':'4 — Distracting','5':'5 — Moderate pain','6':'6 — Strong pain','7':'7 — Severe pain','8':'8 — Very severe','9':'9 — Near-unbearable','10':'10 — Worst pain'};
+
+function updateDiarySlider(el, valId){
+  var valEl = document.getElementById(valId);
+  if(!valEl) return;
+  if(valId === 'diaryEnergyVal') valEl.textContent = diaryEnergyLabels[el.value] || el.value;
+  else if(valId === 'diaryStressVal') valEl.textContent = diaryStressLabels[el.value] || el.value;
+  else if(valId === 'diaryPainVal') valEl.textContent = diaryPainLabels[el.value] || el.value;
+}
+
+function getDiaryEntries(){
+  try{ return JSON.parse(localStorage.getItem(DIARY_KEY)||'[]'); } catch(e){ return []; }
+}
+function saveDiaryEntries(entries){
+  try{ localStorage.setItem(DIARY_KEY, JSON.stringify(entries)); } catch(e){}
+}
+
+function saveDiaryEntry(){
+  var date    = document.getElementById('diaryDate').value;
+  var mood    = parseInt(document.getElementById('diaryMood').value||3);
+  var energy  = parseInt(document.getElementById('diaryEnergy').value||3);
+  var pain    = parseInt(document.getElementById('diaryPain').value||0);
+  var sleep   = document.getElementById('diarySleep').value;
+  var sleepQ  = parseInt(document.getElementById('diarySleepQ').value||3);
+  var stress  = parseInt(document.getElementById('diaryStress').value||2);
+  var meds    = (document.getElementById('diaryMeds').value||'').trim();
+  var notes   = (document.getElementById('diaryNotes').value||'').trim();
+  var symptoms = [...document.querySelectorAll('#diarySympChips .chip.sel')].map(function(c){ return c.textContent.trim(); });
+
+  if(!date){ showToast('⚠️ Please select a date for this entry.'); return; }
+
+  var entry = {
+    id: 'de_'+Date.now(),
+    date: date,
+    mood: mood,
+    energy: energy,
+    pain: pain,
+    sleep: sleep,
+    sleepQuality: sleepQ,
+    stress: stress,
+    medications: meds,
+    notes: notes,
+    symptoms: symptoms,
+    createdAt: new Date().toISOString(),
+  };
+
+  // Also sync to Supabase if possible
+  var emailRaw = null;
+  try{
+    var sess = sessionStorage.getItem('tfb_client_session');
+    if(sess){ emailRaw = JSON.parse(sess).email; }
+  } catch(e){}
+  if(emailRaw && typeof sb !== 'undefined'){
+    sb.from('diary_entries').insert({
+      client_email: emailRaw,
+      date: date,
+      mood_score: mood,
+      energy_score: energy,
+      pain_score: pain,
+      sleep_hours: sleep,
+      sleep_quality: sleepQ,
+      stress_score: stress,
+      medications_taken: meds,
+      notes: notes,
+      symptoms_today: symptoms.join(', '),
+      created_at: entry.createdAt,
+    }).then(function(r){ if(r.error) console.warn('diary sync:', r.error); });
+  }
+
+  // Save locally
+  var entries = getDiaryEntries();
+  // Replace same-date entry if exists
+  entries = entries.filter(function(e){ return e.date !== date; });
+  entries.unshift(entry);
+  saveDiaryEntries(entries);
+
+  // Clear form
+  document.querySelectorAll('#diarySympChips .chip.sel').forEach(function(c){ c.classList.remove('sel'); });
+  document.getElementById('diaryMeds').value = '';
+  document.getElementById('diaryNotes').value = '';
+
+  renderDiaryEntries();
+  showToast('✅ Diary entry saved for '+date);
+}
+
+function renderDiaryEntries(){
+  var container = document.getElementById('diaryEntries');
+  if(!container) return;
+  var entries = getDiaryEntries();
+  if(!entries.length){
+    container.innerHTML = '<div style="font-size:.82rem;color:var(--text-light);text-align:center;padding:1.5rem 0;font-style:italic">No diary entries yet. Start logging your daily progress above.</div>';
+    return;
+  }
+  var moodEmoji = ['','😟','😔','😐','🙂','😄'];
+  container.innerHTML = entries.slice(0,30).map(function(e){
+    var d = new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    var symStr = e.symptoms && e.symptoms.length ? e.symptoms.join(', ') : 'None reported';
+    return '<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">' +
+        '<div style="font-weight:700;font-size:.88rem;color:var(--teal-deep)">'+d+'</div>' +
+        '<div style="display:flex;gap:.5rem;align-items:center">' +
+          '<span style="font-size:1.2rem">'+moodEmoji[e.mood||3]+'</span>' +
+          '<button data-id="'+e.id+'" onclick="deleteDiaryEntry(this.dataset.id)" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:.8rem;padding:2px 6px;border-radius:4px" title="Delete">✕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.6rem">' +
+        diaryBadge('⚡ Energy',''+e.energy+'/5','var(--teal-mid)') +
+        diaryBadge('🔥 Pain',''+e.pain+'/10', e.pain > 6 ? 'var(--spice)' : e.pain > 3 ? 'var(--amber)' : 'var(--green)') +
+        diaryBadge('😴 Sleep',e.sleep||'—','var(--navy-mid,#334155)') +
+        diaryBadge('🧠 Stress',''+e.stress+'/5', e.stress > 3 ? 'var(--spice)' : 'var(--text-soft)') +
+      '</div>' +
+      (e.symptoms && e.symptoms.length ? '<div style="font-size:.75rem;color:var(--text-soft);margin-bottom:.35rem"><strong>Symptoms:</strong> '+e.symptoms.join(' · ')+'</div>' : '') +
+      (e.medications ? '<div style="font-size:.75rem;color:var(--teal-mid);margin-bottom:.35rem">💊 '+e.medications+'</div>' : '') +
+      (e.notes ? '<div style="font-size:.78rem;color:var(--text-mid);line-height:1.55;font-style:italic">"'+escapeHtmlT(e.notes)+'"</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function diaryBadge(label, val, color){
+  return '<div style="background:var(--surface-alt);border-radius:8px;padding:.4rem .5rem;text-align:center">' +
+    '<div style="font-size:.65rem;font-weight:700;color:'+color+';letter-spacing:.04em">'+label+'</div>' +
+    '<div style="font-size:.82rem;font-weight:700;color:var(--text-dark)">'+val+'</div>' +
+  '</div>';
+}
+
+function deleteDiaryEntry(id){
+  var entries = getDiaryEntries().filter(function(e){ return e.id !== id; });
+  saveDiaryEntries(entries);
+  renderDiaryEntries();
+  showToast('Entry removed.');
+}
+
+function exportDiary(){
+  var entries = getDiaryEntries();
+  if(!entries.length){ showToast('No diary entries to export.'); return; }
+  var csv = 'Date,Mood,Energy,Pain,Sleep,Sleep Quality,Stress,Symptoms,Medications,Notes\n';
+  entries.forEach(function(e){
+    csv += [e.date, e.mood, e.energy, e.pain, '"'+e.sleep+'"', e.sleepQuality, e.stress,
+      '"'+(e.symptoms||[]).join('; ')+'"', '"'+(e.medications||'')+'"', '"'+(e.notes||'').replace(/"/g,'\'\'')+'"'].join(',')+'\n';
+  });
+  var blob = new Blob([csv], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'symptom_diary_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ── Show diary after successful submission ──
+function showDiarySection(){
+  var diaryEl = document.getElementById('diarySection');
+  if(diaryEl){
+    diaryEl.style.display = 'block';
+    diaryEl.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  // Set diary date to today
+  var dateEl = document.getElementById('diaryDate');
+  if(dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+  renderDiaryEntries();
+}
+
+// Init diary date to today
+(function(){
+  var dateEl = document.getElementById('diaryDate');
+  if(dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+  renderDiaryEntries();
+})();
+
+document.addEventListener('change',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
 document.addEventListener('input',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
 
-// ESC closes nothing on this page, but prevents errors
-document.addEventListener('keydown',function(e){ if(e.key==='Escape') e.preventDefault(); });
 </script>
 </body>
 </html>
