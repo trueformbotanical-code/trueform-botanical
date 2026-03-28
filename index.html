@@ -692,6 +692,85 @@ input,select,textarea{font-size:max(16px,1em)}
 .register-only #clientTabRegister { border-radius: 0; }
 .register-only .signin-only { display: none !important; }
 .register-only #portalBackBtn { visibility: hidden !important; pointer-events: none !important; }
+
+/* ── Registration benefit banner ── */
+.reg-why-banner {
+  background: linear-gradient(135deg, rgba(18,196,176,.08), rgba(18,196,176,.04));
+  border: 1.5px solid rgba(18,196,176,.25);
+  border-radius: 10px;
+  padding: .9rem 1rem;
+  margin-bottom: 1.1rem;
+}
+.reg-why-title {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--teal-deep);
+  margin-bottom: .55rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.reg-why-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.reg-why-list li {
+  font-size: .78rem;
+  color: var(--text-mid);
+  line-height: 1.55;
+  padding: .22rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+.reg-why-list li .tick {
+  color: var(--teal-mid);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: .05rem;
+}
+.reg-divider-label {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-light);
+  margin: .5rem 0 .9rem;
+}
+.reg-divider-label::before,
+.reg-divider-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.reg-signin-note {
+  text-align: center;
+  font-size: .74rem;
+  color: var(--text-soft);
+  margin-top: .9rem;
+  padding-top: .7rem;
+  border-top: 1px solid var(--border);
+}
+.reg-signin-note button {
+  background: none;
+  border: none;
+  color: var(--teal-mid);
+  font-weight: 700;
+  font-size: inherit;
+  cursor: pointer;
+  font-family: var(--sans);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+}
+/* ── end registration styles ── */
 </style>
 
 <!-- Supabase SDK -->
@@ -949,23 +1028,91 @@ async function dbDelete(table, filters) {
 
         <!-- REGISTER FORM -->
         <div id="clientRegisterForm" style="display:none">
+
+          <!-- ── WHY YOU NEED AN ACCOUNT ── -->
+          <div class="reg-why-banner">
+            <div class="reg-why-title">🌿 Why create a free account?</div>
+            <ul class="reg-why-list">
+              <li><span class="tick">✓</span> Your pre-assessment is saved securely and shared privately with your assigned herbalist</li>
+              <li><span class="tick">✓</span> Track your health journey with a personal Symptom Diary</li>
+              <li><span class="tick">✓</span> Receive your personalised herbal protocol and follow-up notes</li>
+              <li><span class="tick">✓</span> Book and manage consultation sessions from your portal</li>
+              <li><span class="tick">✓</span> Your data is encrypted, HIPAA-aligned, and never shared without consent</li>
+            </ul>
+          </div>
+
+          <!-- ── ERROR BANNERS ── -->
           <div id="portalRegError" class="portal-error" style="display:none"><span>⚠️</span><span id="portalRegMsg"></span></div>
           <div id="roleRegError" role="alert" aria-live="polite" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.8rem;color:#dc2626;font-weight:600;margin-bottom:.9rem"></div>
-          <div class="frow">
-            <div class="fgrp"><label>First Name *</label><input type="text" id="reg-fn" placeholder="Jane" autocomplete="given-name"/></div>
-            <div class="fgrp"><label>Last Name *</label><input type="text" id="reg-ln" placeholder="Smith" autocomplete="family-name"/></div>
-          </div>
-          <div class="fgrp"><label>Email *</label><input type="email" id="reg-em" placeholder="your@email.com" autocomplete="email"/></div>
-          <div class="fgrp"><label>Password *</label>
-            <div style="position:relative"><input type="password" id="reg-pw" placeholder="Min. 8 characters" autocomplete="new-password" style="padding-right:38px" oninput="checkClientPwStrength(this.value)"/><button onclick="togglePortalPw('reg-pw','reg-eye')" id="reg-eye" class="pw-toggle">👁</button></div>
-            <div class="pw-strength-wrap"><div class="pw-strength-track"><div id="regPwBar" class="pw-strength-bar"></div></div><div id="regPwLabel" class="pw-strength-label"></div></div>
-          </div>
-          <div class="fgrp"><label>Confirm Password *</label><input type="password" id="reg-cpw" placeholder="Repeat password" autocomplete="new-password"/></div>
-          <label class="ccheck" style="margin-bottom:1rem"><input type="checkbox" id="reg-terms"/><span>I agree to the <a href="#" style="color:var(--teal-mid);font-weight:700">Privacy Policy</a> &amp; <a href="#" style="color:var(--teal-mid);font-weight:700">Terms</a></span></label>
-          <!-- Pre-fill hint shown when coming from booking form -->
+
+          <!-- ── BOOKING CONTEXT HINT (shows when coming from herb finder / booking btn) ── -->
           <div id="regBookingHint" style="display:none;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.75rem 1rem;font-size:.8rem;color:var(--teal-deep);line-height:1.55;margin-bottom:.8rem"></div>
-          <button class="btn-primary" id="regBtn" style="width:100%;justify-content:center;padding:11px" onclick="portalRegister()">Create Account →</button>
-          <p style="text-align:center;font-size:.71rem;color:var(--text-light);margin-top:.9rem">🔐 Your data is encrypted and never sold</p>
+
+          <div class="reg-divider-label">Your Details</div>
+
+          <!-- ── FIELDS ── -->
+          <div class="frow">
+            <div class="fgrp">
+              <label>First Name *</label>
+              <input type="text" id="reg-fn" placeholder="Jane" autocomplete="given-name"
+                onkeydown="if(event.key==='Enter')document.getElementById('reg-ln').focus()"/>
+            </div>
+            <div class="fgrp">
+              <label>Last Name *</label>
+              <input type="text" id="reg-ln" placeholder="Smith" autocomplete="family-name"
+                onkeydown="if(event.key==='Enter')document.getElementById('reg-em').focus()"/>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label>Email Address *</label>
+            <input type="email" id="reg-em" placeholder="your@email.com" autocomplete="email"
+              onkeydown="if(event.key==='Enter')document.getElementById('reg-pw').focus()"/>
+          </div>
+          <div class="fgrp">
+            <label>Password *</label>
+            <div style="position:relative">
+              <input type="password" id="reg-pw" placeholder="Min. 8 characters"
+                autocomplete="new-password" style="padding-right:38px"
+                oninput="checkClientPwStrength(this.value)"
+                onkeydown="if(event.key==='Enter')document.getElementById('reg-cpw').focus()"/>
+              <button onclick="togglePortalPw('reg-pw','reg-eye')" id="reg-eye" class="pw-toggle" type="button">👁</button>
+            </div>
+            <div class="pw-strength-wrap">
+              <div class="pw-strength-track"><div id="regPwBar" class="pw-strength-bar"></div></div>
+              <div id="regPwLabel" class="pw-strength-label"></div>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label>Confirm Password *</label>
+            <input type="password" id="reg-cpw" placeholder="Repeat password"
+              autocomplete="new-password"
+              onkeydown="if(event.key==='Enter')portalRegister()"/>
+          </div>
+
+          <label class="ccheck" style="margin-bottom:1rem">
+            <input type="checkbox" id="reg-terms"/>
+            <span>I agree to the
+              <a href="#" onclick="return false" style="color:var(--teal-mid);font-weight:700">Privacy Policy</a>
+              &amp;
+              <a href="#" onclick="return false" style="color:var(--teal-mid);font-weight:700">Terms of Service</a>.
+              Your health data is encrypted and never sold.
+            </span>
+          </label>
+
+          <button class="btn-primary" id="regBtn" style="width:100%;justify-content:center;padding:12px;font-size:.88rem" onclick="portalRegister()">
+            Create Free Account &amp; Continue →
+          </button>
+
+          <p style="text-align:center;font-size:.69rem;color:var(--text-light);margin-top:.65rem;line-height:1.6">
+            🔐 256-bit encrypted · HIPAA-aligned · Free forever · Cancel anytime
+          </p>
+
+          <!-- ── ALREADY HAVE AN ACCOUNT ── -->
+          <div class="reg-signin-note">
+            Already have an account?
+            <button onclick="regSwitchToSignIn()">Sign in here</button>
+          </div>
+
         </div>
 
         <!-- VERIFY EMAIL -->
@@ -1728,6 +1875,39 @@ const PORTAL_AREAS=['portalRoleSelect','portalClientArea','portalPractArea'];
 const PORTAL_AREAS_FLEX=['portalClientArea','portalPractArea'];
 // ── OPEN / CLOSE LOGIN MODAL ──
 // Opens the portal directly on the New Registration tab
+
+// ── Switch from registration to sign-in (from "already have account?" link) ──
+function regSwitchToSignIn(){
+  // Restore Sign In tab visibility
+  const tsi = document.getElementById('clientTabSignin');
+  const trg = document.getElementById('clientTabRegister');
+  if(tsi){ tsi.style.display = ''; }
+  if(trg){ trg.style.flex = ''; trg.textContent = 'Sign In'; }
+  // Remove register-only class so both tabs show
+  const modal = document.getElementById('loginModal');
+  if(modal) modal.classList.remove('register-only');
+  clientTab('signin');
+  setTimeout(function(){ document.getElementById('si-email')?.focus(); }, 100);
+}
+
+// ── Show booking context hint in the register form ──
+function showRegBookingHint(){
+  try {
+    const bCtx = sessionStorage.getItem('tfb_booking_context');
+    if(!bCtx) return;
+    const bd = JSON.parse(bCtx);
+    if(!bd || Date.now() - bd.ts > 3600000) return; // expire after 1 hour
+    const hint = document.getElementById('regBookingHint');
+    if(!hint) return;
+    const parts = [];
+    if(bd.healthConcern) parts.push('Your concerns: <strong>' + bd.healthConcern + '</strong>');
+    if(parts.length){
+      hint.innerHTML = '📋 ' + parts.join(' · ') + '<br/><span style="font-size:.75rem;opacity:.85">These will be pre-filled in your assessment after registration.</span>';
+      hint.style.display = 'block';
+    }
+  } catch(e){}
+}
+
 function openRegistrationPortal(){
   const modal = document.getElementById('loginModal');
   if(!modal) return;
@@ -1748,6 +1928,7 @@ function openRegistrationPortal(){
   const hdrs = document.querySelectorAll('#portalClientArea [style*="font-family:var(--serif)"]');
   hdrs.forEach(function(h){ if(h.style.color==='#fff'||h.style.color==='rgb(255, 255, 255)') h.textContent='Create Your Free Account'; });
   clientTab('register');
+  showRegBookingHint();
   setTimeout(function(){ document.getElementById('reg-fn')?.focus(); }, 150);
 }
 
