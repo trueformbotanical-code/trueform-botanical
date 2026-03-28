@@ -1709,22 +1709,8 @@ const PORTAL_AREAS_FLEX=['portalClientArea','portalPractArea'];
 // ── OPEN / CLOSE LOGIN MODAL ──
 // Opens the portal directly on the New Registration tab
 function openRegistrationPortal(){
-  const modal = document.getElementById('loginModal');
-  if(!modal) return;
-  // If already logged in, go to dashboard instead
-  if(portalCurrentUser){
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    showArea('portalClientArea');
-    clientTab('dashboard');
-    return;
-  }
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  clearPortalErrors();
-  showArea('portalClientArea');
-  clientTab('register');
-  setTimeout(function(){ document.getElementById('reg-fn')?.focus(); }, 150);
+  // Redirect to assessment form — auth gate handled on client.html
+  window.location.href = 'client.html';
 }
 
 function openLogin(){
@@ -3676,7 +3662,7 @@ document.addEventListener('click', function(e) {
   if (action === 'bookWithSyms') bookWithSyms();
   if (action === 'toggleChat')   toggleChat();
   if (action === 'finderStep1')  gotoFinderStep(1);
-  if (action === 'scrollBooking') openRegistrationPortal();
+  if (action === 'scrollBooking') { window.location.href = 'client.html'; }
 });
 
 // Nav cart / login / book — also wire via delegation safety net
