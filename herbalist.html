@@ -580,20 +580,17 @@ function showLoginAfterReset(){}
         <span>⚠️</span><span id="loginErrorMsg">Incorrect username or password.</span>
       </div>
 
-      <!-- USERNAME with autocomplete -->
-      <div class="login-fgrp" style="position:relative">
+      <!-- USERNAME -->
+      <div class="login-fgrp">
         <label>Username</label>
         <input
           type="text"
           id="loginUsername"
           placeholder="Enter your username…"
-          autocomplete="username"
-          oninput="onUsernameInput(this.value)"
-          onfocus="onUsernameInput(this.value)"
-          onblur="setTimeout(()=>closeSuggestions(),180)"
+          autocomplete="off"
+          spellcheck="false"
+          onkeydown="if(event.key==='Enter'){ var pw=document.getElementById('loginPw'); if(pw) pw.focus(); }"
         />
-        <!-- SUGGESTIONS DROPDOWN -->
-        <div id="loginSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:2px solid var(--teal-bright);border-top:none;border-radius:0 0 8px 8px;z-index:200;box-shadow:0 8px 24px rgba(13,61,58,.14);max-height:200px;overflow-y:auto"></div>
       </div>
 
       <div class="login-fgrp">
@@ -604,15 +601,7 @@ function showLoginAfterReset(){}
         </div>
       </div>
 
-      <!-- WHO AM I CARD — shows matched user preview -->
-      <div id="userPreviewCard" style="display:none;background:var(--surface-teal);border:1.5px solid var(--border-mid);border-radius:8px;padding:.75rem 1rem;margin-bottom:.9rem;display:none;align-items:center;gap:.8rem">
-        <div id="previewAvatar" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0">?</div>
-        <div>
-          <div id="previewName" style="font-family:var(--serif);font-size:.96rem;font-weight:700;color:var(--text-dark)">—</div>
-          <div id="previewSpecialty" style="font-size:.72rem;color:var(--text-soft)">—</div>
-        </div>
-        <div id="previewStatus" style="margin-left:auto;font-size:.66rem;padding:2px 8px;border-radius:20px;font-weight:700"></div>
-      </div>
+
 
       <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:.85rem" id="loginBtn" onclick="doLogin()">Sign In to Dashboard →</button>
 
@@ -1118,10 +1107,7 @@ function showLoginAfterReset(){}
   </div><!-- /main-layout -->
 </div><!-- /dashboard -->
 
-<script>
-//
-// ══════════════════════════════
-// DATA
+<script>// DATA
 // ══════════════════════════════
 const HERBALISTS={
   amara:{name:'Dr. Amara Osei',initial:'A',specialty:'African Botanicals · Ayurveda',greet:'Dr. Osei',pw:'herb2025'},
@@ -1162,7 +1148,6 @@ async function logout(){
   // Clear sensitive fields
   (document.getElementById('loginUsername')||{}).value='';
   (document.getElementById('loginPw')||{}).value='';
-  (document.getElementById('userPreviewCard')||{style:{}}).style.display='none';
   selectedLoginUser=null;
   currentHerbalist=null;
 }
@@ -1215,103 +1200,24 @@ async function loadHerbalistList() {
   try{ loginHerbalistList = await loadHerbalistList(); }catch(e){ loginHerbalistList = [...BUILT_IN_HERBALISTS]; }
 })()
 
-function onUsernameInput(val) {
-  const q = val.trim().toLowerCase();
-  selectedLoginUser = null;
-  hidePreviewCard();
-  if (!q) { closeSuggestions(); return; }
+function onUsernameInput(val){ /* autocomplete removed */ }
 
-  // Find exact match first (username, id, email, or name)
-  const exact = loginHerbalistList.find(h =>
-    h.username?.toLowerCase() === q ||
-    h.id?.toLowerCase()       === q ||
-    h.email?.toLowerCase()    === q ||
-    h.name?.toLowerCase()     === q
-  );
-  if (exact) {
-    selectedLoginUser = exact;
-    showPreviewCard(exact);
-  }
+function showSuggestions(list){ /* autocomplete removed */ }
 
-  // Filter for suggestions
-  const matches = loginHerbalistList.filter(h =>
-    h.username?.toLowerCase().includes(q) ||
-    h.id?.toLowerCase().includes(q) ||
-    h.name?.toLowerCase().includes(q) ||
-    h.email?.toLowerCase().includes(q)
-  );
+function closeSuggestions(){ /* autocomplete removed */ }
 
-  if (!matches.length) { closeSuggestions(); return; }
-  showSuggestions(matches);
-}
+function highlightSuggest(idx){ /* autocomplete removed */ }
 
-function showSuggestions(list) {
-  const box = document.getElementById('loginSuggestions');
-  if(!box) return;
-  suggestFocusIdx = -1;
-  box.innerHTML=list.map((h, i) => `
-    <div class="suggest-item${h.status === 'suspended' ? ' suggest-suspended' : ''}"
-         data-idx="${i}"
-         onmousedown="selectSuggest('${h.id}')"
-         onmouseover="highlightSuggest(${i})">
-      <div class="suggest-avatar">${h.name.charAt(0)}</div>
-      <div>
-        <strong>${h.name}</strong>
-        <span class="suggest-meta">${h.username || h.email || ''} · ${h.specialty || h.tradition || ''}</span>
-      </div>
-      ${h.status === 'suspended' ? '<span style="margin-left:auto;font-size:.62rem;color:var(--spice);font-weight:700">Suspended</span>' : ''}
-    </div>`).join('');
-  box.style.display = 'block';
-}
+function selectSuggest(id){ /* autocomplete removed */ }
 
-function closeSuggestions() {
-  (document.getElementById('loginSuggestions')||{style:{}}).style.display = 'none';
-}
+function showPreviewCard(user){ /* autocomplete removed */ }
 
-function highlightSuggest(idx) {
-  suggestFocusIdx = idx;
-  document.querySelectorAll('.suggest-item').forEach((el, i) => {
-    el.classList.toggle('focused', i === idx);
-  });
-}
-
-function selectSuggest(id) {
-  const user = loginHerbalistList.find(h => h.id === id);
-  if (!user) return;
-  selectedLoginUser = user;
-  (document.getElementById('loginUsername')||{}).value = user.username || user.email || user.name;
-  closeSuggestions();
-  showPreviewCard(user);
-  document.getElementById('loginPw').focus();
-}
-
-function showPreviewCard(user) {
-  const card = document.getElementById('userPreviewCard');
-  (document.getElementById('previewAvatar')||{}).textContent= user.name.charAt(0);
-  (document.getElementById('previewName')||{}).textContent= user.name;
-  (document.getElementById('previewSpecialty')||{}).textContent= user.specialty || user.tradition || 'Herbalist';
-  const statusEl = document.getElementById('previewStatus');
-  if (user.status === 'active') {
-    statusEl.textContent = '● Active';
-    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border)';
-  } else if (user.status === 'suspended') {
-    statusEl.textContent = '● Suspended';
-    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--red-pale);color:var(--red);border:1px solid var(--red-border)';
-  } else {
-    statusEl.textContent = user.status;
-    statusEl.style.cssText = 'margin-left:auto;font-size:.64rem;padding:2px 8px;border-radius:20px;font-weight:700;background:var(--surface-alt);color:var(--text-light);border:1px solid var(--border)';
-  }
-  card.style.display = 'flex';
-}
-
-function hidePreviewCard() {
-  (document.getElementById('userPreviewCard')||{style:{}}).style.display = 'none';
-}
+function hidePreviewCard(){ /* autocomplete removed */ }
 
 // Keyboard nav on suggestions
 document.addEventListener('keydown', function(e) {
   const box = document.getElementById('loginSuggestions');
-  if (box.style.display === 'none') return;
+  if (box && box.style.display === 'none') return;
   const items = box.querySelectorAll('.suggest-item');
   if (!items.length) return;
   if (e.key === 'ArrowDown') { e.preventDefault(); suggestFocusIdx = Math.min(suggestFocusIdx + 1, items.length - 1); highlightSuggest(suggestFocusIdx); }
@@ -1389,7 +1295,7 @@ function fpSetStep(n) {
 function fpBack(toStep) {
   const steps = {1: 'fpStep1', 2: 'fpStep2', 3: 'fpStep3'};
   Object.values(steps).forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
-  document.getElementById(steps[toStep]).style.display = 'block';
+  const _fpEl = document.getElementById(steps[toStep]); if(_fpEl) _fpEl.style.display = 'block';
   fpSetStep(toStep);
 }
 
@@ -1735,9 +1641,8 @@ async function doLogin() {
     return;
   }
 
-  // Check suspension/inactive
+  // Only block explicitly suspended accounts
   if(found.status==='suspended'){ showLoginError('This account has been suspended. Please contact your administrator.'); return; }
-  if(found.status==='inactive') { showLoginError('This account is inactive. Please contact your administrator.'); return; }
 
   // ── AUTHENTICATE ──
   // Method 1: local password check (works for all built-in accounts)
@@ -1827,7 +1732,7 @@ function toggleHerbSidebar(){
   const overlay = document.getElementById('herbSidebarOverlay');
   const btn = document.getElementById('herbMenuBtn');
   const isOpen = sb.classList.toggle('mobile-open');
-  overlay.style.display = isOpen ? 'block' : 'none';
+  (overlay||{style:{}}).style.display = isOpen ? 'block' : 'none';
   if(btn){ btn.textContent=isOpen?'✕':'☰'; btn.setAttribute('aria-expanded',isOpen); }
   document.body.style.overflow = isOpen ? 'hidden' : '';
 }
@@ -2238,16 +2143,17 @@ const DEFAULT_PROTOCOLS = [
 let ALL_PROTOCOLS = [];
 let editingProtocolId = null;
 
-async function loadProtocols(){
-  const saved = loadFromStorage('tfb_protocols');
-  const custom = saved ? JSON.parse(saved) : [];
-  // Merge defaults with custom (custom overrides matching defaults)
-  ALL_PROTOCOLS = [...DEFAULT_PROTOCOLS];
-  for(const p of custom){
-    const idx = ALL_PROTOCOLS.findIndex(x=>x.id===p.id);
-    if(idx>=0) ALL_PROTOCOLS[idx]=p; else ALL_PROTOCOLS.push(p);
-  }
-  renderProtocolLibrary(); loadProtocols();
+function loadProtocols(){
+  try {
+    const saved = loadFromStorage('tfb_protocols');
+    const custom = saved ? JSON.parse(saved) : [];
+    ALL_PROTOCOLS = [...DEFAULT_PROTOCOLS];
+    for(const p of custom){
+      const idx = ALL_PROTOCOLS.findIndex(x=>x.id===p.id);
+      if(idx>=0) ALL_PROTOCOLS[idx]=p; else ALL_PROTOCOLS.push(p);
+    }
+  } catch(e){ ALL_PROTOCOLS = [...DEFAULT_PROTOCOLS]; }
+  try{ renderProtocolLibrary(); }catch(e){}
 }
 
 async function saveProtocolsToStorage(){
@@ -2440,7 +2346,7 @@ async function loadAllThreads(){
     try {
       const timeout = new Promise(resolve=>setTimeout(()=>resolve({data:null}),4000));
       const { data: msgs } = await Promise.race([
-        sb.from('messages').select('*'),
+        sb.from('messages').select('*').then(r=>({data:r.data||null})).catch(()=>({data:null})),
         timeout
       ]);
       if(msgs && msgs.length){
@@ -2630,6 +2536,7 @@ function switchMsgTab(tab){
   const noteTab    = document.getElementById('msgTabNote');
   const clientPane = document.getElementById('msgComposeClient');
   const notePane   = document.getElementById('msgComposeNote');
+  if(!clientTab||!noteTab||!clientPane||!notePane) return;
   if(tab==='client'){
     clientTab.style.cssText='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:var(--surface-teal);color:var(--teal-deep);border-bottom:2.5px solid var(--teal-mid)';
     noteTab.style.cssText  ='flex:1;padding:.55rem;font-size:.78rem;font-weight:700;font-family:var(--sans);cursor:pointer;border:none;background:transparent;color:var(--text-soft);border-bottom:2.5px solid transparent';
@@ -2823,8 +2730,8 @@ function checkInteraction(){
 }
 
 // ══ MODALS ══
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openModal(id){ var _m=document.getElementById(id); if(_m) _m.classList.add('open'); }
+function closeModal(id){ var _m=document.getElementById(id); if(_m) _m.classList.remove('open'); }
 async function confirmSend(){
   const c=currentClientRef?ALL_CLIENTS.find(x=>x.meta.refCode===currentClientRef):null;
   const delivery=document.querySelector('input[name="delivery"]:checked')?.value||'email';
@@ -3021,7 +2928,7 @@ async function loadAllClients(){
       setTimeout(() => resolve({data:null, error:{message:'timeout'}}), 5000)
     );
     const { data: assessments, error } = await Promise.race([
-      sb.from('assessments').select('*').order('submitted_at',{ascending:false}),
+      sb.from('assessments').select('*').order('submitted_at',{ascending:false}).then(r=>({data:r.data||null,error:r.error||null})).catch(e=>({data:null,error:{message:String(e)}})),
       timeout
     ]);
     if(error){ console.warn('Supabase assessments:', error.message); }
@@ -3035,7 +2942,8 @@ async function loadAllClients(){
         if(refs.length){
           const protoTimeout = new Promise(resolve=>setTimeout(()=>resolve({data:null}),3000));
           const { data: protos } = await Promise.race([
-            sb.from('protocols').select('*').in('assessment_ref', refs),
+            sb.from('protocols').select('*').in('assessment_ref', refs)
+              .then(r=>({data:r.data})).catch(()=>({data:null})),
             protoTimeout
           ]);
           (protos||[]).forEach(p => { protocolMap[p.assessment_ref] = p; });
@@ -4182,14 +4090,14 @@ function hpmOpenPicker(cond, secKey){
   if(picker) picker.classList.remove('collapsed');
   _hpmPickerOpen = true;
   hpmRenderPicker('');
-  document.getElementById('hpmPickerToggle').textContent = '📚 Hide Picker';
+  (document.getElementById('hpmPickerToggle')||{}).textContent = '📚 Hide Picker';
 }
 
 function hpmTogglePicker(){
   var picker = document.getElementById('hpmPicker');
   _hpmPickerOpen = !_hpmPickerOpen;
   if(picker) picker.classList.toggle('collapsed', !_hpmPickerOpen);
-  document.getElementById('hpmPickerToggle').textContent = _hpmPickerOpen ? '📚 Hide Picker' : '📚 Picker';
+  (document.getElementById('hpmPickerToggle')||{}).textContent = _hpmPickerOpen ? '📚 Hide Picker' : '📚 Picker';
 }
 
 function hpmFilterPicker(q){ hpmRenderPicker(q); }
@@ -4354,16 +4262,17 @@ function hpmCollapseAll(){
 // ─────────────────────────────────────────────────────────────────
 // PATCH showPanel TO INIT HPM
 // ─────────────────────────────────────────────────────────────────
-var _origShowPanel_HPM = showPanel;
-function showPanel(id){
-  _origShowPanel_HPM(id);
-  if(id === 'hpm'){
-    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-    var navEl = document.getElementById('nav-hpm');
-    if(navEl) navEl.classList.add('active');
-    hpmLoadClients();
-    try{ /* Restore any saved drafts */ }catch(e){}
-  }
+// HPM panel activation — extends showPanel (no override loop)
+var _hpmShowPanelInstalled = false;
+if(!_hpmShowPanelInstalled){
+  _hpmShowPanelInstalled = true;
+  var _origShowPanel_HPM = showPanel;
+  showPanel = function(id){
+    _origShowPanel_HPM(id);
+    if(id === 'hpm'){
+      try{ hpmLoadClients(); }catch(e){}
+    }
+  };
 }
 
 
