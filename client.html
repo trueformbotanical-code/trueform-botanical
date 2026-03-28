@@ -622,6 +622,167 @@ input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-ra
   .rp-submit-btn { width: 100%; text-align: center; }
 }
 /* ── end review page ── */
+
+/* ══ CLIENT DASHBOARD ══════════════════════════════════════ */
+#clientDashboard {
+  display: none;
+  position: fixed; inset: 0; z-index: 8500;
+  background: #f4faf8;
+  overflow-y: auto;
+  animation: cdFade .35s ease both;
+}
+@keyframes cdFade {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.cd-topbar {
+  background: linear-gradient(135deg, var(--teal-deepest), var(--teal-deep));
+  padding: .85rem 1.4rem;
+  display: flex; align-items: center; gap: .9rem;
+  position: sticky; top: 0; z-index: 5;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+.cd-topbar .cd-logo { display:flex;align-items:center;gap:.5rem; }
+.cd-topbar .cd-logo .mark { font-size:1.25rem; }
+.cd-topbar .cd-logo span { font-family:var(--serif);font-size:.95rem;font-weight:700;color:#fff; }
+.cd-topbar .cd-title { flex:1;text-align:center;font-family:var(--serif);font-size:1rem;font-weight:700;color:rgba(255,255,255,.9); }
+.cd-topbar .cd-logout {
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
+  border-radius:6px; color:#fff; font-size:.75rem; font-weight:600;
+  padding:7px 13px; cursor:pointer; font-family:var(--sans); transition:background .2s;
+}
+.cd-topbar .cd-logout:hover { background:rgba(255,255,255,.22); }
+.cd-hero {
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal), var(--teal-bright));
+  padding: 1.8rem 1.4rem 2.2rem; text-align: center; color: #fff;
+}
+.cd-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(255,255,255,.2); border: 3px solid rgba(255,255,255,.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 700; color: #fff;
+  margin: 0 auto .7rem;
+}
+.cd-hero h2 { font-family:var(--serif);font-size:1.35rem;font-weight:700;margin-bottom:.3rem; }
+.cd-hero p  { font-size:.8rem;color:rgba(255,255,255,.78);max-width:400px;margin:0 auto; }
+.cd-body { max-width: 700px; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
+
+/* Quick action cards */
+.cd-actions {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem;
+  margin-bottom: 1.8rem;
+}
+.cd-action-btn {
+  background: #fff; border: 2px solid var(--border); border-radius: 12px;
+  padding: 1rem .8rem; text-align: center; cursor: pointer;
+  transition: all .2s; font-family: var(--sans);
+}
+.cd-action-btn:hover { border-color: var(--teal-bright); box-shadow: 0 4px 16px rgba(18,196,176,.18); transform: translateY(-2px); }
+.cd-action-btn .icon { font-size: 1.5rem; margin-bottom: .4rem; }
+.cd-action-btn .label { font-size: .74rem; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: .06em; }
+.cd-action-btn .sub { font-size: .68rem; color: var(--text-soft); margin-top: .15rem; }
+
+/* Assessment cards */
+.cd-section-title {
+  font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .12em; color: var(--text-soft); margin-bottom: .75rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.cd-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.cd-assessment-card {
+  background: #fff; border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.2rem; margin-bottom: .8rem;
+  display: flex; align-items: center; gap: 1rem;
+  cursor: pointer; transition: all .2s;
+}
+.cd-assessment-card:hover { border-color: var(--teal-bright); box-shadow: 0 3px 14px rgba(18,196,176,.14); }
+.cd-acard-icon { font-size: 1.5rem; flex-shrink: 0; }
+.cd-acard-info { flex: 1; min-width: 0; }
+.cd-acard-title { font-size: .88rem; font-weight: 700; color: var(--text-dark); margin-bottom: .2rem; }
+.cd-acard-sub { font-size: .73rem; color: var(--text-soft); }
+.cd-acard-badge {
+  padding: 4px 10px; border-radius: 20px; font-size: .68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; flex-shrink: 0;
+}
+.cd-acard-badge.draft { background: #fff8e6; color: var(--spice); border: 1px solid #f5d49a; }
+.cd-acard-badge.submitted { background: var(--surface-teal); color: var(--teal-deep); border: 1px solid var(--border-mid); }
+.cd-acard-badge.reviewed { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.cd-acard-action {
+  padding: 7px 14px; border-radius: 7px; font-size: .75rem; font-weight: 700;
+  font-family: var(--sans); cursor: pointer; border: none; transition: all .2s;
+}
+.cd-acard-action.primary { background: var(--teal-bright); color: #fff; }
+.cd-acard-action.ghost { background: var(--surface-alt); color: var(--teal-mid); border: 1.5px solid var(--border-mid); }
+.cd-new-btn {
+  width: 100%; padding: 14px; margin-top: .4rem;
+  background: linear-gradient(135deg, var(--saffron), var(--spice));
+  color: #fff; border: none; border-radius: 10px;
+  font-family: var(--serif); font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all .25s;
+  box-shadow: 0 4px 14px rgba(232,146,12,.3);
+}
+.cd-new-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,146,12,.4); }
+.cd-empty {
+  text-align: center; padding: 2rem; color: var(--text-light);
+  background: var(--surface-alt); border-radius: 10px; font-size: .84rem;
+}
+
+/* Herb finder modal within client portal */
+#cdHerbModal {
+  display: none; position: fixed; inset: 0; z-index: 9500;
+  background: rgba(7,30,28,.6); align-items: center; justify-content: center;
+  padding: 1rem; backdrop-filter: blur(4px);
+}
+#cdHerbModal.open { display: flex; }
+.cd-herb-card {
+  background: #fff; border-radius: 14px; width: 100%; max-width: 500px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+  animation: cdFade .3s ease both;
+}
+.cd-herb-header {
+  background: linear-gradient(135deg, var(--teal-deep), var(--teal));
+  padding: 1.2rem 1.4rem; display: flex; align-items: center; justify-content: space-between;
+  color: #fff;
+}
+.cd-herb-header h3 { font-family: var(--serif); font-size: 1rem; font-weight: 700; margin: 0; }
+.cd-herb-close {
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 5px; color: #fff; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: .9rem;
+}
+.cd-herb-body { padding: 1.2rem; }
+
+/* Book session modal */
+#cdBookModal {
+  display: none; position: fixed; inset: 0; z-index: 9500;
+  background: rgba(7,30,28,.6); align-items: center; justify-content: center;
+  padding: 1rem; backdrop-filter: blur(4px);
+}
+#cdBookModal.open { display: flex; }
+.cd-book-card {
+  background: #fff; border-radius: 14px; width: 100%; max-width: 460px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.3); animation: cdFade .3s ease both; overflow: hidden;
+}
+
+/* Also fix topbar to show user info when logged in */
+.topbar-user {
+  display: none; align-items: center; gap: .6rem;
+  padding: 5px 10px; border-radius: 20px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  cursor: pointer; transition: background .2s;
+}
+.topbar-user:hover { background: rgba(255,255,255,.18); }
+.topbar-user .tu-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; font-weight: 700; color: #fff;
+}
+.topbar-user .tu-name { font-size: .74rem; font-weight: 600; color: rgba(255,255,255,.9); }
+@media(max-width:500px){ .cd-actions{grid-template-columns:1fr 1fr;} }
+/* ── end client dashboard ── */
 </style>
 </head>
 <body>
@@ -1393,6 +1554,447 @@ input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-ra
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ════════════════════════════════════════════════════════════
+// CLIENT PORTAL DASHBOARD
+// ════════════════════════════════════════════════════════════
+
+var cdSelectedBookType = null;
+var CONSULT_TYPES = [
+  {id:'video',   label:'Video Consultation', duration:'60 min', price:'$85',  icon:'🎥'},
+  {id:'phone',   label:'Phone Consultation', duration:'45 min', price:'$65',  icon:'📞'},
+  {id:'followup',label:'Follow-Up Session',  duration:'30 min', price:'$45',  icon:'🔄'},
+];
+
+// ── Show dashboard on auth ──
+function showClientDashboard(){
+  var dash = document.getElementById('clientDashboard');
+  if(!dash) return;
+  var user = getClientUser();
+  if(!user) return;
+  var name = user.firstName || (user.name||'').split(' ')[0] || 'there';
+  var av   = document.getElementById('cdAvatar');
+  var nm   = document.getElementById('cdName');
+  if(av) av.textContent = name.charAt(0).toUpperCase();
+  if(nm) nm.textContent = name;
+  dash.style.display = 'block';
+  cdLoadAssessments();
+  // Also update topbar
+  updateTopbarUser(user);
+}
+
+function updateTopbarUser(user){
+  var tu = document.querySelector('.topbar-user');
+  if(!tu){
+    // Build it
+    var tbRight = document.querySelector('.topbar-right');
+    if(tbRight){
+      var div = document.createElement('div');
+      div.className = 'topbar-user';
+      div.title = 'My Portal';
+      div.onclick = function(){ showClientDashboard(); };
+      div.innerHTML = '<div class="tu-avatar">'+(user.firstName||user.name||'?').charAt(0).toUpperCase()+'</div>'+
+                      '<div class="tu-name">'+(user.firstName||user.name||user.email).split(' ')[0]+'</div>';
+      div.style.display = 'flex';
+      tbRight.prepend(div);
+    }
+  } else {
+    tu.style.display = 'flex';
+    var tav = tu.querySelector('.tu-avatar');
+    var tnm = tu.querySelector('.tu-name');
+    if(tav) tav.textContent = (user.firstName||user.name||'?').charAt(0).toUpperCase();
+    if(tnm) tnm.textContent = (user.firstName||user.name||user.email).split(' ')[0];
+  }
+}
+
+// ── Load assessments from Supabase ──
+async function cdLoadAssessments(){
+  var list = document.getElementById('cdAssessmentList');
+  if(!list) return;
+  var user = getClientUser();
+  if(!user || !user.email){ list.innerHTML = '<div class="cd-empty">Sign in to see your assessments.</div>'; return; }
+
+  list.innerHTML = '<div class="cd-empty">Loading…</div>';
+  var items = [];
+
+  // 1. Try Supabase
+  try {
+    var res = await Promise.race([
+      sb.from('assessments').select('ref_code,status,submitted_at,last_saved_at,personal,symptoms,draft_step,reviewed')
+        .eq('client_email', user.email)
+        .order('submitted_at', {ascending:false})
+        .limit(10)
+        .then(function(r){ return {data:r.data||null, error:r.error||null}; })
+        .catch(function(){ return {data:null, error:{message:'error'}}; }),
+      new Promise(function(res){ setTimeout(function(){ res({data:null,error:{message:'timeout'}}); }, 5000); })
+    ]);
+    if(res.data && res.data.length){
+      items = res.data;
+    }
+  } catch(e){}
+
+  // 2. Fall back to localStorage
+  if(!items.length){
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if(raw){
+        var d = JSON.parse(raw);
+        items = [{
+          ref_code: getOrCreateRef(user.email),
+          status: 'draft',
+          submitted_at: d.savedAt,
+          last_saved_at: d.savedAt,
+          personal: d.data&&d.data.personal ? d.data.personal : {},
+          symptoms: d.data&&d.data.symptoms ? d.data.symptoms : {},
+          draft_step: d.step||1,
+          reviewed: false,
+        }];
+      }
+    } catch(e){}
+  }
+
+  if(!items.length){
+    list.innerHTML = '<div class="cd-empty">No assessments yet. Start your first one below.</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(function(a){
+    var p   = a.personal||{};
+    var s   = a.symptoms||{};
+    var dt  = a.last_saved_at||a.submitted_at||'';
+    var fmtDate = dt ? new Date(dt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    var complaint = s.primaryComplaint||(typeof s==='string'?'':'')||'Health Assessment';
+    var step = a.draft_step||'';
+    var status  = a.status||'draft';
+    var badge   = status==='reviewed'   ? '<span class="cd-acard-badge reviewed">✅ Reviewed</span>' :
+                  status==='pending'    ? '<span class="cd-acard-badge submitted">📤 Submitted</span>' :
+                                         '<span class="cd-acard-badge draft">✏️ Draft · Step '+(step||'?')+'/5</span>';
+    var action  = status==='draft'
+      ? '<button class="cd-acard-action primary" onclick="cdContinueAssessment(this.dataset.ref)" data-ref="'+a.ref_code+'">Continue \u2192</button>'
+      : '<button class="cd-acard-action ghost"   onclick="cdViewAssessment(this.dataset.ref)" data-ref="'+a.ref_code+'">View \u2192</button>';
+    return '<div class="cd-assessment-card">' +
+      '<div class="cd-acard-icon">📋</div>' +
+      '<div class="cd-acard-info">' +
+        '<div class="cd-acard-title">'+(complaint||'Health Assessment')+'</div>' +
+        '<div class="cd-acard-sub">'+fmtDate+' · '+a.ref_code+'</div>' +
+      '</div>'+badge+action+
+    '</div>';
+  }).join('');
+}
+
+// ── Continue a saved draft ──
+async function cdContinueAssessment(refCode){
+  var dash = document.getElementById('clientDashboard');
+  if(dash) dash.style.display = 'none';
+  // Load data from Supabase
+  try {
+    var res = await sb.from('assessments').select('*').eq('ref_code',refCode).single()
+      .then(function(r){ return r; }).catch(function(){ return {data:null}; });
+    if(res.data && !res.error){
+      var a = res.data;
+      var draftObj = {
+        data: { personal:a.personal||{}, symptoms:a.symptoms||{},
+                body:a.body_areas||{}, history:a.history||{}, lifestyle:a.lifestyle||{} },
+        step: a.draft_step||1, savedAt: a.last_saved_at||a.submitted_at,
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draftObj));
+      localStorage.setItem('tfb_client_ref_'+(getClientUser()&&getClientUser().email||'').replace(/[^a-z0-9]/gi,'_'), refCode);
+    }
+  } catch(e){}
+  loadDraft();
+  goStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── View submitted assessment ──
+function cdViewAssessment(refCode){
+  // For submitted assessments, show the review page in read-only mode
+  loadSavedDraft().then(function(){
+    loadDraft();
+    var dash = document.getElementById('clientDashboard');
+    if(dash) dash.style.display = 'none';
+    openReviewPage();
+  });
+}
+
+// ── Start new assessment ──
+function cdStartNewAssessment(){
+  // Clear current draft
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  var user = getClientUser();
+  if(user && user.email){
+    try{ localStorage.removeItem('tfb_client_ref_'+user.email.replace(/[^a-z0-9]/gi,'_')); }catch(e){}
+  }
+  var dash = document.getElementById('clientDashboard');
+  if(dash) dash.style.display = 'none';
+  // Reset all form fields
+  try{ document.getElementById('form-wrap').reset(); }catch(e){}
+  window._photoBase64 = null;
+  window._returnToReview = false;
+  currentStep = 1;
+  updateProgress();
+  // Show step 1
+  document.querySelectorAll('.form-step').forEach(function(s){ s.classList.add('hidden'); });
+  var s1 = document.getElementById('step1');
+  if(s1) s1.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── View all history ──
+function cdViewHistory(){
+  cdLoadAssessments();
+  var el = document.getElementById('cdAssessmentList');
+  if(el) el.scrollIntoView({behavior:'smooth'});
+}
+
+// ── Profile ──
+function cdOpenProfile(){
+  var user = getClientUser();
+  if(!user){ showToast('Please sign in first.'); return; }
+  var name  = (user.firstName||'')+' '+(user.lastName||'');
+  alert('Profile: '+name.trim()+'\nEmail: '+user.email+'\n\nTo update your profile, complete a new assessment.');
+}
+
+// ── Logout ──
+function cdLogout(){
+  if(!confirm('Sign out of your portal?')) return;
+  var dash = document.getElementById('clientDashboard');
+  if(dash) dash.style.display = 'none';
+  clientLogout(true);
+}
+
+// ════════════════════════════════════════════════════════════
+// BOOK SESSION
+// ════════════════════════════════════════════════════════════
+function cdOpenBookSession(){
+  // Set min date to tomorrow
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate()+1);
+  var dateEl = document.getElementById('cdBookDate');
+  if(dateEl) dateEl.min = tomorrow.toISOString().slice(0,10);
+  // Render consult type options
+  var opts = document.getElementById('cdBookOptions');
+  if(opts){
+    cdSelectedBookType = CONSULT_TYPES[0].id;
+    opts.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem">'+
+      CONSULT_TYPES.map(function(t){
+        return '<div class="cd-action-btn" id="cdBT_'+t.id+'" onclick="cdSelectBookType(this.dataset.bid)" data-bid="'+t.id+'" style="padding:.7rem .5rem">'+
+          '<div class="icon" style="font-size:1.2rem">'+t.icon+'</div>'+
+          '<div class="label" style="font-size:.68rem">'+t.label+'</div>'+
+          '<div class="sub">'+t.duration+' · '+t.price+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+    cdSelectBookType(CONSULT_TYPES[0].id);
+  }
+  var errEl = document.getElementById('cdBookError');
+  if(errEl) errEl.style.display='none';
+  var sucEl = document.getElementById('cdBookSuccess');
+  if(sucEl) sucEl.style.display='none';
+  document.getElementById('cdBookModal').classList.add('open');
+}
+function cdSelectBookType(id){
+  cdSelectedBookType = id;
+  CONSULT_TYPES.forEach(function(t){
+    var el = document.getElementById('cdBT_'+t.id);
+    if(!el) return;
+    el.style.borderColor = t.id===id ? 'var(--teal-bright)' : 'var(--border)';
+    el.style.background  = t.id===id ? 'var(--surface-teal)' : '#fff';
+  });
+}
+function cdBookDateChange(val){
+  var day = new Date(val).getDay();
+  var errEl = document.getElementById('cdBookError');
+  if(day===0||day===6){
+    if(errEl){ errEl.textContent='Consultations are available Monday–Friday only.'; errEl.style.display='block'; }
+  } else {
+    if(errEl) errEl.style.display='none';
+  }
+}
+async function cdSubmitBooking(){
+  var user = getClientUser();
+  if(!user){ showToast('Please sign in first.'); return; }
+  var date  = document.getElementById('cdBookDate')?.value;
+  var notes = document.getElementById('cdBookNotes')?.value||'';
+  var errEl = document.getElementById('cdBookError');
+  var sucEl = document.getElementById('cdBookSuccess');
+  if(!date){ if(errEl){ errEl.textContent='Please select a preferred date.'; errEl.style.display='block'; } return; }
+  var day = new Date(date).getDay();
+  if(day===0||day===6){ if(errEl){ errEl.textContent='Please choose a weekday.'; errEl.style.display='block'; } return; }
+  var type = CONSULT_TYPES.find(function(t){ return t.id===cdSelectedBookType; })||CONSULT_TYPES[0];
+  // Save to Supabase appointments
+  try {
+    await sb.from('appointments').insert({
+      client_name:    (user.firstName||'')+' '+(user.lastName||''),
+      client_id:      user.id||null,
+      appt_date:      date,
+      appt_time:      'TBD',
+      appt_type:      type.label,
+      status:         'upcoming',
+      notes:          notes||null,
+      created_at:     new Date().toISOString(),
+    });
+  } catch(e){ console.warn('booking:', e); }
+  // Show success
+  if(errEl) errEl.style.display='none';
+  if(sucEl) sucEl.style.display='block';
+  showToast('📅 Appointment request sent for '+date+'!');
+}
+
+// ════════════════════════════════════════════════════════════
+// HERB FINDER (within client portal)
+// ════════════════════════════════════════════════════════════
+function cdOpenHerbFinder(){
+  document.getElementById('cdHerbModal').classList.add('open');
+  cdFilterHerbs('');
+}
+function cdFilterHerbs(q){
+  var container = document.getElementById('cdHerbResults');
+  if(!container) return;
+  // Use herbDB if available (loaded from client page), else use SYMPTOMS_CLIENT
+  var source = (typeof herbDB !== 'undefined' && herbDB.length) ? herbDB : [];
+  if(!source.length){
+    // Build from SYMPTOMS_CLIENT as a simple lookup
+    container.innerHTML = '<div style="text-align:center;padding:1.5rem;font-size:.82rem;color:var(--text-light)">'+
+      '<div style="font-size:1.8rem;margin-bottom:.5rem">🌿</div>'+
+      '<div>Full herb database available in the Assessment.<br>Complete your assessment to get personalised recommendations.</div>'+
+      '<button onclick="cdStartNewAssessment();document.getElementById(\"cdHerbModal\").classList.remove(\"open\");" '+
+      'style="margin-top:1rem;padding:9px 18px;background:var(--teal-bright);color:#fff;border:none;border-radius:6px;font-family:var(--sans);font-weight:700;cursor:pointer;font-size:.78rem">'+
+      'Start Assessment →</button></div>';
+    return;
+  }
+  var lq = q.toLowerCase().trim();
+  var filtered = lq ? source.filter(function(h){
+    return h.name.toLowerCase().includes(lq)||
+           (h.syms||[]).join().toLowerCase().includes(lq)||
+           (h.latin||'').toLowerCase().includes(lq);
+  }) : source;
+  if(!filtered.length){
+    container.innerHTML='<div style="text-align:center;padding:1.5rem;font-size:.82rem;color:var(--text-light)">No herbs found for "'+q+'"</div>';
+    return;
+  }
+  container.innerHTML = filtered.slice(0,12).map(function(h){
+    return '<div style="display:flex;align-items:flex-start;gap:.7rem;padding:.75rem;border-bottom:1px solid var(--border)">'+
+      '<div style="font-size:1.4rem;flex-shrink:0">'+h.emoji+'</div>'+
+      '<div>'+
+        '<div style="font-size:.86rem;font-weight:700;color:var(--text-dark)">'+h.name+' <span style="font-size:.7rem;color:var(--text-light);font-weight:400">'+h.latin+'</span></div>'+
+        '<div style="font-size:.74rem;color:var(--teal-mid);font-weight:600;margin:.15rem 0">'+h.trad+'</div>'+
+        '<div style="font-size:.73rem;color:var(--text-mid)">'+(h.syms||[]).slice(0,4).join(', ')+'</div>'+
+        (h.caution?'<div style="font-size:.7rem;color:var(--spice);margin-top:.25rem">⚠ '+h.caution+'</div>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// SYMPTOM DIARY (quick log from dashboard)
+// ════════════════════════════════════════════════════════════
+function cdOpenSymptomDiary(){
+  var modal = document.getElementById('cdDiaryModal');
+  var body  = document.getElementById('cdDiaryBody');
+  if(!body) return;
+  var today = new Date().toISOString().slice(0,10);
+  body.innerHTML =
+    '<div style="margin-bottom:1rem">'+
+      '<label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);margin-bottom:.3rem">Date</label>'+
+      '<input type="date" id="cdDDate" value="'+today+'" max="'+today+'" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none;box-sizing:border-box"/>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem">'+
+      cdDiaryField('Overall Mood',   'cdDMood',  'select', ['😄 Excellent|5','🙂 Good|4','😐 Neutral|3','😔 Low|2','😟 Very Poor|1'])+
+      cdDiaryField('Energy Level',   'cdDEnergy','range',  {min:1,max:5,val:3,labels:['Low','Moderate','High']})+
+      cdDiaryField('Pain Level',     'cdDPain',  'range',  {min:0,max:10,val:0,labels:['None','Mild','Severe']})+
+      cdDiaryField('Stress Level',   'cdDStress','range',  {min:1,max:4,val:2,labels:['Low','Moderate','High','Extreme']})+
+    '</div>'+
+    '<div style="margin-bottom:.8rem">'+
+      '<label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);margin-bottom:.3rem">Symptoms Today</label>'+
+      '<input type="text" id="cdDSymp" placeholder="e.g. headache, fatigue, anxiety…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;outline:none;box-sizing:border-box"/>'+
+    '</div>'+
+    '<div style="margin-bottom:1rem">'+
+      '<label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);margin-bottom:.3rem">Notes</label>'+
+      '<textarea id="cdDNotes" rows="2" placeholder="How are you feeling overall today?" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;resize:vertical;outline:none;box-sizing:border-box"></textarea>'+
+    '</div>'+
+    '<button onclick="cdSaveDiaryEntry()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--teal-bright),var(--teal-mid));color:#fff;border:none;border-radius:7px;font-family:var(--sans);font-size:.86rem;font-weight:700;cursor:pointer">Save Entry →</button>'+
+    '<div id="cdDiaryRecent" style="margin-top:1.1rem"></div>';
+  cdRenderRecentDiary();
+  if(modal) modal.style.display = 'flex';
+}
+
+function cdDiaryField(label, id, type, opts){
+  var inp = '';
+  if(type==='select'){
+    inp='<select id="'+id+'" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;outline:none">'+
+      opts.map(function(o){ var p=o.split('|'); return '<option value="'+p[1]+'">'+p[0]+'</option>'; }).join('')+'</select>';
+  } else if(type==='range'){
+    inp='<input type="range" id="'+id+'" min="'+opts.min+'" max="'+opts.max+'" value="'+opts.val+'" style="width:100%;accent-color:var(--teal-bright)"/>'+
+        '<div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-light);margin-top:.15rem">'+
+        opts.labels.map(function(l){ return '<span>'+l+'</span>'; }).join('')+'</div>';
+  }
+  return '<div><label style="display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-strong);margin-bottom:.25rem">'+label+'</label>'+inp+'</div>';
+}
+
+async function cdSaveDiaryEntry(){
+  var user = getClientUser();
+  var date  = document.getElementById('cdDDate')?.value;
+  var mood  = parseInt(document.getElementById('cdDMood')?.value||3);
+  var energy= parseInt(document.getElementById('cdDEnergy')?.value||3);
+  var pain  = parseInt(document.getElementById('cdDPain')?.value||0);
+  var stress= parseInt(document.getElementById('cdDStress')?.value||2);
+  var symp  = (document.getElementById('cdDSymp')?.value||'').trim();
+  var notes = (document.getElementById('cdDNotes')?.value||'').trim();
+  if(!date){ showToast('Please select a date.'); return; }
+  var entry = {id:'de_'+Date.now(),date,mood,energy,pain,stress,symptoms:symp?symp.split(',').map(function(s){return s.trim();}):[], notes, createdAt:new Date().toISOString()};
+  // Local save
+  var entries=getDiaryEntries().filter(function(e){return e.date!==date;});
+  entries.unshift(entry);
+  try{ localStorage.setItem(DIARY_KEY, JSON.stringify(entries)); }catch(e){}
+  // Supabase sync
+  if(user && user.email){
+    sb.from('diary_entries').upsert({
+      client_email:user.email, client_id:user.id||null,
+      date, entry_date:date, mood_score:mood, energy_score:energy,
+      pain_score:pain, stress_score:stress,
+      symptoms_today:symp||null, notes:notes||null,
+      created_at:entry.createdAt,
+    },{onConflict:'client_email,entry_date'}).then(function(){}).catch(function(e){console.warn(e);});
+  }
+  showToast('✅ Diary entry saved for '+date);
+  cdRenderRecentDiary();
+}
+
+function cdRenderRecentDiary(){
+  var el = document.getElementById('cdDiaryRecent');
+  if(!el) return;
+  var entries = getDiaryEntries().slice(0,5);
+  if(!entries.length){ el.innerHTML='<div style="font-size:.76rem;color:var(--text-light);text-align:center;padding:.5rem">No entries yet.</div>'; return; }
+  el.innerHTML='<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-soft);margin-bottom:.5rem">Recent Entries</div>'+
+    entries.map(function(e){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem .6rem;background:var(--surface-alt);border-radius:6px;margin-bottom:.3rem;font-size:.76rem">'+
+        '<span style="color:var(--text-dark);font-weight:600">'+e.date+'</span>'+
+        '<span>😐 Mood '+e.mood+' · ⚡ Energy '+e.energy+'</span>'+
+        (e.notes?'<span style="color:var(--text-light);font-style:italic;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.notes+'</span>':'')+
+      '</div>';
+    }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// FIX AUTH GATE: Don't show for already-logged-in clients
+// ════════════════════════════════════════════════════════════
+function checkAndRouteClient(){
+  var user = getClientUser();
+  if(user && user.email){
+    // Already logged in — skip auth gate, go straight to dashboard
+    var gate = document.getElementById('authGate');
+    if(gate) gate.style.display = 'none';
+    showClientDashboard();
+    return true;
+  }
+  return false;
+}
+
+// ════════════════════════════════════════════════════════════
+// END CLIENT PORTAL DASHBOARD
+// ════════════════════════════════════════════════════════════
+
+
+// ════════════════════════════════════════════════════════════
 // CLIENT LOGOUT HELPER
 // ════════════════════════════════════════════════════════════
 function clientLogout(redirectToHome){
@@ -1950,6 +2552,8 @@ function agDismiss(user){
         gate.style.display = 'none';
         // Pre-fill form with user name if possible
         try{ prefillFromUser(user); }catch(e){}
+        try{ onClientAuthenticated(); }catch(e){}
+        try{ showClientDashboard(); }catch(e){}
       }, 650);
     }, 1800);
   }
@@ -2209,12 +2813,17 @@ function agShowToast(msg){
 
 // ── ON PAGE LOAD: check if user already has a session ──
 (function agCheckSession(){
+  // If already logged in, skip auth gate entirely → go to dashboard
   try {
     const raw = sessionStorage.getItem('tfb_client_user');
     if(raw){
       const u = JSON.parse(raw);
       if(u && u.email){
-        agDismiss(u);
+        const gate = document.getElementById('authGate');
+        if(gate) gate.style.display = 'none';
+        agCurrentUser = u;
+        showClientDashboard();
+        onClientAuthenticated();
         return;
       }
     }
@@ -3257,5 +3866,139 @@ document.addEventListener('input',function(){ clearTimeout(_saveTimer); _saveTim
   </div>
 
 </div><!-- /reviewPage -->
+
+<!-- ══ CLIENT PORTAL DASHBOARD ══════════════════════════════ -->
+<div id="clientDashboard">
+
+  <!-- Topbar -->
+  <div class="cd-topbar">
+    <div class="cd-logo"><span class="mark">🌿</span><span>TrueForm <em>Botanical</em></span></div>
+    <div class="cd-title">My Portal</div>
+    <button class="cd-logout" onclick="cdLogout()">Sign Out</button>
+  </div>
+
+  <!-- Hero -->
+  <div class="cd-hero">
+    <div class="cd-avatar" id="cdAvatar">?</div>
+    <h2>Welcome back, <span id="cdName">there</span>!</h2>
+    <p>Manage your assessments, track your health journey, and connect with your herbalist.</p>
+  </div>
+
+  <!-- Body -->
+  <div class="cd-body">
+
+    <!-- Quick Actions -->
+    <div class="cd-section-title">Quick Actions</div>
+    <div class="cd-actions">
+      <div class="cd-action-btn" onclick="cdStartNewAssessment()">
+        <div class="icon">📋</div>
+        <div class="label">New Assessment</div>
+        <div class="sub">Start a new pre-assessment</div>
+      </div>
+      <div class="cd-action-btn" onclick="cdOpenBookSession()">
+        <div class="icon">📅</div>
+        <div class="label">Book Session</div>
+        <div class="sub">Schedule a consultation</div>
+      </div>
+      <div class="cd-action-btn" onclick="cdOpenSymptomDiary()">
+        <div class="icon">📓</div>
+        <div class="label">Symptom Diary</div>
+        <div class="sub">Log today's health</div>
+      </div>
+      <div class="cd-action-btn" onclick="cdOpenHerbFinder()">
+        <div class="icon">🌿</div>
+        <div class="label">Herb Finder</div>
+        <div class="sub">Find herbs for your symptoms</div>
+      </div>
+      <div class="cd-action-btn" onclick="cdViewHistory()">
+        <div class="icon">📜</div>
+        <div class="label">My History</div>
+        <div class="sub">View past assessments</div>
+      </div>
+      <div class="cd-action-btn" onclick="cdOpenProfile()">
+        <div class="icon">👤</div>
+        <div class="label">My Profile</div>
+        <div class="sub">Update your details</div>
+      </div>
+    </div>
+
+    <!-- Existing Assessments -->
+    <div class="cd-section-title">My Assessments</div>
+    <div id="cdAssessmentList">
+      <div class="cd-empty">Loading your assessments…</div>
+    </div>
+
+    <!-- Start New -->
+    <button class="cd-new-btn" onclick="cdStartNewAssessment()" style="margin-top:1.2rem">
+      + Start a New Assessment
+    </button>
+
+  </div><!-- /cd-body -->
+</div><!-- /clientDashboard -->
+
+<!-- ══ BOOK SESSION MODAL ══ -->
+<div id="cdBookModal">
+  <div class="cd-book-card">
+    <div class="cd-herb-header">
+      <h3>📅 Book a Consultation</h3>
+      <button class="cd-herb-close" onclick="document.getElementById('cdBookModal').classList.remove('open')">✕</button>
+    </div>
+    <div style="padding:1.4rem">
+      <div style="text-align:center;margin-bottom:1.2rem">
+        <div style="font-size:2rem;margin-bottom:.5rem">🌿</div>
+        <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem">Schedule Your Session</div>
+        <div style="font-size:.8rem;color:var(--text-mid);line-height:1.6">Choose a consultation type below. Your herbalist will confirm your appointment within 24 hours.</div>
+      </div>
+      <div id="cdBookOptions"></div>
+      <div style="margin-top:1rem">
+        <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);margin-bottom:.35rem">Preferred Date</label>
+        <input type="date" id="cdBookDate" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.86rem;outline:none;box-sizing:border-box" min="" onchange="cdBookDateChange(this.value)"/>
+      </div>
+      <div style="margin-top:.8rem">
+        <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-strong);margin-bottom:.35rem">Additional Notes</label>
+        <textarea id="cdBookNotes" rows="2" placeholder="Any specific topics or concerns for the session…" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+      </div>
+      <div id="cdBookError" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:6px;padding:.55rem .9rem;font-size:.78rem;color:#dc2626;font-weight:600;margin-top:.8rem"></div>
+      <button onclick="cdSubmitBooking()" style="width:100%;margin-top:1rem;padding:12px;background:linear-gradient(135deg,var(--saffron),var(--spice));color:#fff;border:none;border-radius:7px;font-family:var(--sans);font-size:.86rem;font-weight:700;cursor:pointer;transition:all .25s">
+        Request Appointment →
+      </button>
+      <div id="cdBookSuccess" style="display:none;text-align:center;padding:1rem;background:#d1fae5;border-radius:8px;margin-top:.8rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">✅</div>
+        <div style="font-weight:700;color:#065f46;font-size:.88rem">Appointment request sent!</div>
+        <div style="font-size:.76rem;color:#047857;margin-top:.3rem">Your herbalist will confirm within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HERB FINDER MODAL ══ -->
+<div id="cdHerbModal">
+  <div class="cd-herb-card">
+    <div class="cd-herb-header">
+      <h3>🌿 Herb Finder</h3>
+      <button class="cd-herb-close" onclick="document.getElementById('cdHerbModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="cd-herb-body">
+      <p style="font-size:.81rem;color:var(--text-mid);margin-bottom:1rem;line-height:1.6">Select your symptoms to find matched herbal recommendations from our database.</p>
+      <input type="text" id="cdHerbSearch" placeholder="Search symptoms or herbs…"
+        style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:.84rem;outline:none;margin-bottom:.8rem;box-sizing:border-box"
+        oninput="cdFilterHerbs(this.value)"/>
+      <div id="cdHerbResults" style="max-height:380px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SYMPTOM DIARY QUICK-LOG MODAL ══ -->
+<div id="cdDiaryModal" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(7,30,28,.6);align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)">
+  <div style="background:#fff;border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:cdFade .3s ease both">
+    <div style="background:linear-gradient(135deg,var(--teal-deep),var(--teal));padding:1.1rem 1.4rem;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:#fff">📓 Log Today's Health</div>
+      <button onclick="document.getElementById('cdDiaryModal').style.display='none'" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:5px;color:#fff;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem">✕</button>
+    </div>
+    <div style="padding:1.2rem" id="cdDiaryBody">
+      <!-- Injected by cdOpenSymptomDiary() -->
+    </div>
+  </div>
+</div>
 </body>
 </html>
