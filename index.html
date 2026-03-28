@@ -691,6 +691,7 @@ input,select,textarea{font-size:max(16px,1em)}
 .register-only #clientTabSignin { display: none !important; }
 .register-only #clientTabRegister { border-radius: 0; }
 .register-only .signin-only { display: none !important; }
+.register-only #portalBackBtn { visibility: hidden !important; pointer-events: none !important; }
 </style>
 
 <!-- Supabase SDK -->
@@ -911,7 +912,7 @@ async function dbDelete(table, filters) {
 
       <!-- Header -->
       <div style="background:linear-gradient(135deg,var(--teal-deep),var(--teal));padding:1.1rem 1.8rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
-        <button onclick="portalBackToRoles()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:5px 12px;cursor:pointer;color:#fff;font-size:.78rem;font-family:var(--sans);font-weight:700">← Back</button>
+        <button id="portalBackBtn" onclick="portalBackToRoles()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:5px 12px;cursor:pointer;color:#fff;font-size:.78rem;font-family:var(--sans);font-weight:700">← Back</button>
         <div style="display:flex;align-items:center;gap:.55rem">
           <span style="font-size:1rem">👤</span>
           <div style="font-family:var(--serif);font-size:1rem;font-weight:700;color:#fff">Client Portal</div>
