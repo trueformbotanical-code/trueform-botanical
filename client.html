@@ -848,7 +848,7 @@ input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-ra
       <div class="pstep" data-step="3" onclick="goStep(3)"><div class="pstep-num">3</div><div class="pstep-label">Body</div></div>
       <div class="pstep" data-step="4" onclick="goStep(4)"><div class="pstep-num">4</div><div class="pstep-label">History</div></div>
       <div class="pstep" data-step="5" onclick="goStep(5)"><div class="pstep-num">5</div><div class="pstep-label">Lifestyle</div></div>
-      <div class="pstep" data-step="6" onclick="goStep(6)"><div class="pstep-num">6</div><div class="pstep-label">Review</div></div>
+      <div class="pstep" data-step="6" onclick="openReviewPage()"><div class="pstep-num">6</div><div class="pstep-label">Review &amp; Submit</div></div>
     </div>
   </div>
 
@@ -1209,7 +1209,7 @@ input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-ra
     <div class="step-nav">
       <button class="btn-outline" onclick="goStep(4)">← Back</button>
       <div class="step-counter">Step 5 of 6</div>
-      <button class="btn-primary" onclick="goStep(6)" id="reviewSubmitBtn">Review &amp; Submit →</button>
+      <button class="btn-primary" onclick="saveAndExit()" id="saveExitBtn">💾 Save &amp; Exit</button>
     </div>
   </div>
 
@@ -1392,6 +1392,191 @@ input[type=range].scale-input::-moz-range-thumb{width:24px;height:24px;border-ra
 <!-- SUPABASE -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ════════════════════════════════════════════════════════════
+// CLIENT LOGOUT HELPER
+// ════════════════════════════════════════════════════════════
+function clientLogout(redirectToHome){
+  // Sign out of Supabase auth
+  try{ sb.auth.signOut().then(function(){}).catch(function(){}); }catch(e){}
+  // Clear all session data
+  try{ sessionStorage.removeItem('tfb_client_user'); }catch(e){}
+  try{ sessionStorage.removeItem('tfb_client_session'); }catch(e){}
+  // Keep the draft in localStorage (so they can continue later)
+  // but clear the auth gate state
+  if(typeof agCurrentUser !== 'undefined') agCurrentUser = null;
+  if(typeof agPendingUser !== 'undefined') agPendingUser = null;
+  if(redirectToHome !== false){
+    window.location.href = 'index.html';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// SAVE AND EXIT (Req 3)
+// ════════════════════════════════════════════════════════════
+async function saveAndExit(){
+  var data = collectData();
+  var user = getClientUser();
+  if(!user || !user.email){
+    showToast('⚠️ Please sign in before saving.');
+    return;
+  }
+
+  // Show saving indicator
+  var saveBtn = document.getElementById('saveExitBtn');
+  if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='Saving…'; }
+
+  // 1. Save to localStorage immediately
+  try{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      data: data, step: currentStep,
+      savedAt: new Date().toISOString(),
+      photo: window._photoBase64 || null,
+    }));
+  }catch(e){}
+
+  // 2. Save to Supabase
+  var ref = getOrCreateRef(user.email);
+  var row = buildAssessmentRow(data, ref, user, 'draft');
+  var saved = false;
+  try{
+    var res = await sb.from('assessments').upsert(row,{onConflict:'ref_code'}).select().single();
+    if(!res.error) saved = true;
+    // Update session ref
+    try{
+      var sess = JSON.parse(sessionStorage.getItem('tfb_client_session')||'{}');
+      sess.assessmentRef = ref; sess.hasDraft = true;
+      sessionStorage.setItem('tfb_client_session', JSON.stringify(sess));
+    }catch(e){}
+  }catch(e){ console.warn('saveAndExit Supabase:', e); }
+
+  if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent='💾 Save & Exit'; }
+
+  // 3. Confirm dialog
+  var proceed = confirm('Assessment saved. Exit and continue later? Your progress is kept.');
+  if(proceed){
+    showToast('✅ Saved! You can continue anytime from your account.');
+    setTimeout(function(){
+      clientLogout(true); // logout and go to index.html
+    }, 1200);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// 5-DAY REMINDER CHECK (Req 5)
+// Runs on page load — if draft is >5 days old, log a reminder
+// In production this would be a Supabase scheduled function /
+// Edge Function. Here we store metadata and trigger via Supabase.
+// ════════════════════════════════════════════════════════════
+function checkDraftReminder(){
+  try{
+    var meta = JSON.parse(localStorage.getItem('tfb_draft_meta')||'{}');
+    if(!meta.email || !meta.started_at) return;
+    var started = new Date(meta.started_at);
+    var now = new Date();
+    var daysDiff = (now - started) / (1000 * 60 * 60 * 24);
+    if(daysDiff >= 5 && meta.status === 'draft'){
+      var lastReminder = localStorage.getItem('tfb_reminder_sent_'+meta.ref_code);
+      var today = now.toISOString().slice(0,10);
+      if(lastReminder === today) return; // already reminded today
+      // Store reminder record in Supabase (herbalist/admin can see it)
+      sb.from('messages').insert({
+        assessment_ref:  meta.ref_code,
+        from_role:       'system',
+        from_name:       'TrueForm Botanical (System)',
+        message_type:    'note',
+        body:            '⏰ REMINDER: Client ' + meta.name + ' (' + meta.email + ') ' +
+                         'started their pre-assessment ' + Math.floor(daysDiff) + ' days ago ' +
+                         'and has not yet submitted it. Consider sending a follow-up.',
+        read_by_herbalist: false,
+        read_by_client:    false,
+        created_at:        now.toISOString(),
+      }).then(function(){}).catch(function(){});
+      // Also write a client notification
+      sb.from('client_registrations').update({
+        last_reminder_at: now.toISOString(),
+        reminder_count:   1,
+      }).eq('email', meta.email).then(function(){}).catch(function(){});
+      localStorage.setItem('tfb_reminder_sent_'+meta.ref_code, today);
+      // Show a gentle nudge on the page
+      showToast('💌 Reminder: Your assessment from '+Math.floor(daysDiff)+' days ago is still pending. Complete it today!');
+    }
+  }catch(e){}
+}
+
+// ════════════════════════════════════════════════════════════
+// CONTINUE DRAFT (Req 6)
+// Load existing Supabase draft and restore form
+// ════════════════════════════════════════════════════════════
+async function loadSavedDraft(){
+  var user = getClientUser();
+  if(!user || !user.email) return false;
+
+  // First try localStorage (fastest)
+  var localDraft = localStorage.getItem(DRAFT_KEY);
+  if(localDraft){
+    try{
+      var saved = JSON.parse(localDraft);
+      if(saved && saved.data && saved.savedAt){
+        var age = (Date.now() - new Date(saved.savedAt)) / 1000;
+        if(age < 86400 * 30){ // within 30 days
+          return true; // loadDraft() will handle this
+        }
+      }
+    }catch(e){}
+  }
+
+  // Then try Supabase
+  try{
+    var res = await sb.from('assessments')
+      .select('*')
+      .eq('client_email', user.email)
+      .eq('status','draft')
+      .order('last_saved_at', {ascending:false})
+      .limit(1)
+      .single();
+
+    if(res.data && !res.error){
+      var a = res.data;
+      // Reconstruct the draft format expected by loadDraft()
+      var draftData = {
+        data:{
+          personal:   a.personal   || {},
+          symptoms:   a.symptoms   || {},
+          body:       a.body_areas || {},
+          history:    a.history    || {},
+          lifestyle:  a.lifestyle  || {},
+          photo_base64: null,
+        },
+        step:      a.draft_step || 1,
+        savedAt:   a.last_saved_at || a.submitted_at,
+        supabaseRef: a.ref_code,
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
+      // Store the ref so updates go to the right row
+      var refKey = 'tfb_client_ref_'+user.email.replace(/[^a-z0-9]/gi,'_');
+      localStorage.setItem(refKey, a.ref_code);
+      return true;
+    }
+  }catch(e){ console.warn('loadSavedDraft Supabase:', e); }
+  return false;
+}
+
+// ════════════════════════════════════════════════════════════
+// PAGE INIT: check reminder + load draft on auth success
+// ════════════════════════════════════════════════════════════
+function onClientAuthenticated(){
+  // Called by agDismiss after successful login/register
+  checkDraftReminder();
+  // Check for existing draft
+  loadSavedDraft().then(function(hasDraft){
+    if(hasDraft){
+      loadDraft(); // restore form fields
+    }
+  }).catch(function(){});
+}
+
+
+
 const SUPABASE_URL = 'https://bsvgzklspjerioyjmegl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_l8kOR5BFNV7ds38sjGO8fQ_HySFFAUr';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -1406,8 +1591,6 @@ const safeStorage = {
   list: async function(prefix){ try { const keys=Object.keys(localStorage).filter(k=>!prefix||k.startsWith(prefix)); return {keys}; } catch(e){ return {keys:[]}; } }
 };
 if(typeof window.storage==='undefined'||typeof window.storage.get!=='function'){ window.storage=safeStorage; }
-</script>
-<script>
 // ════════════════════════════════════════════════════════════
 // REVIEW PAGE — full-screen assessment review with edit buttons
 // ════════════════════════════════════════════════════════════
@@ -2407,18 +2590,9 @@ async function submitAssessment(){
     }catch(e){}
   }
 
-  var refCode=existingRef||('TFB-'+Date.now().toString(36).toUpperCase());
-  var row={
-    ref_code:refCode, client_name:d.personal.firstName+' '+d.personal.lastName,
-    client_email:d.personal.email, client_phone:d.personal.phone||null,
-    assigned_herbalist: null, // assigned by admin/system
-    client_photo:d.photo_base64?'[photo attached]':null,
-    personal_info:JSON.stringify(d.personal),
-    symptoms:JSON.stringify(d.symptoms), body_areas:JSON.stringify(d.body),
-    medical_history:JSON.stringify(d.history), lifestyle:JSON.stringify(d.lifestyle),
-    status:'pending', reviewed:false,
-    submitted_at:new Date().toISOString(),
-  };
+  var user = getClientUser();
+  var refCode = existingRef || getOrCreateRef(d.personal.email||user?.email||'unknown');
+  var row = buildAssessmentRow(d, refCode, user, 'pending');
 
   try{
     var res;
@@ -2446,9 +2620,26 @@ async function submitAssessment(){
   var conf=document.getElementById('submitConfirm');
   if(conf){ conf.style.display='block'; }
   showDiarySection();
-  startPortalRedirect();
-  try{ localStorage.removeItem('tfb_draft_assessment'); }catch(e){}
+  // Clear draft
+  try{ localStorage.removeItem(DRAFT_KEY); localStorage.removeItem('tfb_draft_meta'); localStorage.removeItem('tfb_started_at'); }catch(e){}
   showToast('✅ Assessment submitted successfully!');
+  // Auto-logout client and redirect after countdown
+  startSubmitCountdown(refCode);
+}
+
+function startSubmitCountdown(refCode){
+  var el = document.getElementById('refNum');
+  if(el) el.textContent = refCode;
+  var btn = document.querySelector('#submitConfirm .btn-primary');
+  var secs = 5;
+  var iv = setInterval(function(){
+    secs--;
+    if(btn) btn.textContent = 'Logging out in '+secs+'s…';
+    if(secs <= 0){
+      clearInterval(iv);
+      clientLogout(false); // silent logout then redirect
+    }
+  }, 1000);
 }
 
 // ════════════════════════════════════════════════
@@ -2611,19 +2802,88 @@ async function autoSave(){
   try{
     var data = collectData();
     var hash = getDraftHash(data);
-    if(hash === _lastSavedHash) return; // no change
+    if(hash === _lastSavedHash) return;
     _lastSavedHash = hash;
+    // Save locally always
     localStorage.setItem(DRAFT_KEY, JSON.stringify({
-      data: data,
-      step: currentStep,
+      data: data, step: currentStep,
       savedAt: new Date().toISOString(),
       photo: window._photoBase64 || null,
     }));
     var status = document.getElementById('saveStatus');
-    if(status){ status.textContent = 'Saved ✓'; setTimeout(function(){ status.textContent = 'Auto-saving…'; }, 2000); }
+    if(status){ status.textContent = 'Saved ✓'; setTimeout(function(){ status.textContent = 'Auto-saving…'; }, 2200); }
     var dot = document.getElementById('autosave');
     if(dot){ dot.classList.add('show'); setTimeout(function(){ dot.classList.remove('show'); }, 2500); }
+    // Background Supabase sync
+    autoSaveToSupabase(data);
   } catch(e){ console.warn('Autosave error:', e); }
+}
+
+// ── Supabase draft upsert (non-blocking) ──
+function autoSaveToSupabase(data){
+  try {
+    var user = getClientUser();
+    if(!user || !user.email) return;
+    var ref  = getOrCreateRef(user.email);
+    var row  = buildAssessmentRow(data, ref, user, 'draft');
+    sb.from('assessments').upsert(row, {onConflict:'ref_code'})
+      .then(function(){ })
+      .catch(function(e){ console.warn('Supabase autosave:', e); });
+    // Store reminder metadata for 5-day check
+    try {
+      var meta = { ref_code: ref, email: user.email, name: user.name||user.email,
+                   started_at: localStorage.getItem('tfb_started_at')||new Date().toISOString(),
+                   last_saved: new Date().toISOString(), status: 'draft' };
+      localStorage.setItem('tfb_draft_meta', JSON.stringify(meta));
+      if(!localStorage.getItem('tfb_started_at'))
+        localStorage.setItem('tfb_started_at', meta.started_at);
+    } catch(e){}
+  } catch(e){}
+}
+
+// ── Build the Supabase row from collected data ──
+function buildAssessmentRow(data, ref_code, user, status){
+  return {
+    ref_code:           ref_code,
+    client_name:        (data.personal.firstName||'')+' '+(data.personal.lastName||''),
+    client_email:       data.personal.email || user.email || '',
+    personal:           data.personal,
+    symptoms:           data.symptoms,
+    body_areas:         data.body,
+    history:            data.history,
+    lifestyle:          data.lifestyle,
+    status:             status || 'draft',
+    reviewed:           false,
+    submitted_at:       status === 'pending' ? new Date().toISOString() : null,
+    last_saved_at:      new Date().toISOString(),
+    client_photo:       data.photo_base64 ? '[photo attached]' : null,
+    draft_step:         currentStep,
+  };
+}
+
+// ── Get or create a persistent ref_code for this client ──
+function getOrCreateRef(email){
+  var key = 'tfb_client_ref_'+email.replace(/[^a-z0-9]/gi,'_');
+  var stored = localStorage.getItem(key);
+  if(stored) return stored;
+  var newRef = 'TFB-'+Date.now().toString(36).toUpperCase();
+  localStorage.setItem(key, newRef);
+  // Also try session
+  try {
+    var sess = JSON.parse(sessionStorage.getItem('tfb_client_session')||'{}');
+    if(sess.assessmentRef) return sess.assessmentRef;
+  } catch(e){}
+  return newRef;
+}
+
+// ── Get logged-in client user ──
+function getClientUser(){
+  try {
+    var u = JSON.parse(sessionStorage.getItem('tfb_client_user')||'{}');
+    if(u && u.email) return u;
+  } catch(e){}
+  if(agCurrentUser && agCurrentUser.email) return agCurrentUser;
+  return null;
 }
 
 function loadDraft(){
@@ -2929,6 +3189,8 @@ function showDiarySection(){
 
 document.addEventListener('change',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
 document.addEventListener('input',function(){ clearTimeout(_saveTimer); _saveTimer=setTimeout(autoSave,1500); });
+
+
 
 </script>
 
