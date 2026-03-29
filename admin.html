@@ -1200,24 +1200,16 @@ async function dbDelete(table, filters) {
 // ══════════════════════════════════════════════════
 // STORAGE HELPERS
 // ══════════════════════════════════════════════════
-async function sget(key,shared=true){
-  // Try window.storage first
-  try{const r=await window.storage.get(key,shared);if(r&&r.value)return JSON.parse(r.value);}catch(e){}
-  // Fallback: localStorage
-  try{const v=localStorage.getItem(key);if(v)return JSON.parse(v);}catch(e){}
+async function sget(key){
+  try{const v=localStorage.getItem(key);if(v!==null)return JSON.parse(v);}catch(e){}
   return null;
 }
-async function sset(key,val,shared=true){
-  const str=JSON.stringify(val);
-  // Always write localStorage first (synchronous, reliable)
-  try{localStorage.setItem(key,str);}catch(e){}
-  // Also write to window.storage (async, shared across sessions)
-  try{await window.storage.set(key,str,shared);}catch(e){}
+async function sset(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}
   return true;
 }
-async function sdel(key,shared=true){
+async function sdel(key){
   try{localStorage.removeItem(key);}catch(e){}
-  try{await window.storage.delete(key,shared);}catch(e){}
   return true;
 }
 
@@ -1318,9 +1310,9 @@ async function loadAll(){
     {id:'miller.jerome',name:'Jerome Miller',     username:'miller.jerome',email:'jerome@trueformbotanical.com',pw:'herb2025',role:'herbalist',specialty:'Herbal Medicine',tradition:'Western',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
   ];
   // Get deletion tombstones first
-  const deletedIds=await sget('tfb_deleted_herbalists')||[];
+  const deletedIds=sget('tfb_deleted_herbalists')||[];
   // Get stored list (may be empty on first load)
-  const storedHerbalists=await sget('tfb_herbalists')||[];
+  const storedHerbalists=sget('tfb_herbalists')||[];
   // Merge: defaults as base, storage overrides, then filter deleted
   const merged=[...defaultHerbalists];
   for(const s of storedHerbalists){
@@ -1342,7 +1334,7 @@ async function loadAll(){
   } catch(e){}
   ALL_HERBALISTS=merged.filter(h=>!deletedIds.includes(h.id));
   // Load admin accounts
-  ALL_ADMINS=await sget('tfb_admins')||[DEFAULT_ADMIN];
+  ALL_ADMINS=sget('tfb_admins')||[DEFAULT_ADMIN];
 
   // ── Load clients — 3 source approach ──
   ALL_CLIENTS_USR = [];
@@ -1353,21 +1345,28 @@ async function loadAll(){
     ALL_CLIENTS_USR.push(obj);
   }
 
-  // Source 1: client_registrations table (simple open-read table, no RLS issues)
+  // Load deleted-client tombstone from localStorage
+  const _deletedClients = new Set(JSON.parse(localStorage.getItem('tfb_deleted_clients')||'[]'));
+
+  // Source 1: client_registrations table
   try {
-    const { data: regs, error: regErr } = await sb.from('client_registrations').select('*').order('created_at',{ascending:false});
+    const { data: regs, error: regErr } = await sb.from('client_registrations')
+      .select('*').order('created_at',{ascending:false});
     if(regErr) console.warn('[Admin] client_registrations:', regErr.message);
     if(regs && regs.length){
-      regs.forEach(r => addClient({
-        id:          r.id || r.user_id,
-        name:        r.full_name || ((r.first_name||'')+' '+(r.last_name||'')).trim() || r.email,
-        email:       r.email,
-        role:        'client',
-        status:      r.status || 'active',
-        createdAt:   r.created_at,
-        hasAssessment: false,
-        assessmentRef: null,
-      }));
+      regs.forEach(r => {
+        if(_deletedClients.has(r.id)||_deletedClients.has(r.email)) return;
+        addClient({
+          id:          r.id || r.user_id,
+          name:        r.full_name || ((r.first_name||'')+' '+(r.last_name||'')).trim() || r.email,
+          email:       r.email,
+          role:        'client',
+          status:      r.status || 'active',
+          createdAt:   r.created_at,
+          hasAssessment: false,
+          assessmentRef: null,
+        });
+      });
       console.log('[Admin] clients from client_registrations:', ALL_CLIENTS_USR.length);
     }
   } catch(e){ console.warn('[Admin] client_registrations error:', e); }
@@ -1378,7 +1377,8 @@ async function loadAll(){
     if(profErr) console.warn('[Admin] profiles:', profErr.message);
     if(profs && profs.length){
       profs
-        .filter(p => p.role === 'client' || (!p.role && p.email && p.email !== 'trueformbotanical@gmail.com'))
+        .filter(p => (p.role === 'client' || (!p.role && p.email && p.email !== 'trueformbotanical@gmail.com'))
+                    && !_deletedClients.has(p.id) && !_deletedClients.has(p.email))
         .forEach(p => addClient({
           id:        p.id,
           name:      ((p.first_name||'')+' '+(p.last_name||'')).trim() || p.full_name || p.email,
@@ -1429,12 +1429,12 @@ async function loadAll(){
   // localStorage fallback for pre-Supabase data
   try {
     const tombstone = JSON.parse(localStorage.getItem('tfb_deleted_assessments')||'[]');
-    const refs = await sget('tfb_refs')||[];
+    const refs = sget('tfb_refs')||[];
     for(const ref of refs){
       if(tombstone.includes(ref)) continue; // skip deleted
-      const a = await sget('tfb_assessment_'+ref);
+      const a = sget('tfb_assessment_'+ref);
       if(!a) continue;
-      const state = await sget('tfb_state_'+ref)||{};
+      const state = sget('tfb_state_'+ref)||{};
       const merged = {...a,...state};
       if(!ALL_ASSESSMENTS.find(x=>x.meta?.refCode===ref)) ALL_ASSESSMENTS.push(merged);
       const email = a.personal?.email;
@@ -1473,7 +1473,7 @@ async function loadAll(){
     return h;
   });
   // Load audit
-  ALL_AUDIT=await sget('tfb_audit')||[];
+  ALL_AUDIT=sget('tfb_audit')||[];
   // Update UI
   updateStats();
   renderHerbalists();
@@ -1522,7 +1522,7 @@ async function loadAll(){
   setText('bkAssessments', ALL_ASSESSMENTS.length);
   setText('bkAudit', ALL_AUDIT.length);
   // Last backup time
-  const lastBk = await sget('tfb_last_backup');
+  const lastBk = sget('tfb_last_backup');
   if(lastBk) setText('lastBackupTime', new Date(lastBk).toLocaleString());
   // Check storage health
   setText('hStorageStatus','Online');
@@ -1581,11 +1581,12 @@ function renderHerbalists(list=ALL_HERBALISTS){
 async function refreshClientList(){
   showToast('🔄 Refreshing client list…');
   // Re-load from Supabase profiles
+  const _deadClients = new Set(JSON.parse(localStorage.getItem('tfb_deleted_clients')||'[]'));
   try {
-    // Refresh from client_registrations first
     const { data: regsR } = await sb.from('client_registrations').select('*').order('created_at',{ascending:false});
     if(regsR && regsR.length){
       regsR.forEach(r=>{
+        if(_deadClients.has(r.id)||_deadClients.has(r.email)) return;
         if(!ALL_CLIENTS_USR.find(x=>x.email?.toLowerCase()===r.email?.toLowerCase())){
           ALL_CLIENTS_USR.push({
             id:r.id||r.user_id, name:r.full_name||((r.first_name||'')+' '+(r.last_name||'')).trim()||r.email,
@@ -1847,11 +1848,12 @@ async function saveUser(){
       if(label.includes('Audit'))user['perm-viewAudit']=on;
     });
     if(isNew){ALL_HERBALISTS.push(user);}else{ALL_HERBALISTS=ALL_HERBALISTS.map(h=>h.id===user.id?user:h);}
-    await sset('tfb_herbalists',ALL_HERBALISTS);
-    // Sync to herbalist login data used by herbalist.html
+    sset('tfb_herbalists',ALL_HERBALISTS);
     const loginData={};
     ALL_HERBALISTS.forEach(h=>{loginData[h.id]={name:h.name,initial:h.name.charAt(0),specialty:h.specialty,greet:h.name.split(' ')[0],pw:h.pw||'herb2025'};});
-    await sset('tfb_herbalist_login',loginData);
+    sset('tfb_herbalist_login',loginData);
+    // Sync to Supabase
+    sb.from('herbalists').upsert({id:user.id,username:user.username,full_name:user.name,email:user.email,specialty:user.specialty||'',tradition:user.tradition||'',status:user.status,updated_at:new Date().toISOString()},{onConflict:'id'}).then(()=>{}).catch(e=>console.warn('herb sync:',e));
     renderHerbalists();
   } else if(drawerRole==='client'){
     user.assignedHerbalist=document.getElementById('uf-herbalist')?.value||'Unassigned';
@@ -1859,12 +1861,12 @@ async function saveUser(){
     user.adminNotes=document.getElementById('uf-notes')?.value||'';
     user.hasAssessment=user.hasAssessment||false;
     if(isNew){ALL_CLIENTS_USR.push(user);}else{ALL_CLIENTS_USR=ALL_CLIENTS_USR.map(c=>c.id===user.id?user:c);}
-    await sset('tfb_client_users',ALL_CLIENTS_USR);
+    sset('tfb_client_users',ALL_CLIENTS_USR);
     renderClients();
   } else if(drawerRole==='admin'){
     user.level=document.getElementById('uf-level')?.value||'full';
     if(isNew){ALL_ADMINS.push(user);}else{ALL_ADMINS=ALL_ADMINS.map(a=>a.id===user.id?user:a);}
-    await sset('tfb_admins',ALL_ADMINS);
+    sset('tfb_admins',ALL_ADMINS);
     renderAdmins();
   }
   await appendAudit({type:isNew?'create':'edit',icon:isNew?'➕':'✏️',action:`${isNew?'Created':'Updated'} ${drawerRole} account: ${name}`,actor:currentAdmin?.name||'Admin',target:email});
@@ -1886,63 +1888,88 @@ async function deleteUser(id,role){
     `This will permanently delete the account for "${user.name}"${user.email?' ('+user.email+')':''}. This action cannot be undone.`,
     async()=>{
       if(role==='herbalist'){
-        // Remove from in-memory list
-        ALL_HERBALISTS=ALL_HERBALISTS.filter(h=>h.id!==id);
-        // Save the updated list (which no longer contains this user)
-        await sset('tfb_herbalists',ALL_HERBALISTS);
-        // Also save a deletion record so built-in accounts stay deleted on reload
-        const deleted=await sget('tfb_deleted_herbalists')||[];
-        if(!deleted.includes(id)){deleted.push(id);await sset('tfb_deleted_herbalists',deleted);}
+        // 1. Delete from Supabase herbalists table
+        try { await sb.from('herbalists').delete().eq('id',id); } catch(e){}
+        try { await sb.from('herbalists').delete().eq('username',user.username||id); } catch(e){}
+        try { await sb.from('profiles').delete().eq('id',id); } catch(e){}
+        // 2. Save tombstone so built-in defaults stay deleted on reload
+        const deleted = sget('tfb_deleted_herbalists')||[];
+        if(!deleted.includes(id)){ deleted.push(id); sset('tfb_deleted_herbalists',deleted); }
+        // 3. Remove from in-memory list
+        ALL_HERBALISTS = ALL_HERBALISTS.filter(h=>h.id!==id);
+        sset('tfb_herbalists', ALL_HERBALISTS);
         renderHerbalists();
       }
       else if(role==='client'){
-        // Remove from in-memory list
-        ALL_CLIENTS_USR=ALL_CLIENTS_USR.filter(c=>c.id!==id);
-        await sset('tfb_client_users',ALL_CLIENTS_USR);
+        let errors = [];
 
-        // ── Delete from Supabase profiles table ──
+        // 1. Delete from client_registrations (PRIMARY SOURCE — must go first)
         try {
-          await sb.from('profiles').delete().eq('id', id);
-        } catch(e){ console.warn('profiles delete:', e); }
+          const r1 = await sb.from('client_registrations').delete().eq('email', user.email);
+          if(r1.error) errors.push('client_registrations: '+r1.error.message);
+        } catch(e){ errors.push('client_registrations: '+e.message); }
 
-        // ── Delete from Supabase assessments table ──
+        // Also try by id
+        if(user.id && !user.id.startsWith('c_')){
+          try { await sb.from('client_registrations').delete().eq('id', user.id); } catch(e){}
+        }
+
+        // 2. Delete from profiles table
+        try {
+          const r2 = await sb.from('profiles').delete().eq('email', user.email);
+          if(r2.error) errors.push('profiles: '+r2.error.message);
+        } catch(e){ errors.push('profiles: '+e.message); }
+
+        if(user.id && !user.id.startsWith('c_')){
+          try { await sb.from('profiles').delete().eq('id', user.id); } catch(e){}
+        }
+
+        // 3. Delete assessments by email and by client_id
+        try {
+          await sb.from('assessments').delete().eq('client_email', user.email);
+        } catch(e){}
         if(user.assessmentRef){
           try { await sb.from('assessments').delete().eq('ref_code', user.assessmentRef); } catch(e){}
         }
-        try { await sb.from('assessments').delete().eq('client_id', id); } catch(e){}
+        if(user.id && !user.id.startsWith('c_')){
+          try { await sb.from('assessments').delete().eq('client_id', user.id); } catch(e){}
+        }
 
-        // ── Delete from Supabase auth.users ──
-        // Note: this requires the service role key - we use admin API via edge function
-        // As a workaround, we mark the account in profiles so it can't log in
-        // and the email is freed by running the cleanup SQL in Supabase dashboard
+        // 4. Delete diary entries and appointments
+        try { await sb.from('diary_entries').delete().eq('client_email', user.email); } catch(e){}
+        try { await sb.from('appointments').delete().eq('client_id', user.id); } catch(e){}
+        try { await sb.from('messages').delete().eq('client_email', user.email); } catch(e){}
+
+        // 5. Add to persistent tombstone (survives refresh)
         try {
-          // Try to delete via Supabase admin API
-          const { error: authErr } = await sb.auth.admin.deleteUser(id);
-          if(authErr) console.warn('auth.users delete (may need service role):', authErr.message);
-        } catch(e){
-          // Expected to fail from browser — show instruction
-          console.info('To fully free this email, delete the user from Supabase Auth → Users dashboard, or run: DELETE FROM auth.users WHERE id = \'' + id + '\'');
+          const tomb = JSON.parse(localStorage.getItem('tfb_deleted_clients')||'[]');
+          if(!tomb.includes(user.id))   tomb.push(user.id);
+          if(!tomb.includes(user.email)) tomb.push(user.email);
+          localStorage.setItem('tfb_deleted_clients', JSON.stringify(tomb));
+        } catch(e){}
+
+        // 6. Remove from in-memory list
+        ALL_CLIENTS_USR = ALL_CLIENTS_USR.filter(c => c.id!==id && c.email!==user.email);
+
+        // 7. Clear any local portal data
+        try {
+          const ek = 'tfb_cp_' + user.email.toLowerCase().replace(/[^a-z0-9]/g, ch=>'_'+ch.charCodeAt(0)+'_');
+          localStorage.removeItem(ek);
+        } catch(e){}
+        if(user.assessmentRef){
+          localStorage.removeItem('tfb_assessment_'+user.assessmentRef);
+          localStorage.removeItem('tfb_state_'+user.assessmentRef);
+          sdel('tfb_assessment_'+user.assessmentRef);
         }
 
-        // ── Clear localStorage / window.storage portal data ──
-        if(user.email){
-          const ek = 'tfb_cp_' + user.email.toLowerCase().replace(/[^a-z0-9]/g, function(ch){ return '_'+ch.charCodeAt(0)+'_'; });
-          try { await sdel(ek); } catch(e){}
-          try { localStorage.removeItem(ek); } catch(e){}
-        }
-        if(user.assessmentRef){
-          await sdel('tfb_assessment_'+user.assessmentRef);
-          await sdel('tfb_state_'+user.assessmentRef);
-          try { localStorage.removeItem('tfb_assessment_'+user.assessmentRef); } catch(e){}
-          const refs = await sget('tfb_refs')||[];
-          await sset('tfb_refs', refs.filter(r=>r!==user.assessmentRef));
-        }
+        // 8. Update UI
         renderClients();
         updateStats();
+        if(errors.length) console.warn('Delete errors (non-fatal):', errors);
       }
       else if(role==='admin'){
         ALL_ADMINS=ALL_ADMINS.filter(a=>a.id!==id);
-        await sset('tfb_admins',ALL_ADMINS);
+        sset('tfb_admins',ALL_ADMINS);
         renderAdmins();
       }
       await appendAudit({type:'delete',icon:'🗑️',action:`Deleted ${role} account: ${user.name}`,actor:currentAdmin?.name||'Admin',target:user.email||user.username||id});
@@ -1958,24 +1985,32 @@ async function toggleSuspend(id,role){
   const user=list.find(u=>u.id===id);
   if(!user)return;
   const newStatus=user.status==='suspended'?'active':'suspended';
+
+  // 1. Update Supabase FIRST (source of truth)
+  try {
+    await sb.from('profiles').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id);
+  } catch(e){ console.warn('profiles suspend:', e); }
+  try {
+    await sb.from('client_registrations').update({status:newStatus}).eq('id',id);
+  } catch(e){}
+  if(role==='herbalist'){
+    try { await sb.from('herbalists').update({status:newStatus}).eq('id',id); } catch(e){}
+  }
+
+  // 2. Update in-memory
   user.status=newStatus;
   if(role==='herbalist'){
     ALL_HERBALISTS=ALL_HERBALISTS.map(h=>h.id===id?user:h);
-    await sset('tfb_herbalists',ALL_HERBALISTS);
     renderHerbalists();
   } else {
     ALL_CLIENTS_USR=ALL_CLIENTS_USR.map(c=>c.id===id?user:c);
-    await sset('tfb_client_users',ALL_CLIENTS_USR);
     renderClients();
   }
-  // Always refresh suspended panel and stats
   renderSuspended();
   updateStats();
-  // Try to update Supabase status too
-  try {
-    await sb.from('profiles').update({status: newStatus}).eq('id', id);
-  } catch(e){}
-  await appendAudit({type:'suspend',icon:newStatus==='suspended'?'🔴':'🟢',action:`${newStatus==='suspended'?'Suspended':'Reinstated'} ${role}: ${user.name}`,actor:currentAdmin?.name||'Admin',target:user.email});
+  await appendAudit({type:'suspend',icon:newStatus==='suspended'?'🔴':'🟢',
+    action:`${newStatus==='suspended'?'Suspended':'Reinstated'} ${role}: ${user.name}`,
+    actor:currentAdmin?.name||'Admin',target:user.email});
   showToast(`${newStatus==='suspended'?'🔴 Suspended':'🟢 Reinstated'}: ${user.name}`);
 }
 
@@ -2031,7 +2066,7 @@ let _rolePermState = {};
 
 async function editRolePermissions(role){
   // Load saved permissions, fall back to defaults
-  const saved = await sget('tfb_role_perms_'+role) || {};
+  const saved = sget('tfb_role_perms_'+role) || {};
   const perms  = ROLE_PERMISSIONS[role] || [];
   _rolePermState = {};
   perms.forEach(p=>{ _rolePermState[p.key] = saved.hasOwnProperty(p.key) ? saved[p.key] : p.default; });
@@ -2060,7 +2095,7 @@ async function editRolePermissions(role){
     </div>`,
     async()=>{
       // Save permissions to storage
-      await sset('tfb_role_perms_'+role, _rolePermState);
+      sset('tfb_role_perms_'+role, _rolePermState);
       // Update the visual permission tags on the roles panel
       const el = document.getElementById(role==='herbalist'?'herbalistPerms':'clientPerms');
       if(el){
@@ -2097,10 +2132,10 @@ async function saveSystemSettings(){
     autoAssign:document.getElementById('ss-autoassign')?.value||'',
     savedAt:new Date().toISOString()
   };
-  await sset('tfb_settings',settings);
+  sset('tfb_settings',settings);
   if(pw){
     ALL_ADMINS=ALL_ADMINS.map(a=>a.id==='admin'?{...a,pw}:a);
-    await sset('tfb_admins',ALL_ADMINS);
+    sset('tfb_admins',ALL_ADMINS);
     showToast('🔐 Admin password updated.');
   }
   await appendAudit({type:'edit',icon:'⚙️',action:'System settings updated',actor:currentAdmin?.name||'Admin',target:'Settings'});
@@ -2111,24 +2146,24 @@ async function saveSystemSettings(){
 function confirmDangerAction(action,title,msg){
   showConfirm(title,msg,async()=>{
     if(action==='purge_assessments'){
-      const refs=await sget('tfb_refs')||[];
-      for(const ref of refs){await sdel('tfb_assessment_'+ref);await sdel('tfb_state_'+ref);}
-      await sset('tfb_refs',[]);
+      const refs=sget('tfb_refs')||[];
+      for(const ref of refs){sdel('tfb_assessment_'+ref);sdel('tfb_state_'+ref);}
+      sset('tfb_refs',[]);
       // Also delete all client portal login accounts
       for(const c of ALL_CLIENTS_USR){
         if(c.email){
           const ek='tfb_cp_'+c.email.toLowerCase().replace(/[^a-z0-9]/g,ch=>'_'+ch.charCodeAt(0)+'_');
-          await sdel(ek);
+          sdel(ek);
           try{localStorage.removeItem(ek);}catch(e){}
         }
       }
       ALL_ASSESSMENTS=[];ALL_CLIENTS_USR=[];
-      await sset('tfb_client_users',[]);
+      sset('tfb_client_users',[]);
       await appendAudit({type:'delete',icon:'💥',action:'ALL assessment and client data purged',actor:currentAdmin?.name||'Admin',target:'All Clients & Assessments'});
       await loadAll();showToast('🗑️ All client and assessment data has been purged.');
     }
     if(action==='reset_herbalists'){
-      await sdel('tfb_herbalists');await sdel('tfb_herbalist_login');ALL_HERBALISTS=[];
+      sdel('tfb_herbalists');sdel('tfb_herbalist_login');ALL_HERBALISTS=[];
       await appendAudit({type:'delete',icon:'💥',action:'Herbalist accounts reset to defaults',actor:currentAdmin?.name||'Admin',target:'Herbalist Accounts'});
       await loadAll();showToast('↺ Herbalist accounts reset to defaults.');
     }
@@ -2152,7 +2187,7 @@ function exportAuditLog(){
 }
 async function clearAuditLog(){
   showConfirm('Clear Audit Log','This will permanently delete all audit log entries. This cannot be undone.',async()=>{
-    ALL_AUDIT=[];await sset('tfb_audit',[]);
+    ALL_AUDIT=[];sset('tfb_audit',[]);
     renderAuditLog([]);renderOverviewActivity();
     setText('nbAudit',0);showToast('🗑️ Audit log cleared.');
   });
@@ -2165,7 +2200,7 @@ async function appendAudit(entry){
   entry.time=new Date().toISOString();
   ALL_AUDIT.unshift(entry);
   if(ALL_AUDIT.length>500)ALL_AUDIT=ALL_AUDIT.slice(0,500);
-  await sset('tfb_audit',ALL_AUDIT);
+  sset('tfb_audit',ALL_AUDIT);
   setText('nbAudit',ALL_AUDIT.length);
 }
 
@@ -2405,7 +2440,7 @@ async function _saveNewPassword(herbalistId, newPw, method){
   h.passwordResetBy     = currentAdmin?.name || 'Administrator';
   h.passwordResetMethod = method;
   ALL_HERBALISTS = ALL_HERBALISTS.map(x => x.id === herbalistId ? h : x);
-  await sset('tfb_herbalists', ALL_HERBALISTS);
+  sset('tfb_herbalists', ALL_HERBALISTS);
 
   // Audit log
   await appendAudit({
@@ -2442,7 +2477,29 @@ document.getElementById('resetPwModal').addEventListener('click', e => {
 let ALL_APPOINTMENTS = [];
 
 async function loadAppointments(){
-  ALL_APPOINTMENTS = await sget('tfb_appointments') || [];
+  // Load from Supabase appointments table first
+  try {
+    const { data, error } = await sb.from('appointments')
+      .select('*').order('appt_date',{ascending:true});
+    if(!error && data){
+      ALL_APPOINTMENTS = data.map(a=>({
+        id:     a.id,
+        ref:    a.ref_code || a.client_id || a.id,
+        client: a.client_name || 'Unknown',
+        herbalist: a.herbalist_name || a.assigned_herbalist || 'Unassigned',
+        date:   a.appt_date,
+        time:   a.appt_time || 'TBD',
+        type:   a.appt_type || 'Consultation',
+        status: a.status || 'upcoming',
+        notes:  a.notes || '',
+        supabase_id: a.id,
+      }));
+    } else {
+      ALL_APPOINTMENTS = sget('tfb_appointments') || [];
+    }
+  } catch(e){
+    ALL_APPOINTMENTS = sget('tfb_appointments') || [];
+  }
   renderAppointments(ALL_APPOINTMENTS);
   setText('nbAppts', ALL_APPOINTMENTS.length);
   // Populate herbalist filter
@@ -2506,14 +2563,24 @@ function filterApptHerbalist(h){
   }) : ALL_APPOINTMENTS);
 }
 async function deleteAppointment(ref, date){
-  showConfirm('Cancel Appointment', `Cancel the appointment for ${ALL_APPOINTMENTS.find(a=>a.ref===ref&&a.date===date)?.client||'this client'} on ${date}?`, async()=>{
-    ALL_APPOINTMENTS = ALL_APPOINTMENTS.filter(a => !(a.ref===ref && a.date===date));
-    await sset('tfb_appointments', ALL_APPOINTMENTS);
-    renderAppointments(ALL_APPOINTMENTS);
-    setText('nbAppts', ALL_APPOINTMENTS.length);
-    await appendAudit({type:'delete',icon:'📅',action:`Cancelled appointment for ref ${ref} on ${date}`,actor:currentAdmin?.name||'Admin',target:ref});
-    showToast('📅 Appointment cancelled.');
-  });
+  const appt = ALL_APPOINTMENTS.find(a=>a.ref===ref&&a.date===date);
+  showConfirm('Cancel Appointment',
+    `Cancel the appointment for ${appt?.client||'this client'} on ${date}?`,
+    async()=>{
+      // Delete from Supabase
+      if(appt?.supabase_id){
+        try { await sb.from('appointments').delete().eq('id', appt.supabase_id); } catch(e){ console.warn('appt delete:', e); }
+      } else {
+        try { await sb.from('appointments').delete().eq('appt_date', date).eq('client_name', appt?.client||''); } catch(e){}
+      }
+      // Update in-memory
+      ALL_APPOINTMENTS = ALL_APPOINTMENTS.filter(a => !(a.ref===ref && a.date===date));
+      renderAppointments(ALL_APPOINTMENTS);
+      setText('nbAppts', ALL_APPOINTMENTS.length);
+      await appendAudit({type:'delete',icon:'📅',action:`Cancelled appointment for ${appt?.client||ref} on ${date}`,actor:currentAdmin?.name||'Admin',target:ref});
+      showToast('📅 Appointment cancelled.');
+    }
+  );
 }
 function openAddAppointment(){
   // Find all clients with assessments for dropdown
@@ -2533,8 +2600,14 @@ function openAddAppointment(){
     const type = document.getElementById('aa-type')?.value;
     const name = document.getElementById('aa-name')?.value;
     if(!date){ showToast('⚠️ Please select a date.'); return; }
-    ALL_APPOINTMENTS.push({ ref: ref||'', date, time: time||'TBD', type, client: name||ref||'Unknown' });
-    await sset('tfb_appointments', ALL_APPOINTMENTS);
+    const apptRow = { ref: ref||'', date, time: time||'TBD', type, client: name||ref||'Unknown', status:'upcoming' };
+    // Save to Supabase
+    sb.from('appointments').insert({
+      ref_code: ref||null, appt_date: date, appt_time: time||'TBD',
+      appt_type: type, client_name: name||ref||'Unknown',
+      status:'upcoming', created_at: new Date().toISOString(),
+    }).then(r=>{ if(!r.error && r.data?.[0]) apptRow.supabase_id=r.data[0].id; }).catch(e=>console.warn('appt insert:',e));
+    ALL_APPOINTMENTS.push(apptRow);
     renderAppointments(ALL_APPOINTMENTS);
     setText('nbAppts', ALL_APPOINTMENTS.length);
     closeDrawer();
@@ -2626,7 +2699,16 @@ async function renderAnalytics(){
 let ALL_ANNOUNCEMENTS = [];
 
 async function loadAnnouncements(){
-  ALL_ANNOUNCEMENTS = await sget('tfb_announcements') || [];
+  try {
+    const { data, error } = await sb.from('announcements').select('*').order('created_at',{ascending:false});
+    if(!error && data){
+      ALL_ANNOUNCEMENTS = data.map(a=>({
+        id: a.id, title: a.title, body: a.body||a.content||'',
+        active: a.active!==false, target: a.target||'all',
+        createdAt: a.created_at, supabase_id: a.id,
+      }));
+    } else { ALL_ANNOUNCEMENTS = sget('tfb_announcements')||[]; }
+  } catch(e){ ALL_ANNOUNCEMENTS = sget('tfb_announcements')||[]; }
   renderAnnouncements();
   setText('nbAnnouncements', ALL_ANNOUNCEMENTS.filter(a=>a.active).length);
 }
@@ -2674,8 +2756,9 @@ function openAddAnnouncement(){
     const type  = document.getElementById('ann-type')?.value;
     if(!title||!body){ showToast('⚠️ Title and message are required.'); return; }
     const ann = { id: 'ann_'+Date.now(), title, body, type, active: true, author: currentAdmin?.name||'Admin', createdAt: new Date().toISOString() };
+    // Save to Supabase announcements
+    sb.from('announcements').insert({title,body,content:body,active:true,target:type||'all',created_at:ann.createdAt}).then(()=>{}).catch(e=>console.warn('ann insert:',e));
     ALL_ANNOUNCEMENTS.unshift(ann);
-    await sset('tfb_announcements', ALL_ANNOUNCEMENTS);
     renderAnnouncements();
     setText('nbAnnouncements', ALL_ANNOUNCEMENTS.filter(a=>a.active).length);
     closeDrawer();
@@ -2686,16 +2769,16 @@ function openAddAnnouncement(){
 
 async function toggleAnnouncement(id){
   ALL_ANNOUNCEMENTS = ALL_ANNOUNCEMENTS.map(a => a.id===id ? {...a, active:!a.active} : a);
-  await sset('tfb_announcements', ALL_ANNOUNCEMENTS);
+  sset('tfb_announcements', ALL_ANNOUNCEMENTS);
   renderAnnouncements();
   setText('nbAnnouncements', ALL_ANNOUNCEMENTS.filter(a=>a.active).length);
   showToast('✅ Announcement updated.');
 }
 
 async function deleteAnnouncement(id){
-  showConfirm('Delete Announcement', 'Permanently delete this announcement?', async()=>{
-    ALL_ANNOUNCEMENTS = ALL_ANNOUNCEMENTS.filter(a => a.id!==id);
-    await sset('tfb_announcements', ALL_ANNOUNCEMENTS);
+  showConfirm('Delete Announcement','Permanently delete this announcement?',async()=>{
+    try { await sb.from('announcements').delete().eq('id',id); } catch(e){ console.warn('ann delete:',e); }
+    ALL_ANNOUNCEMENTS = ALL_ANNOUNCEMENTS.filter(a=>a.id!==id);
     renderAnnouncements();
     setText('nbAnnouncements', ALL_ANNOUNCEMENTS.filter(a=>a.active).length);
     showToast('🗑️ Announcement deleted.');
@@ -2709,7 +2792,7 @@ const HERB_TRADITIONS = ['Ayurveda','TCM','Western','African','Integrated'];
 
 async function loadHerbAdmin(){
   // Herb list is embedded in herbalist.html — we manage overrides via storage
-  const custom = await sget('tfb_custom_herbs') || [];
+  const custom = sget('tfb_custom_herbs') || [];
   renderHerbAdmin(custom);
 }
 
@@ -2787,10 +2870,10 @@ async function saveHerbForm(editId){
     caution: document.getElementById('hf-caution')?.value||'',
     addedBy: currentAdmin?.name||'Admin', updatedAt: new Date().toISOString()
   };
-  let list = await sget('tfb_custom_herbs')||[];
+  let list = sget('tfb_custom_herbs')||[];
   if(editId) list = list.map(h=>h.id===editId?herb:h);
   else list.push(herb);
-  await sset('tfb_custom_herbs', list);
+  sset('tfb_custom_herbs', list);
   renderHerbAdmin(list);
   closeDrawer();
   await appendAudit({type:editId?'edit':'create',icon:'🌿',action:`${editId?'Updated':'Added'} herb: ${name}`,actor:currentAdmin?.name||'Admin',target:name});
@@ -2798,10 +2881,10 @@ async function saveHerbForm(editId){
 }
 async function deleteCustomHerb(id){
   showConfirm('Delete Herb','Permanently remove this herb from the custom database?', async()=>{
-    let list = await sget('tfb_custom_herbs')||[];
+    let list = sget('tfb_custom_herbs')||[];
     const h = list.find(x=>x.id===id);
     list = list.filter(x=>x.id!==id);
-    await sset('tfb_custom_herbs', list);
+    sset('tfb_custom_herbs', list);
     renderHerbAdmin(list);
     await appendAudit({type:'delete',icon:'🌿',action:`Deleted herb: ${h?.name||id}`,actor:currentAdmin?.name||'Admin',target:id});
     showToast('🗑️ Herb deleted.');
@@ -2826,13 +2909,13 @@ async function exportFullBackup(){
       appointments:  ALL_APPOINTMENTS,
       announcements: ALL_ANNOUNCEMENTS,
       audit:         ALL_AUDIT,
-      deletedHerbalists: await sget('tfb_deleted_herbalists')||[],
-      customHerbs:   await sget('tfb_custom_herbs')||[],
-      settings:      await sget('tfb_settings')||{},
+      deletedHerbalists: sget('tfb_deleted_herbalists')||[],
+      customHerbs:   sget('tfb_custom_herbs')||[],
+      settings:      sget('tfb_settings')||{},
     }
   };
   downloadJSON(backup, `tfb-backup-${new Date().toISOString().slice(0,10)}.json`);
-  await sset('tfb_last_backup', new Date().toISOString());
+  sset('tfb_last_backup', new Date().toISOString());
   setText('lastBackupTime', new Date().toLocaleString());
   await appendAudit({type:'edit',icon:'💾',action:'Full system backup exported',actor:currentAdmin?.name||'Admin',target:'All data'});
   showToast('💾 Full backup downloaded.');
@@ -2891,18 +2974,18 @@ async function confirmRestore(){
   if(!restoreData){ showToast('⚠️ No backup data loaded.'); return; }
   showConfirm('Confirm Restore','This will overwrite ALL current system data with the backup. This cannot be undone. Are you sure?', async()=>{
     const d = restoreData.data;
-    if(d.herbalists?.length)  await sset('tfb_herbalists', d.herbalists);
-    if(d.clients?.length)     await sset('tfb_client_users', d.clients);
+    if(d.herbalists?.length)  sset('tfb_herbalists', d.herbalists);
+    if(d.clients?.length)     sset('tfb_client_users', d.clients);
     if(d.assessments?.length){
       const refs = d.assessments.map(a=>a.meta?.refCode).filter(Boolean);
-      await sset('tfb_refs', refs);
-      for(const a of d.assessments){ if(a.meta?.refCode) await sset('tfb_assessment_'+a.meta.refCode, a); }
+      sset('tfb_refs', refs);
+      for(const a of d.assessments){ if(a.meta?.refCode) sset('tfb_assessment_'+a.meta.refCode, a); }
     }
-    if(d.appointments?.length) await sset('tfb_appointments', d.appointments);
-    if(d.announcements?.length) await sset('tfb_announcements', d.announcements);
-    if(d.deletedHerbalists?.length) await sset('tfb_deleted_herbalists', d.deletedHerbalists);
-    if(d.customHerbs?.length) await sset('tfb_custom_herbs', d.customHerbs);
-    if(d.settings) await sset('tfb_settings', d.settings);
+    if(d.appointments?.length) sset('tfb_appointments', d.appointments);
+    if(d.announcements?.length) sset('tfb_announcements', d.announcements);
+    if(d.deletedHerbalists?.length) sset('tfb_deleted_herbalists', d.deletedHerbalists);
+    if(d.customHerbs?.length) sset('tfb_custom_herbs', d.customHerbs);
+    if(d.settings) sset('tfb_settings', d.settings);
     await appendAudit({type:'edit',icon:'📤',action:'System data restored from backup',actor:currentAdmin?.name||'Admin',target:`${restoreData.exportedAt||'unknown date'}`});
     restoreData = null;
     (document.getElementById('restorePreview')||{style:{}}).style.display = 'none';
@@ -2931,7 +3014,18 @@ function showDrawerForm(title, body, saveCb){
 let ALL_INVOICES = [];
 
 async function loadInvoices(){
-  ALL_INVOICES = await sget('tfb_invoices') || [];
+  try {
+    const { data, error } = await sb.from('invoices').select('*').order('created_at',{ascending:false});
+    if(!error && data){
+      ALL_INVOICES = data.map(i=>({
+        id: i.id, number: i.invoice_number||i.id,
+        client: i.client_name||'', amount: i.amount||0,
+        status: i.status||'unpaid', dueDate: i.due_date,
+        createdAt: i.created_at, supabase_id: i.id,
+        items: i.items||[], notes: i.notes||'',
+      }));
+    } else { ALL_INVOICES = sget('tfb_invoices')||[]; }
+  } catch(e){ ALL_INVOICES = sget('tfb_invoices')||[]; }
   renderInvoices(ALL_INVOICES);
   setText('nbInvoices', ALL_INVOICES.filter(i=>i.status==='unpaid'||i.status==='overdue').length);
   renderInvoiceSummary();
@@ -3020,8 +3114,13 @@ function openAddInvoice(){
       createdAt: new Date().toISOString(),
       createdBy: currentAdmin?.name||'Admin'
     };
+    // Save to Supabase
+    sb.from('invoices').insert({
+      invoice_number: inv.number, client_name: inv.client,
+      amount: inv.amount, status: inv.status, due_date: inv.dueDate,
+      notes: inv.notes||'', created_at: new Date().toISOString(),
+    }).then(r=>{ if(!r.error && r.data?.[0]) inv.supabase_id=r.data[0].id; }).catch(e=>console.warn('inv insert:',e));
     ALL_INVOICES.unshift(inv);
-    await sset('tfb_invoices', ALL_INVOICES);
     renderInvoices(ALL_INVOICES);
     renderInvoiceSummary();
     setText('nbInvoices', ALL_INVOICES.filter(i=>i.status==='unpaid'||i.status==='overdue').length);
@@ -3033,7 +3132,7 @@ function openAddInvoice(){
 
 async function markInvoicePaid(id){
   ALL_INVOICES = ALL_INVOICES.map(i=>i.id===id?{...i,status:'paid',paidAt:new Date().toISOString()}:i);
-  await sset('tfb_invoices', ALL_INVOICES);
+  sset('tfb_invoices', ALL_INVOICES);
   renderInvoices(ALL_INVOICES);
   renderInvoiceSummary();
   setText('nbInvoices', ALL_INVOICES.filter(i=>i.status==='unpaid'||i.status==='overdue').length);
@@ -3042,8 +3141,8 @@ async function markInvoicePaid(id){
 async function deleteInvoice(id){
   const inv = ALL_INVOICES.find(i=>i.id===id);
   showConfirm('Delete Invoice',`Delete invoice ${inv?.number||id} for ${inv?.client}?`,async()=>{
+    try { await sb.from('invoices').delete().eq('id',id); } catch(e){ console.warn('inv delete:',e); }
     ALL_INVOICES = ALL_INVOICES.filter(i=>i.id!==id);
-    await sset('tfb_invoices', ALL_INVOICES);
     renderInvoices(ALL_INVOICES);
     renderInvoiceSummary();
     setText('nbInvoices', ALL_INVOICES.filter(i=>i.status==='unpaid'||i.status==='overdue').length);
@@ -3063,7 +3162,8 @@ function exportInvoices(){
 let ALL_WAITLIST = [];
 
 async function loadWaitlist(){
-  ALL_WAITLIST = await sget('tfb_waitlist') || [];
+  // Waitlist stored in localStorage (no dedicated Supabase table yet)
+  ALL_WAITLIST = sget('tfb_waitlist')||[];
   renderWaitlist();
   setText('nbWaitlist', ALL_WAITLIST.filter(w=>w.status==='waiting').length);
 }
@@ -3124,7 +3224,7 @@ function openAddWaitlist(){
       priority: document.getElementById('wl-priority')?.value||'normal',
       status:   'waiting', addedAt: new Date().toISOString()
     });
-    await sset('tfb_waitlist', ALL_WAITLIST);
+    sset('tfb_waitlist', ALL_WAITLIST);
     renderWaitlist();
     setText('nbWaitlist', ALL_WAITLIST.filter(w=>w.status==='waiting').length);
     closeDrawer();
@@ -3147,7 +3247,7 @@ async function assignWaitlistClient(id){
   `, async()=>{
     const herb = document.getElementById('assign-herb')?.value;
     ALL_WAITLIST = ALL_WAITLIST.map(x=>x.id===id?{...x,status:'assigned',assignedTo:herb,assignedAt:new Date().toISOString()}:x);
-    await sset('tfb_waitlist', ALL_WAITLIST);
+    sset('tfb_waitlist', ALL_WAITLIST);
     renderWaitlist();
     setText('nbWaitlist', ALL_WAITLIST.filter(x=>x.status==='waiting').length);
     closeDrawer();
@@ -3159,7 +3259,7 @@ async function removeFromWaitlist(id){
   const w = ALL_WAITLIST.find(x=>x.id===id);
   showConfirm('Remove from Waitlist',`Remove ${w?.name} from the waiting list?`,async()=>{
     ALL_WAITLIST = ALL_WAITLIST.filter(x=>x.id!==id);
-    await sset('tfb_waitlist', ALL_WAITLIST);
+    sset('tfb_waitlist', ALL_WAITLIST);
     renderWaitlist();
     setText('nbWaitlist', ALL_WAITLIST.filter(x=>x.status==='waiting').length);
     showToast('🗑️ Removed from waiting list.');
@@ -3174,7 +3274,7 @@ const SLOTS = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','
 let scheduleData = {};
 
 async function loadSchedule(){
-  scheduleData = await sget('tfb_schedule') || {};
+  scheduleData = sget('tfb_schedule') || {};
   renderSchedule();
 }
 
@@ -3224,7 +3324,7 @@ function updateScheduleSlot(herbId, key, val){
   scheduleData[herbId][key]=val;
 }
 async function saveAllSchedules(){
-  await sset('tfb_schedule', scheduleData);
+  sset('tfb_schedule', scheduleData);
   await appendAudit({type:'edit',icon:'🕐',action:'Staff schedules updated',actor:currentAdmin?.name||'Admin',target:'All Practitioners'});
   showToast('✅ All schedules saved.');
 }
@@ -3242,7 +3342,7 @@ const DEFAULT_TEMPLATES = [
 ];
 
 async function loadTemplates(){
-  const saved = await sget('tfb_email_templates');
+  const saved = sget('tfb_email_templates');
   ALL_TEMPLATES = saved || DEFAULT_TEMPLATES;
   renderTemplates();
 }
@@ -3313,7 +3413,7 @@ function openAddTemplate(){
     const body    = document.getElementById('tpl-body')?.value.trim();
     if(!name||!subject||!body){ showToast('⚠️ Name, subject and body are required.'); return; }
     ALL_TEMPLATES.push({id:'tpl_'+Date.now(),name,subject,body,category:document.getElementById('tpl-cat')?.value||'admin',locked:false,createdAt:new Date().toISOString()});
-    await sset('tfb_email_templates',ALL_TEMPLATES);
+    sset('tfb_email_templates',ALL_TEMPLATES);
     renderTemplates();
     closeDrawer();
     await appendAudit({type:'create',icon:'✉️',action:`Email template created: "${name}"`,actor:currentAdmin?.name||'Admin',target:name});
@@ -3330,14 +3430,14 @@ function editTemplate(id){
   `, async()=>{
     const idx = ALL_TEMPLATES.findIndex(x=>x.id===id);
     ALL_TEMPLATES[idx]={...ALL_TEMPLATES[idx],name:document.getElementById('tpl-name')?.value.trim(),subject:document.getElementById('tpl-subject')?.value.trim(),body:document.getElementById('tpl-body')?.value.trim(),updatedAt:new Date().toISOString()};
-    await sset('tfb_email_templates',ALL_TEMPLATES);
+    sset('tfb_email_templates',ALL_TEMPLATES);
     renderTemplates(); closeDrawer(); showToast('✅ Template updated.');
   });
 }
 async function deleteTemplate(id){
-  showConfirm('Delete Template','Permanently delete this email template?',async()=>{
+  showConfirm('Delete Template','Permanently delete this email template?',()=>{
     ALL_TEMPLATES=ALL_TEMPLATES.filter(t=>t.id!==id);
-    await sset('tfb_email_templates',ALL_TEMPLATES);
+    sset('tfb_email_templates',ALL_TEMPLATES);
     renderTemplates(); showToast('🗑️ Template deleted.');
   });
 }
@@ -3348,7 +3448,7 @@ async function deleteTemplate(id){
 let ALL_RESOURCES = [];
 
 async function loadResources(){
-  ALL_RESOURCES = await sget('tfb_resources') || [];
+  ALL_RESOURCES = sget('tfb_resources') || [];
   renderResources(ALL_RESOURCES);
 }
 
@@ -3396,7 +3496,7 @@ function openAddResource(){
     const title = document.getElementById('res-title')?.value.trim();
     if(!title){ showToast('⚠️ Title is required.'); return; }
     ALL_RESOURCES.unshift({id:'res_'+Date.now(),title,type:document.getElementById('res-type')?.value||'other',audience:document.getElementById('res-audience')?.value||'All',url:document.getElementById('res-url')?.value||'',description:document.getElementById('res-desc')?.value||'',addedAt:new Date().toISOString(),addedBy:currentAdmin?.name||'Admin'});
-    await sset('tfb_resources',ALL_RESOURCES);
+    sset('tfb_resources',ALL_RESOURCES);
     renderResources(ALL_RESOURCES);
     closeDrawer();
     await appendAudit({type:'create',icon:'📚',action:`Resource added: "${title}"`,actor:currentAdmin?.name||'Admin',target:title});
@@ -3404,9 +3504,9 @@ function openAddResource(){
   });
 }
 async function deleteResource(id){
-  showConfirm('Delete Resource','Remove this resource from the library?',async()=>{
+  showConfirm('Delete Resource','Remove this resource from the library?',()=>{
     ALL_RESOURCES=ALL_RESOURCES.filter(r=>r.id!==id);
-    await sset('tfb_resources',ALL_RESOURCES);
+    sset('tfb_resources',ALL_RESOURCES);
     renderResources(ALL_RESOURCES);
     showToast('🗑️ Resource removed.');
   });
@@ -3423,7 +3523,7 @@ const DEFAULT_CONSENTS = [
 ];
 
 async function loadConsents(){
-  const saved = await sget('tfb_consents');
+  const saved = sget('tfb_consents');
   ALL_CONSENTS = saved || DEFAULT_CONSENTS;
   renderConsents();
 }
@@ -3480,18 +3580,18 @@ function openAddConsent(){
     const ver   = document.getElementById('con-ver')?.value.trim()||'v'+((ALL_CONSENTS.length+1)+'.0');
     if(!title||!body){ showToast('⚠️ Title and body are required.'); return; }
     ALL_CONSENTS.push({id:'consent_'+Date.now(),version:ver,title,body,status:'active',createdAt:new Date().toISOString()});
-    await sset('tfb_consents',ALL_CONSENTS);
+    sset('tfb_consents',ALL_CONSENTS);
     renderConsents(); closeDrawer();
     await appendAudit({type:'create',icon:'📝',action:`Consent form added: "${title}" (${ver})`,actor:currentAdmin?.name||'Admin',target:title});
     showToast('✅ Consent form version created.');
   });
 }
-async function archiveConsent(id){ ALL_CONSENTS=ALL_CONSENTS.map(c=>c.id===id?{...c,status:'archived'}:c); await sset('tfb_consents',ALL_CONSENTS); renderConsents(); showToast('✅ Consent form archived.'); }
-async function activateConsent(id){ ALL_CONSENTS=ALL_CONSENTS.map(c=>c.id===id?{...c,status:'active'}:c); await sset('tfb_consents',ALL_CONSENTS); renderConsents(); showToast('✅ Consent form activated.'); }
+async function archiveConsent(id){ ALL_CONSENTS=ALL_CONSENTS.map(c=>c.id===id?{...c,status:'archived'}:c); sset('tfb_consents',ALL_CONSENTS); renderConsents(); showToast('✅ Consent form archived.'); }
+async function activateConsent(id){ ALL_CONSENTS=ALL_CONSENTS.map(c=>c.id===id?{...c,status:'active'}:c); sset('tfb_consents',ALL_CONSENTS); renderConsents(); showToast('✅ Consent form activated.'); }
 async function deleteConsent(id){
-  showConfirm('Delete Consent Form','Permanently delete this consent form version?',async()=>{
+  showConfirm('Delete Consent Form','Permanently delete this consent form version?',()=>{
     ALL_CONSENTS=ALL_CONSENTS.filter(c=>c.id!==id);
-    await sset('tfb_consents',ALL_CONSENTS);
+    sset('tfb_consents',ALL_CONSENTS);
     renderConsents(); showToast('🗑️ Consent form deleted.');
   });
 }
@@ -3528,7 +3628,7 @@ async function cleanupOrphanedAccounts(){
         }
         for(const {key, email} of keysToDelete){
           localStorage.removeItem(key);
-          try{ await window.storage.delete(key, true); }catch(e){}
+          
           cleaned++;
         }
       }catch(e){}
@@ -3540,7 +3640,7 @@ async function cleanupOrphanedAccounts(){
         if(email && !activeEmails.has(email)){
           const k = emailKey(email);
           try{ localStorage.removeItem(k); }catch(e){}
-          try{ await window.storage.delete(k, true); }catch(e){}
+          // window.storage not available on GitHub Pages
           cleaned++;
         }
       }
@@ -3716,11 +3816,7 @@ async function deleteAssessment(ref){
       const refs = JSON.parse(localStorage.getItem('tfb_refs')||'[]');
       const newRefs = refs.filter(r => r !== ref);
       localStorage.setItem('tfb_refs', JSON.stringify(newRefs));
-      // Also attempt via window.storage
-      for(const k of keysToRemove){
-        try{ await window.storage.delete(k, false); }catch(e){}
-        try{ await window.storage.delete(k, true);  }catch(e){}
-      }
+      // localStorage cleanup done above
     } catch(e){ console.warn('localStorage delete error:', e); }
 
     // 3. Add to tombstone — prevents fallback from re-inserting
