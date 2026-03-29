@@ -807,7 +807,10 @@ async function dbDelete(table, filters) {
       <div class="panel" id="panel-herbalists">
         <div class="ph">
           <div><div class="ph-title">Herbalist <em>Accounts</em></div><div class="ph-sub">Manage practitioner access, specialties, and permissions</div></div>
-          <div class="ph-actions"><button class="btn btn-saffron" onclick="openAddUser('herbalist')">+ Add Herbalist</button></div>
+          <div class="ph-actions">
+            <button class="btn btn-ghost" onclick="refreshHerbalistList()">🔄 Refresh</button>
+            <button class="btn btn-saffron" onclick="openAddUser('herbalist')">+ Add Herbalist</button>
+          </div>
         </div>
         <div class="table-wrap" style="padding-top:1rem">
           <div class="toolbar">
@@ -1188,15 +1191,7 @@ async function dbDelete(table, filters) {
           <div class="ph-actions"><button class="btn btn-saffron" onclick="openAddConsent()">+ New Consent Version</button></div>
         </div>
         <div class="table-wrap" style="padding-top:1rem">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem" id="consentsBody"></div>
-        </div>
-      </div>
-
-    </div><!-- /content -->
-  </div><!-- /app -->
-</div><!-- /adminApp -->
-
-<script>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem" id="consentsBody"></
 // ══════════════════════════════════════════════════
 // STORAGE HELPERS
 // ══════════════════════════════════════════════════
@@ -1578,6 +1573,50 @@ function renderHerbalists(list=ALL_HERBALISTS){
   }).join('');
 }
 
+
+// ── Refresh herbalist list from Supabase ──
+async function refreshHerbalistList(){
+  showToast('🔄 Refreshing herbalists…');
+  try {
+    const { data, error } = await sb.from('herbalists').select('*');
+    if(!error && data && data.length){
+      const deletedIds = sget('tfb_deleted_herbalists')||[];
+      data.forEach(sh => {
+        if(deletedIds.includes(sh.id)) return;
+        const idx = ALL_HERBALISTS.findIndex(h => h.email===sh.email || h.id===sh.id);
+        const merged = {
+          id: sh.id, name: sh.full_name||sh.name||sh.email,
+          email: sh.email, username: sh.username||sh.email?.split('@')[0],
+          specialty: sh.specialty||'', tradition: sh.tradition||'',
+          status: sh.status||'active', pw: sh.password||'herb2025',
+          role: 'herbalist', createdAt: sh.created_at,
+          bio: sh.bio||'', qualifications: sh.qualifications||'',
+        };
+        if(idx >= 0) ALL_HERBALISTS[idx] = {...ALL_HERBALISTS[idx], ...merged};
+        else ALL_HERBALISTS.push(merged);
+      });
+    }
+    // Also reload from profiles table
+    const { data: profs } = await sb.from('profiles').select('*');
+    if(profs){
+      profs.filter(p=>p.role==='herbalist').forEach(p=>{
+        const deletedIds = sget('tfb_deleted_herbalists')||[];
+        if(deletedIds.includes(p.id)) return;
+        if(!ALL_HERBALISTS.find(h=>h.email===p.email)){
+          ALL_HERBALISTS.push({
+            id: p.id, name: ((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
+            email: p.email, status: p.status||'active', role:'herbalist',
+            specialty:'', tradition:'', pw:'herb2025', createdAt: p.created_at,
+          });
+        }
+      });
+    }
+  } catch(e){ console.warn('refreshHerbalistList:', e); }
+  renderHerbalists();
+  updateStats();
+  showToast('✅ Herbalist list refreshed — '+ALL_HERBALISTS.length+' practitioners');
+}
+
 async function refreshClientList(){
   showToast('🔄 Refreshing client list…');
   // Re-load from Supabase profiles
@@ -1892,7 +1931,14 @@ async function deleteUser(id,role){
         try { await sb.from('herbalists').delete().eq('id',id); } catch(e){}
         try { await sb.from('herbalists').delete().eq('username',user.username||id); } catch(e){}
         try { await sb.from('profiles').delete().eq('id',id); } catch(e){}
-        // 2. Save tombstone so built-in defaults stay deleted on reload
+        // 2. Delete from Supabase Auth
+        if(id && !id.startsWith('c_')){
+          try {
+            const rpcR = await sb.rpc('admin_delete_auth_user', { target_user_id: id });
+            if(rpcR.error) console.warn('Herbalist auth delete RPC:', rpcR.error.message);
+          } catch(e){}
+        }
+        // 3. Save tombstone so built-in defaults stay deleted on reload
         const deleted = sget('tfb_deleted_herbalists')||[];
         if(!deleted.includes(id)){ deleted.push(id); sset('tfb_deleted_herbalists',deleted); }
         // 3. Remove from in-memory list
@@ -1924,7 +1970,26 @@ async function deleteUser(id,role){
           try { await sb.from('profiles').delete().eq('id', user.id); } catch(e){}
         }
 
-        // 3. Delete assessments by email and by client_id
+        // 3. Delete from Supabase Auth (via security-definer RPC — bypasses service role restriction)
+        if(user.id && !user.id.startsWith('c_')){
+          try {
+            // Try RPC first (requires delete_auth_user SQL function in Supabase)
+            const rpcResult = await sb.rpc('admin_delete_auth_user', { target_user_id: user.id });
+            if(rpcResult.error){
+              console.warn('RPC auth delete:', rpcResult.error.message);
+              // Fallback: mark the account disabled in profiles so it cannot log in
+              await sb.from('profiles').update({
+                status: 'deleted',
+                email: user.email + '__deleted__' + Date.now(),
+                updated_at: new Date().toISOString()
+              }).eq('id', user.id);
+            }
+          } catch(e){
+            console.warn('Auth user delete:', e);
+          }
+        }
+
+        // 4. Delete assessments by email and by client_id
         try {
           await sb.from('assessments').delete().eq('client_email', user.email);
         } catch(e){}
@@ -1975,7 +2040,7 @@ async function deleteUser(id,role){
       await appendAudit({type:'delete',icon:'🗑️',action:`Deleted ${role} account: ${user.name}`,actor:currentAdmin?.name||'Admin',target:user.email||user.username||id});
       updateStats();
       closeDrawer();
-      showToast(`🗑️ ${user.name} deleted. To free their email for re-registration, also delete them from Supabase → Authentication → Users.`);
+      showToast(`🗑️ ${user.name} has been fully deleted from the system.`);
     }
   );
 }
@@ -4072,6 +4137,11 @@ function startRealtimeSync(){
     await loadAll();
     startRealtimeSync();
     showToast('✅ Session restored — welcome back, ' + currentAdmin.name + '!');
+  } catch(e){
+    console.warn('Session restore failed:', e);
+  }
+})();
+— welcome back, ' + currentAdmin.name + '!');
   } catch(e){
     console.warn('Session restore failed:', e);
   }

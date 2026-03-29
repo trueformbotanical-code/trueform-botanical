@@ -453,3 +453,44 @@ on conflict (username) do nothing;
 --   FIX: assessments, protocols, messages, appointments now allow anon reads.
 --   The security model relies on the app's UI auth layer, not Supabase Auth.
 -- ================================================================
+
+-- ══════════════════════════════════════════════════════════════════
+-- ADMIN RPC: Delete auth.users entry from browser (security definer)
+-- Call via: sb.rpc('admin_delete_auth_user', { target_user_id: uuid })
+-- Only usable when signed in as admin (checked inside function)
+-- ══════════════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION public.admin_delete_auth_user(target_user_id uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_role text;
+BEGIN
+  -- Only allow admins (role = 'admin' in profiles)
+  SELECT role INTO v_role
+  FROM public.profiles
+  WHERE id = auth.uid();
+
+  IF v_role IS DISTINCT FROM 'admin' THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Permission denied — admin only');
+  END IF;
+
+  -- Delete from auth.users (cascades to auth.sessions, auth.identities etc.)
+  DELETE FROM auth.users WHERE id = target_user_id;
+
+  RETURN jsonb_build_object('success', true, 'deleted_id', target_user_id);
+EXCEPTION WHEN OTHERS THEN
+  RETURN jsonb_build_object('success', false, 'error', SQLERRM);
+END;
+$$;
+
+-- Grant execute to authenticated role (admin will be authenticated)
+GRANT EXECUTE ON FUNCTION public.admin_delete_auth_user(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_delete_auth_user(uuid) TO service_role;
+
+-- ── Comment ──
+COMMENT ON FUNCTION public.admin_delete_auth_user(uuid) IS
+  'Admin-only security-definer function to delete a Supabase Auth user by UUID. '
+  'Verifies the calling user has role=admin in the profiles table before deleting.';
