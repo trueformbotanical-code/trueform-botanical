@@ -1191,7 +1191,13 @@ async function dbDelete(table, filters) {
           <div class="ph-actions"><button class="btn btn-saffron" onclick="openAddConsent()">+ New Consent Version</button></div>
         </div>
         <div class="table-wrap" style="padding-top:1rem">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem" id="consentsBody"></
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem" id="consentsBody"></div>
+        </div>
+      </div><!-- /panel-consents -->
+    </div><!-- /content -->
+  </div><!-- /app -->
+</div><!-- /adminApp -->
+<script>
 // ══════════════════════════════════════════════════
 // STORAGE HELPERS
 // ══════════════════════════════════════════════════
@@ -1233,7 +1239,7 @@ async function doAdminLogin(){
   let adminName = 'System Administrator';
 
   // ── Method 1: Local fallback (original sysadmin2025 password) ──
-  const isAdminEmail = email==='admin' || email==='trueformbotanical@gmail.com';
+  const isAdminEmail = email==='admin' || email==='<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9bdbbbcacafa6bba4aba6bda8a7a0aaa8a589aea4a8a0a5e7aaa6a4">[email&#160;protected]</a>';
   if(isAdminEmail && pw==='sysadmin2025'){
     authenticated = true;
   }
@@ -1241,7 +1247,7 @@ async function doAdminLogin(){
   // ── Method 2: Supabase Auth ──
   if(!authenticated){
     try {
-      const loginEmail = email==='admin' ? 'trueformbotanical@gmail.com' : email;
+      const loginEmail = email==='admin' ? '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aaded8dfcfccc5d8c7c8c5decbc4c3c9cbc6eacdc7cbc3c684c9c5c7">[email&#160;protected]</a>' : email;
       const { data, error } = await sb.auth.signInWithPassword({ email: loginEmail, password: pw });
       if(!error && data?.user){
         // Verify admin role
@@ -1250,7 +1256,7 @@ async function doAdminLogin(){
           const { data: pd } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
           profile = pd;
         } catch(e){}
-        const isAdmin = data.user.email==='trueformbotanical@gmail.com' || profile?.role==='admin';
+        const isAdmin = data.user.email==='<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9cdcbccdcdfd6cbd4dbd6cdd8d7d0dad8d5f9ded4d8d0d597dad6d4">[email&#160;protected]</a>' || profile?.role==='admin';
         if(isAdmin){
           authenticated = true;
           adminName = profile?.full_name || 'System Administrator';
@@ -1272,7 +1278,7 @@ async function doAdminLogin(){
     return;
   }
 
-  currentAdmin = { id:'admin', name: adminName, email: email==='admin'?'trueformbotanical@gmail.com':email, role:'admin' };
+  currentAdmin = { id:'admin', name: adminName, email: email==='admin'?'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4337313626252c312e212c37222d2a20222f03242e222a2f6d202c2e">[email&#160;protected]</a>':email, role:'admin' };
   (document.getElementById('loginGate')||{style:{}}).style.display='none';
   (document.getElementById('adminApp')||{style:{}}).style.display='flex';
   await loadAll();
@@ -1298,11 +1304,11 @@ let ALL_HERBALISTS=[],ALL_CLIENTS_USR=[],ALL_ADMINS=[],ALL_ASSESSMENTS=[],ALL_AU
 async function loadAll(){
   // Load herbalists — merge defaults with storage, respect deletions
   const defaultHerbalists=[
-    {id:'amara',        name:'Dr. Amara Osei',    username:'amara',        email:'amara@trueformbotanical.com', pw:'herb2025',role:'herbalist',specialty:'African Botanicals · Ayurveda',tradition:'African / Ayurveda',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
-    {id:'liang',        name:'Liang Wei PhD',     username:'liang',        email:'liang@trueformbotanical.com', pw:'herb2025',role:'herbalist',specialty:'TCM · Phytochemistry',tradition:'TCM',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
-    {id:'sofia',        name:'Sofia Navarro',     username:'sofia',        email:'sofia@trueformbotanical.com', pw:'herb2025',role:'herbalist',specialty:'Western Phytotherapy',tradition:'Western',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
-    {id:'priya',        name:'Dr. Priya Sharma',  username:'priya',        email:'priya@trueformbotanical.com', pw:'herb2025',role:'herbalist',specialty:'Ayurveda · Panchakarma',tradition:'Ayurveda',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
-    {id:'miller.jerome',name:'Jerome Miller',     username:'miller.jerome',email:'jerome@trueformbotanical.com',pw:'herb2025',role:'herbalist',specialty:'Herbal Medicine',tradition:'Western',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
+    {id:'amara',        name:'Dr. Amara Osei',    username:'amara',        email:'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef8e828e9d8eaf9b9d9a8a89809d828d809b8e81868c8e83c18c8082">[email&#160;protected]</a>', pw:'herb2025',role:'herbalist',specialty:'African Botanicals · Ayurveda',tradition:'African / Ayurveda',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
+    {id:'liang',        name:'Liang Wei PhD',     username:'liang',        email:'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd7d2dad5dcfbcfc9cededdd4c9d6d9d4cfdad5d2d8dad795d8d4d6">[email&#160;protected]</a>', pw:'herb2025',role:'herbalist',specialty:'TCM · Phytochemistry',tradition:'TCM',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
+    {id:'sofia',        name:'Sofia Navarro',     username:'sofia',        email:'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acdfc3cac5cdecd8ded9c9cac3dec1cec3d8cdc2c5cfcdc082cfc3c1">[email&#160;protected]</a>', pw:'herb2025',role:'herbalist',specialty:'Western Phytotherapy',tradition:'Western',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
+    {id:'priya',        name:'Dr. Priya Sharma',  username:'priya',        email:'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1e6e6c77677f5e6a6c6b7b78716c737c716a7f70777d7f72307d7173">[email&#160;protected]</a>', pw:'herb2025',role:'herbalist',specialty:'Ayurveda · Panchakarma',tradition:'Ayurveda',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
+    {id:'miller.jerome',name:'Jerome Miller',     username:'miller.jerome',email:'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660c0314090b0326121413030009140b04091207080f05070a4805090b">[email&#160;protected]</a>',pw:'herb2025',role:'herbalist',specialty:'Herbal Medicine',tradition:'Western',status:'active',createdAt:'2025-01-01T00:00:00Z',lastLogin:null,clients:0},
   ];
   // Get deletion tombstones first
   const deletedIds=sget('tfb_deleted_herbalists')||[];
@@ -1372,7 +1378,7 @@ async function loadAll(){
     if(profErr) console.warn('[Admin] profiles:', profErr.message);
     if(profs && profs.length){
       profs
-        .filter(p => (p.role === 'client' || (!p.role && p.email && p.email !== 'trueformbotanical@gmail.com'))
+        .filter(p => (p.role === 'client' || (!p.role && p.email && p.email !== '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f185838494979e839c939e85909f9892909db1969c90989ddf929e9c">[email&#160;protected]</a>'))
                     && !_deletedClients.has(p.id) && !_deletedClients.has(p.email))
         .forEach(p => addClient({
           id:        p.id,
@@ -1638,7 +1644,7 @@ async function refreshClientList(){
     // Also try profiles
     const { data: profsR } = await sb.from('profiles').select('*');
     if(profsR && profsR.length){
-      profsR.filter(p=>p.role==='client'||(!p.role&&p.email!=='trueformbotanical@gmail.com')).forEach(p=>{
+      profsR.filter(p=>p.role==='client'||(!p.role&&p.email!=='<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f3b3d3a2a29203d222d203b2e21262c2e230f28222e2623612c2022">[email&#160;protected]</a>')).forEach(p=>{
         if(!ALL_CLIENTS_USR.find(x=>x.email?.toLowerCase()===p.email?.toLowerCase())){
           ALL_CLIENTS_USR.push({
             id:p.id, name:((p.first_name||'')+' '+(p.last_name||'')).trim()||p.full_name||p.email,
@@ -3778,7 +3784,7 @@ async function doAdminPasswordReset(){
   (document.getElementById('adminLoginBox')||{style:{}}).style.display='block';
   // Pre-fill email
   const emailEl = document.getElementById('adminUser');
-  if(emailEl) emailEl.value = 'trueformbotanical@gmail.com';
+  if(emailEl) emailEl.value = '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9dddbdccccfc6dbc4cbc6ddc8c7c0cac8c5e9cec4c8c0c587cac6c4">[email&#160;protected]</a>';
   showToast('✅ Password updated! Please sign in with your new password.');
 }
 
@@ -4100,52 +4106,20 @@ function startRealtimeSync(){
           });
           renderClients();
           updateStats();
-          showToast('👤 New client registered: ' + (payload.new?.email||''));
         }
       })
       .subscribe();
-  } catch(e){ console.warn('Realtime sync failed:', e); }
+  } catch(e){
+    console.warn('[Admin] Realtime sync unavailable:', e);
+  }
 }
 
-// ══ AUTO-RESTORE ADMIN SESSION ON PAGE LOAD ══
-(async function initAdminSession(){
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if(!session || !session.user) return; // no session, show login
-
-    const email = session.user.email;
-    const isAdminEmail = email === 'trueformbotanical@gmail.com';
-
-    // Check profile role
-    let isAdminRole = false;
-    try {
-      const { data: pd } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
-      isAdminRole = pd?.role === 'admin';
-    } catch(e){}
-
-    if(!isAdminEmail && !isAdminRole) return; // not an admin
-
-    // Restore session — skip login gate
-    currentAdmin = {
-      id:    session.user.id,
-      name:  session.user.user_metadata?.full_name || 'System Administrator',
-      email: email,
-      role:  'admin'
-    };
-    (document.getElementById('loginGate')||{style:{}}).style.display  = 'none';
-    (document.getElementById('adminApp')||{style:{}}).style.display   = 'flex';
-    await loadAll();
-    startRealtimeSync();
-    showToast('✅ Session restored — welcome back, ' + currentAdmin.name + '!');
-  } catch(e){
-    console.warn('Session restore failed:', e);
-  }
+// ══ OVERVIEW DATE ══
+(function setOverviewDate(){
+  const el = document.getElementById('overviewDate');
+  if(el) el.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 })();
-— welcome back, ' + currentAdmin.name + '!');
-  } catch(e){
-    console.warn('Session restore failed:', e);
-  }
-})();
+
 </script>
 </body>
 </html>
